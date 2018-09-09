@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="ffmpeg,stdin,Broken pipe,windows," />
+  <meta name="keywords" content="stdin,ffmpeg,Broken pipe,windows," />
 
 
 
@@ -80,7 +80,7 @@
 
 
 <meta name="description" content="最近遇到一个这样的问题：ffmpeg 解码出 yuv 输出至管道，我写的程序从管道读取 yuv。 e.g: 1D:\huang_xuezhong\build_win32_VDNAGen&amp;gt;ffmpeg -i test.mkv -c:v rawvideo -s 320x240 -f rawvideo - | my_tool -o output 就上面这行命令，在 Linux 和 osx 下面运行">
-<meta name="keywords" content="ffmpeg,stdin,Broken pipe,windows">
+<meta name="keywords" content="stdin,ffmpeg,Broken pipe,windows">
 <meta property="og:type" content="article">
 <meta property="og:title" content="一个 Broken pipe 引发的血案">
 <meta property="og:url" content="http://hxzqlh.com/2016/04/06/一个-Broken-pipe-引发的血案/index.html">
@@ -380,14 +380,32 @@
     
 
     
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    hxzqlh
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://hxzqlh.com/2016/04/06/一个-Broken-pipe-引发的血案/" title="一个 Broken pipe 引发的血案">http://hxzqlh.com/2016/04/06/一个-Broken-pipe-引发的血案/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
 
     <footer class="post-footer">
       
         <div class="post-tags">
           
-            <a href="/tags/ffmpeg/" rel="tag"># ffmpeg</a>
-          
             <a href="/tags/stdin/" rel="tag"># stdin</a>
+          
+            <a href="/tags/ffmpeg/" rel="tag"># ffmpeg</a>
           
             <a href="/tags/Broken-pipe/" rel="tag"># Broken pipe</a>
           
