@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="stdin,stdout,ffmpeg,stderr,pipe," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="临近春节假期之际，我司提供给客户用的命令行工具还遭遇一个新需求：  支持管道输入/输出。  需求背景：  原始的视频流体积巨大（一个十分钟视频的原始视频流就占用 2G 多空间），为了节约机器资源，客户希望能将原始的视频流直接通过管道输入，而不必转码生成临时媒体文件。  简而言之，客户希望支持这种调用方式： 1cat some_big_rawvideo | ./my_prog 比如，我们用到的 ff">
+<meta name="keywords" content="stdin,stdout,ffmpeg,stderr,pipe">
+<meta property="og:type" content="article">
+<meta property="og:title" content="管道是个好东西">
+<meta property="og:url" content="http://hxzqlh.com/2016/02/02/管道是个好东西/index.html">
+<meta property="og:site_name" content="不忘痴心 砥砺前行">
+<meta property="og:description" content="临近春节假期之际，我司提供给客户用的命令行工具还遭遇一个新需求：  支持管道输入/输出。  需求背景：  原始的视频流体积巨大（一个十分钟视频的原始视频流就占用 2G 多空间），为了节约机器资源，客户希望能将原始的视频流直接通过管道输入，而不必转码生成临时媒体文件。  简而言之，客户希望支持这种调用方式： 1cat some_big_rawvideo | ./my_prog 比如，我们用到的 ff">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-03-27T15:18:57.142Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="管道是个好东西">
+<meta name="twitter:description" content="临近春节假期之际，我司提供给客户用的命令行工具还遭遇一个新需求：  支持管道输入/输出。  需求背景：  原始的视频流体积巨大（一个十分钟视频的原始视频流就占用 2G 多空间），为了节约机器资源，客户希望能将原始的视频流直接通过管道输入，而不必转码生成临时媒体文件。  简而言之，客户希望支持这种调用方式： 1cat some_big_rawvideo | ./my_prog 比如，我们用到的 ff">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hxzqlh.com/2016/02/02/管道是个好东西/"/>
+
+
+
+
+
+  <title>管道是个好东西 | 不忘痴心 砥砺前行</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">不忘痴心 砥砺前行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hxzqlh.com/2016/02/02/管道是个好东西/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hxzqlh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不忘痴心 砥砺前行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">管道是个好东西</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-02-02T16:44:57+08:00">
+                2016-02-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/" itemprop="url" rel="index">
+                    <span itemprop="name">C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>临近春节假期之际，我司提供给客户用的命令行工具还遭遇一个新需求：</p>
+<blockquote>
+<p>支持管道输入/输出。</p>
+</blockquote>
+<p>需求背景：</p>
+<blockquote>
+<p>原始的视频流体积巨大（一个十分钟视频的原始视频流就占用 <code>2G</code> 多空间），为了节约机器资源，客户希望能将原始的视频流直接通过管道输入，而不必转码生成临时媒体文件。</p>
+</blockquote>
+<p>简而言之，客户希望支持这种调用方式：</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat some_big_rawvideo <span class="string">| ./my_prog</span></span><br></pre></td></tr></table></figure>
+<p>比如，我们用到的 <code>ffmpeg</code> 和 <code>ffplay</code> 工具也支持通过 <code>-</code> 或 <code>pipe</code>来指定管道输入输出：</p>
+<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i input.<span class="symbol">mp4</span> -f avi - | ffplay -</span><br><span class="line">ffmpeg -i input.<span class="symbol">mp4</span> -f avi <span class="built_in">pi</span><span class="symbol">pe:</span> | ffplay <span class="built_in">pi</span><span class="symbol">pe:</span></span><br><span class="line">ffmpeg -i input.<span class="symbol">mp4</span> -f avi <span class="built_in">pi</span><span class="symbol">pe:1</span> | ffplay <span class="built_in">pi</span><span class="symbol">pe:0</span></span><br></pre></td></tr></table></figure>
+<p>不幸的是，我们现有的工具并不支持，它只能根据命令行中的文件路径来指定输入输出。</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">my_prog -i <span class="regexp">/path/</span>to<span class="regexp">/inputfile -o /</span>path<span class="regexp">/to/</span>outputfile</span><br></pre></td></tr></table></figure>
+<p>咋办？改！</p>
+<a id="more"></a>
+<h2 id="已知"><a href="#已知" class="headerlink" title="已知"></a>已知</h2><p>首先，小明知道，对于标准的命令行程序，它遵从基本的「一进二出」规范。</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">                                                   ---&gt; stdout, pipe:1</span><br><span class="line">                                                /</span><br><span class="line">                                              /</span><br><span class="line">                   ||<span class="string">======================</span>||</span><br><span class="line">stdin, pipe:0 ---&gt; ||<span class="string">        cmd           </span>||<span class="string">   </span></span><br><span class="line"><span class="string">                   </span>||<span class="string">======================</span>||</span><br><span class="line">                                              \</span><br><span class="line">                                                \</span><br><span class="line">                                                   ---&gt; stderr, pipe:2</span><br></pre></td></tr></table></figure>
+<h3 id="管道"><a href="#管道" class="headerlink" title="管道"></a>管道</h3><p>管道是 <code>unix</code> 设计哲学之一，其核心思想就是<code>将前一个命令的标准输出作为后一个命令的标准输入</code>。</p>
+<p>比如<code>programo0 | program1 | program2</code> 的输入输出示意图如下：</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">                                                     </span><br><span class="line">stdin    stdout            stdin     stdout           stdin      stdout</span><br><span class="line">   <span class="params">||</span>    =======================     ======================    <span class="regexp">/\</span></span><br><span class="line"><span class="regexp">   ||   /</span>\                     <span class="params">||</span>   /\                    <span class="params">||</span>   <span class="params">||</span></span><br><span class="line">   <span class="params">||</span>   <span class="params">||</span>                     <span class="params">||</span>   <span class="params">||</span>                    <span class="params">||</span>   <span class="params">||</span></span><br><span class="line">   \/   <span class="params">||</span>                     \/   <span class="params">||</span>                    \/   <span class="params">||</span></span><br><span class="line"><span class="params">||</span>==========<span class="params">||</span>             <span class="params">||</span>==========<span class="params">||</span>             <span class="params">||</span>==========<span class="params">||</span></span><br><span class="line"><span class="params">||</span> program<span class="number">0</span> <span class="params">||</span>             <span class="params">||</span> program1 <span class="params">||</span>             <span class="params">||</span> program2 <span class="params">||</span>  </span><br><span class="line"><span class="params">||</span>==========<span class="params">||</span>             <span class="params">||</span>==========<span class="params">||</span>             <span class="params">||</span>==========<span class="params">||</span>  </span><br><span class="line">      <span class="params">||</span>                         <span class="params">||</span>                         <span class="params">||</span></span><br><span class="line">      <span class="params">||</span>                         <span class="params">||</span>                         <span class="params">||</span></span><br><span class="line">      \/                         \/                         \/</span><br><span class="line">    stderr                     stderr                     stderr</span><br></pre></td></tr></table></figure>
+<p>基于这么一条简单到爆的原则，管道通过 <code>|</code> 把一系列命令连接起来：第一个命令的输出会作为第二个命令的输入通过管道传给第二个命令，第二个命令的输出又会作为第三个命令的输入……，最终结果为管道行中最后一个命令的输出。</p>
+<p>举个栗子：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat <span class="regexp">/etc/</span>passwd | <span class="keyword">grep</span> <span class="regexp">/bin/</span>bash | wc -l</span><br></pre></td></tr></table></figure>
+<p>这条命令使用了两个管道，利用第一个管道将 <code>cat</code> 命令（显示<code>passwd</code>文件的内容）的输出送给<code>grep</code>命令，<code>grep</code>命令找出含有<code>/bin/bash</code>的所有行；第二个管道将<code>grep</code>的输出送给<code>wc</code>命令，<code>wc</code>命令统计出输入中的行数。这个命令的功能在于找出系统中有多少个用户使用<code>bash</code>。</p>
+<h3 id="stdin-stdout-stderr"><a href="#stdin-stdout-stderr" class="headerlink" title="stdin stdout stderr"></a>stdin stdout stderr</h3><p>在 <code>unix</code> 世界中，<code>一切皆文件</code>。文件描述符是与打开文件或者数据流相关联的整数，<code>0、1、2</code> 是系统保留的三个文件描述符，分别对应标准输入、标准输出、标准错误。</p>
+<ul>
+<li>0: stdin  标准输入串流 (键盘輸入）</li>
+<li>1: stdout 标准输出串流 (终端屏幕）</li>
+<li>2: stderr 标准错误输出串流 (终端屏幕)</li>
+</ul>
+<h3 id="重定向"><a href="#重定向" class="headerlink" title="重定向"></a>重定向</h3><p>比如：</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">my_prog <span class="params">&lt;inputfile &gt;</span>outfile <span class="number">2</span>&gt;<span class="variable">&amp;1</span></span><br></pre></td></tr></table></figure>
+<p>将标准输入重定向到 <code>inputfile</code>（意味着 <code>my_prog</code>不再从标准输入而是从 <code>inputfile</code> 中读取数据），将标准输出和标准错误结果都重定向到 <code>outfile</code>。</p>
+<h2 id="如何才能让一个命令行程序支持管道？"><a href="#如何才能让一个命令行程序支持管道？" class="headerlink" title="如何才能让一个命令行程序支持管道？"></a>如何才能让一个命令行程序支持管道？</h2><p>So，小明上 StackOverflow 上先看看各位同仁怎么说：</p>
+<blockquote>
+<p>To be “pipe compatible” your program will need to read from <code>stdin</code> and write to <code>stdout</code>.</p>
+</blockquote>
+<p>原来如此:「为了支持管道，你的程序需要从 <code>stdin</code>读取输入并且将输出写到 <code>stdout</code>」</p>
+<h3 id="小试牛刀"><a href="#小试牛刀" class="headerlink" title="小试牛刀"></a>小试牛刀</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//pipe-std.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    FILE * fi = <span class="built_in">stdin</span>;</span><br><span class="line">    FILE * fo = <span class="built_in">stdout</span>;</span><br><span class="line">    <span class="keyword">char</span> buf[<span class="number">1024</span>];</span><br><span class="line">    <span class="keyword">int</span> r_cnt, w_cnt;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> ((r_cnt = fread (buf, <span class="number">1</span>, <span class="number">1024</span>, fi)) &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        w_cnt = fwrite (buf, <span class="number">1</span>, r_cnt, fo);</span><br><span class="line">        <span class="keyword">if</span> (w_cnt != r_cnt) &#123;</span><br><span class="line">            <span class="built_in">fprintf</span> (<span class="built_in">stderr</span>, <span class="string">"some err: %d, %d\n"</span>, r_cnt, w_cnt);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个示例非常简单，编译、运行：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">hxz<span class="meta">@pc</span><span class="number">0170:</span><span class="regexp">~/workspace/</span>c++$ gcc -o pipe-std pipe-std.c</span><br><span class="line">hxz<span class="meta">@pc</span><span class="number">0170:</span><span class="regexp">~/workspace/</span>c++$ ls -l <span class="regexp">~/test/</span>input/<span class="number">2.</span>mp4</span><br><span class="line">-rw-r--r--@ <span class="number">1</span> hxz  staff  <span class="number">1958612</span> Nov <span class="number">27</span> <span class="number">18</span>:<span class="number">01</span> <span class="regexp">/Users/</span>hxz<span class="regexp">/test/</span>input/<span class="number">2.</span>mp4</span><br><span class="line">hxz<span class="meta">@pc</span><span class="number">0170:</span><span class="regexp">~/workspace/</span>c++$ cat <span class="regexp">~/test/</span>input<span class="regexp">/2.mp4 | ./</span>pipe-std &gt;copy.mp4 <span class="number">2</span>&gt;error</span><br><span class="line">hxz<span class="meta">@pc</span><span class="number">0170:</span><span class="regexp">~/workspace/</span>c++$ ls -l copy.mp4 </span><br><span class="line">-rw-r--r--  <span class="number">1</span> hxz  staff  <span class="number">1958612</span> Mar  <span class="number">1</span> <span class="number">14</span>:<span class="number">22</span> copy.mp4</span><br></pre></td></tr></table></figure>
+<p>瞧见了没，这个简单的程序通过管道将输入的内容<code>~/test/input/2.mp4</code>复制到输出<code>copy.mp4</code>。</p>
+<h3 id="实践出真知"><a href="#实践出真知" class="headerlink" title="实践出真知"></a>实践出真知</h3><p>原理搞懂了，接下来就是体力活了。在实际码代码过程中，还是发现了几点管道程序需要注意的地方：</p>
+<ul>
+<li><p>由于是从管道读取输入内容，而管道每获取到<strong>片段内容</strong>就会发送到下一级程序处理，这意味着我们不能事先获知输入文件的大小了。因此，像 <code>get_file_size</code>之类的方法将不再可用。</p>
+</li>
+<li><p>管道内容只能顺序读取，不可逆回溯，也不可重复读取同一段内容。所以啊，我们的程序要珍惜每一次读取的机会，不能<code>open</code>了再<code>open</code>，只能<code>open</code>、<code>do_work1</code>、<code>do_work2</code>……<code>close</code> 。具体到 <code>ffmpeg</code> 解码程序就是，<code>avformat_open_input</code> 这个<code>api</code>只能用一次，一次就要把需要的信息全部预加载进来。</p>
+</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay_hxzqlh.jpg" alt="hxzqlh 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    hxzqlh
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://hxzqlh.com/2016/02/02/管道是个好东西/" title="管道是个好东西">http://hxzqlh.com/2016/02/02/管道是个好东西/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/stdin/" rel="tag"># stdin</a>
+          
+            <a href="/tags/stdout/" rel="tag"># stdout</a>
+          
+            <a href="/tags/ffmpeg/" rel="tag"># ffmpeg</a>
+          
+            <a href="/tags/stderr/" rel="tag"># stderr</a>
+          
+            <a href="/tags/pipe/" rel="tag"># pipe</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/02/01/张小龙饭否语录/" rel="next" title="张小龙饭否语录">
+                <i class="fa fa-chevron-left"></i> 张小龙饭否语录
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/02/03/dup2-考得一首好古/" rel="prev" title="dup2 | 考得一首好古">
+                dup2 | 考得一首好古 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">hxzqlh</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">124</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">212</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hxzqlh" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hxzqlh@gmail.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#已知"><span class="nav-number">1.</span> <span class="nav-text">已知</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#管道"><span class="nav-number">1.1.</span> <span class="nav-text">管道</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#stdin-stdout-stderr"><span class="nav-number">1.2.</span> <span class="nav-text">stdin stdout stderr</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重定向"><span class="nav-number">1.3.</span> <span class="nav-text">重定向</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何才能让一个命令行程序支持管道？"><span class="nav-number">2.</span> <span class="nav-text">如何才能让一个命令行程序支持管道？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#小试牛刀"><span class="nav-number">2.1.</span> <span class="nav-text">小试牛刀</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实践出真知"><span class="nav-number">2.2.</span> <span class="nav-text">实践出真知</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hxzqlh</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

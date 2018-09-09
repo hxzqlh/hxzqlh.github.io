@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="salt,states," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="五一小长假，魏泽西事件，谁也没想到这事闹得这么大，惊动了习大大出来亲自做指示：「搜索结果不能以给钱多少作为排序依据」，当社会民生问题上升到国家机器的高度，这事推动起来就好办点了，这是积极的一面。 再说黑暗的一面，在此事件中，百度的竞价排名、医疗广告备受诟病，有部分知乎大V收黑钱，昧着良心给那些为百度洗地的答案「点赞」，结果被人扒出来吊打一顿，个中过程，一波三折，撕逼打脸此起彼伏…… 详细报道，请观">
+<meta name="keywords" content="salt,states">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Salt States 基本法&lt;二&gt;">
+<meta property="og:url" content="http://hxzqlh.com/2016/05/05/Salt-States-基本法-二/index.html">
+<meta property="og:site_name" content="不忘痴心 砥砺前行">
+<meta property="og:description" content="五一小长假，魏泽西事件，谁也没想到这事闹得这么大，惊动了习大大出来亲自做指示：「搜索结果不能以给钱多少作为排序依据」，当社会民生问题上升到国家机器的高度，这事推动起来就好办点了，这是积极的一面。 再说黑暗的一面，在此事件中，百度的竞价排名、医疗广告备受诟病，有部分知乎大V收黑钱，昧着良心给那些为百度洗地的答案「点赞」，结果被人扒出来吊打一顿，个中过程，一波三折，撕逼打脸此起彼伏…… 详细报道，请观">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://hxzqlh.qiniudn.com/2016-04-28_1m2eS4">
+<meta property="og:updated_time" content="2018-03-27T15:18:57.118Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Salt States 基本法&lt;二&gt;">
+<meta name="twitter:description" content="五一小长假，魏泽西事件，谁也没想到这事闹得这么大，惊动了习大大出来亲自做指示：「搜索结果不能以给钱多少作为排序依据」，当社会民生问题上升到国家机器的高度，这事推动起来就好办点了，这是积极的一面。 再说黑暗的一面，在此事件中，百度的竞价排名、医疗广告备受诟病，有部分知乎大V收黑钱，昧着良心给那些为百度洗地的答案「点赞」，结果被人扒出来吊打一顿，个中过程，一波三折，撕逼打脸此起彼伏…… 详细报道，请观">
+<meta name="twitter:image" content="http://hxzqlh.qiniudn.com/2016-04-28_1m2eS4">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hxzqlh.com/2016/05/05/Salt-States-基本法-二/"/>
+
+
+
+
+
+  <title>Salt States 基本法<二> | 不忘痴心 砥砺前行</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">不忘痴心 砥砺前行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hxzqlh.com/2016/05/05/Salt-States-基本法-二/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hxzqlh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不忘痴心 砥砺前行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Salt States 基本法<二></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-05T17:07:04+08:00">
+                2016-05-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Ops/" itemprop="url" rel="index">
+                    <span itemprop="name">Ops</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>五一小长假，魏泽西事件，谁也没想到这事闹得这么大，惊动了习大大出来亲自做指示：「搜索结果不能以给钱多少作为排序依据」，当社会民生问题上升到国家机器的高度，这事推动起来就好办点了，这是积极的一面。</p>
+<p>再说黑暗的一面，在此事件中，百度的竞价排名、医疗广告备受诟病，有部分知乎大V收黑钱，昧着良心给那些为百度洗地的答案「点赞」，结果被人扒出来吊打一顿，个中过程，一波三折，撕逼打脸此起彼伏……</p>
+<p>详细报道，请观看明晚 19 点 35 分播出的焦点访谈节目《知乎6大V为百度洗地被永久封号》（链接：<a href="http://t.cn/Rq8r9zg）" target="_blank" rel="noopener">http://t.cn/Rq8r9zg）</a></p>
+<p>只不过一不小心点了个赞，瞬间几百万粉丝就没了，大V们的人品、口碑及其附带的一系列营销价值一夜坍塌，被永久地钉在知乎的耻辱柱上，受万人唾骂？请问，这事能怪谁？</p>
+<p>人在做天在看，且问苍天绕过谁？</p>
+<p><img src="http://hxzqlh.qiniudn.com/2016-04-28_1m2eS4" alt=""></p>
+<p>勿以恶小而为之啊！</p>
+<p>好啦，继续研究《Salt States 基本法》，本集前情提要：</p>
+<blockquote>
+<p>讨论有关 <code>sls</code> 模版以及 <code>include</code>, <code>extend</code> 等高级配置语法。</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="sls-模版"><a href="#sls-模版" class="headerlink" title="sls 模版"></a>sls 模版</h2><p>当你编写 <code>sls</code> 文件时，可能会用到编程语句，这可以用模版语言 <code>{ % % }</code> 表示。默认的模版渲染器是 <code>Jinja2</code>，当然，你也可以换成其他的，修改 <code>master</code> 配置文件的 <code>render</code> 值即可。</p>
+<p>你写好的所有 <code>state</code> 模块都会发送给 <code>Jinja2</code> 去渲染、编译。</p>
+<p>好！下面，就让我们来往里面加点料：模版标记语句，示例如下：</p>
+<figure class="highlight django"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="xml"></span><span class="template-tag">&#123;% <span class="name"><span class="name">for</span></span> usr <span class="keyword">in</span> ['moe','larry','curly'] %&#125;</span><span class="xml"></span></span><br><span class="line"><span class="xml"></span><span class="template-variable">&#123;&#123; usr &#125;&#125;</span><span class="xml">:</span></span><br><span class="line"><span class="xml">  user.present</span></span><br><span class="line"><span class="xml"></span><span class="template-tag">&#123;% <span class="name"><span class="name">endfor</span></span> %&#125;</span><span class="xml"></span></span><br></pre></td></tr></table></figure>
+<p>渲染后的 <code>sls</code> 文件将变成这样：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">moe:</span><br><span class="line">  user.present</span><br><span class="line">larry:</span><br><span class="line">  user.present</span><br><span class="line">curly:</span><br><span class="line">  user.present</span><br></pre></td></tr></table></figure>
+<p>下面是个更复杂的例子：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> Comments <span class="keyword">in</span> yaml start with a <span class="built_in">hash</span> symbol.</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> Since jinja rendering occurs before yaml parsing, <span class="keyword">if</span> you want to include jinja</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> <span class="keyword">in</span> the comments you may need to escape them using <span class="string">'jinja'</span> comments to prevent</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> jinja from trying to render something <span class="built_in">which</span> is not well-defined jinja.</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> e.g.</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> &#123;<span class="comment"># iterate over the Three Stooges using a &#123;% for %&#125;..&#123;% endfor %&#125; loop</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> with the iterator variable &#123;&#123; usr &#125;&#125; becoming the state ID. <span class="comment">#&#125;</span></span></span><br><span class="line">&#123;% for usr in 'moe','larry','curly' %&#125;</span><br><span class="line">&#123;&#123; usr &#125;&#125;:</span><br><span class="line">  group:</span><br><span class="line">    - present</span><br><span class="line">  user:</span><br><span class="line">    - present</span><br><span class="line">    - gid_from_name: True</span><br><span class="line">    - require:</span><br><span class="line">      - group: &#123;&#123; usr &#125;&#125;</span><br><span class="line">&#123;% endfor %&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="在-sls-模块中使用-Grains"><a href="#在-sls-模块中使用-Grains" class="headerlink" title="在 sls 模块中使用 Grains"></a>在 sls 模块中使用 Grains</h2><p>通常来说，根据主机操作系统的不同，一个 <code>state</code> 模块需要执行不同的动作。前面我们介绍过了，<code>Apache</code> 服务器在不同操作系统下，它的软件安装包名是不一样的。这时，<code>grains</code> 就派上用场了，比如，下面的例子根据不同的操作系统信息确定 <code>Apache</code> 的安装包名：</p>
+<figure class="highlight django"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="xml">apache:</span></span><br><span class="line"><span class="xml">  pkg.installed:</span></span><br><span class="line"><span class="xml">    </span><span class="template-tag">&#123;% <span class="name"><span class="name">if</span></span> grains['os'] == 'RedHat' %&#125;</span><span class="xml"></span></span><br><span class="line"><span class="xml">    - name: httpd</span></span><br><span class="line"><span class="xml">    </span><span class="template-tag">&#123;% <span class="name"><span class="name">elif</span></span> grains['os'] == 'Ubuntu' %&#125;</span><span class="xml"></span></span><br><span class="line"><span class="xml">    - name: apache2</span></span><br><span class="line"><span class="xml">    </span><span class="template-tag">&#123;% <span class="name"><span class="name">endif</span></span> %&#125;</span><span class="xml"></span></span><br></pre></td></tr></table></figure>
+<h2 id="在-sls-模块中使用环境变量"><a href="#在-sls-模块中使用环境变量" class="headerlink" title="在 sls 模块中使用环境变量"></a>在 sls 模块中使用环境变量</h2><p>你可以在 <code>state</code> 中使用 <code>salt[&#39;environ.get&#39;](&#39;VARNAME&#39;)</code> 来访问某个环境变量。</p>
+<p>新建一个 <code>test.sls</code> 文件：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">file.managed:</span><br><span class="line">  - name: /tmp/hello</span><br><span class="line">  - contents: &#123;&#123; salt[<span class="string">'environ.get'</span>](<span class="link">'MYENVVAR'</span>) &#125;&#125;</span><br></pre></td></tr></table></figure>
+<p>然后，命令行运行：</p>
+<figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MYENVVAR=<span class="string">"world"</span> salt-call <span class="keyword">state</span>.template test.sls</span><br></pre></td></tr></table></figure>
+<p>利用环境变量来检查错误信息:</p>
+<figure class="highlight django"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="xml"></span><span class="template-tag">&#123;% <span class="name">set</span> myenvvar = salt['environ.get']('MYENVVAR') %&#125;</span><span class="xml"></span></span><br><span class="line"><span class="xml"></span><span class="template-tag">&#123;% <span class="name"><span class="name">if</span></span> myenvvar %&#125;</span><span class="xml"></span></span><br><span class="line"><span class="xml"></span></span><br><span class="line"><span class="xml">file.managed:</span></span><br><span class="line"><span class="xml">    - name: /tmp/hello</span></span><br><span class="line"><span class="xml">    - contents: </span><span class="template-variable">&#123;&#123; salt['environ.get']('MYENVVAR') &#125;&#125;</span><span class="xml"></span></span><br><span class="line"><span class="xml"></span></span><br><span class="line"><span class="xml"></span><span class="template-tag">&#123;% <span class="name"><span class="name">else</span></span> %&#125;</span><span class="xml"></span></span><br><span class="line"><span class="xml"></span></span><br><span class="line"><span class="xml">Fail - no environment passed in:</span></span><br><span class="line"><span class="xml">  test:</span></span><br><span class="line"><span class="xml">    A. fail_without_changes</span></span><br><span class="line"><span class="xml"></span></span><br><span class="line"><span class="xml"></span><span class="template-tag">&#123;% <span class="name"><span class="name">endif</span></span> %&#125;</span><span class="xml"></span></span><br></pre></td></tr></table></figure>
+<h2 id="调用其他-sls-模块"><a href="#调用其他-sls-模块" class="headerlink" title="调用其他 sls 模块"></a>调用其他 sls 模块</h2><p><code>sls</code> 模版中可以访问 <code>minion</code> 上面的所有 <code>salt</code> 模块，以及模块内的方法：</p>
+<p>下面的例子演示了调用了 <code>file</code> 模块的 <code>group_to_gid</code> 方法，参数为 <code>some_group_that_exists</code>。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">moe:</span></span><br><span class="line">  user.<span class="string">present:</span></span><br><span class="line">    - <span class="string">gid:</span> &#123;&#123; salt[<span class="string">'file.group_to_gid'</span>](<span class="string">'some_group_that_exists'</span>) &#125;&#125;</span><br></pre></td></tr></table></figure>
+<p>再看另外一个例子，使用 <code>network</code> 模块的 <code>hw_addr</code> 方法来读取 <code>eth0</code> 的 <code>MAC</code> 地址。</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">salt[<span class="string">'network.hw_addr'</span>](<span class="link">'eth0'</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="高级-sls-语法"><a href="#高级-sls-语法" class="headerlink" title="高级 sls 语法"></a>高级 sls 语法</h2><h3 id="include"><a href="#include" class="headerlink" title="include"></a>include</h3><p><code>State</code> 基本法《一》的例子中展示了如何跨文件引用 <code>sls</code>，下面再举一个例子：</p>
+<p><code>python/python-libs.sls</code>:</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">python</span>-dateuti<span class="variable">l:</span></span><br><span class="line">  pkg.installed</span><br></pre></td></tr></table></figure>
+<p><code>python/django.sls</code>:</p>
+<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">include:</span><br><span class="line">  -<span class="ruby"> python.python-libs</span></span><br><span class="line"><span class="ruby"></span></span><br><span class="line"><span class="ruby"><span class="symbol">django:</span></span></span><br><span class="line"><span class="ruby">  pkg.<span class="symbol">installed:</span></span></span><br><span class="line"><span class="ruby">    - <span class="symbol">require:</span></span></span><br><span class="line"><span class="ruby">      - <span class="symbol">pkg:</span> python-dateutil</span></span><br></pre></td></tr></table></figure>
+<h3 id="extend"><a href="#extend" class="headerlink" title="extend"></a>extend</h3><p>通过 <code>extend</code> 语句，你可以添加某些内容到已有的 <code>sls</code> 中，比如，当发现 <code>vhost</code> 配置文件被修改后，马上重启 <code>Apache</code> 服务器。</p>
+<p><code>apache/apache.sls</code>:</p>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">apache:</span></span><br><span class="line">  pkg.installed</span><br></pre></td></tr></table></figure>
+<p><code>apache/mywebsite.sls</code>:</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">include:</span></span><br><span class="line">  - apache.apache</span><br><span class="line"></span><br><span class="line"><span class="string">extend:</span></span><br><span class="line"><span class="symbol">  apache:</span></span><br><span class="line"><span class="symbol">    service:</span></span><br><span class="line">      - running</span><br><span class="line">      - <span class="string">watch:</span></span><br><span class="line">        - <span class="string">file:</span> <span class="regexp">/etc/</span>httpd<span class="regexp">/extra/</span>httpd-vhosts.conf</span><br><span class="line"></span><br><span class="line"><span class="regexp">/etc/</span>httpd<span class="regexp">/extra/</span>httpd-vhosts.<span class="string">conf:</span></span><br><span class="line">  file.<span class="string">managed:</span></span><br><span class="line">    - <span class="string">source:</span> <span class="string">salt:</span><span class="comment">//apache/httpd-vhosts.conf</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>还是那个注意点：在使用 <code>extend</code>时，会添加 <code>require/watch</code> 的内容，而不是覆盖。</p>
+</blockquote>
+<h2 id="命名空间"><a href="#命名空间" class="headerlink" title="命名空间"></a>命名空间</h2><p>你可以设置 <code>state</code> 的 <code>name</code> 属性 （如果没有指定 <code>name</code> 属性，它的默认值就是 <code>ID</code>)。</p>
+<p>在大多数情况下，重置 <code>name</code> 属性是一个非常实用的小技巧。</p>
+<ul>
+<li>其一，避免 <code>ID</code> 声明冲突。</li>
+</ul>
+<p>比如，下面的两个 <code>state</code> 不能都用 <code>/etc/motd</code> 作为 ID，但可以通过将 <code>/etc/motd</code>  设为 <code>name</code> 属性来规避这点。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">motd_perms:</span></span><br><span class="line">  file.<span class="string">managed:</span></span><br><span class="line">    - <span class="string">name:</span> <span class="regexp">/etc/</span>motd</span><br><span class="line">    - <span class="string">mode:</span> <span class="number">644</span></span><br><span class="line"></span><br><span class="line"><span class="string">motd_quote:</span></span><br><span class="line">  file.<span class="string">append:</span></span><br><span class="line">    - <span class="string">name:</span> <span class="regexp">/etc/</span>motd</span><br><span class="line">    - <span class="string">text:</span> <span class="string">"Of all smells, bread; of all tastes, salt."</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>其二，方便其他 <code>state</code> 引用。</li>
+</ul>
+<p><code>ID</code> 名称太长的话，其他 <code>state</code> 来引用不方便还极易出错，比如，下面的例子，将这串冗长的  <code>/etc/apache2/sites-available/mywebsite.com</code> 设为 <code>name</code> 属性，<code>ID</code> 名用 <code>mywebsite</code> 姿势就优雅得多了，想引用几次就引用几次，简单明了。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">mywebsite:</span></span><br><span class="line">  file.<span class="string">managed:</span></span><br><span class="line">    - <span class="string">name:</span> <span class="regexp">/etc/</span>apache2<span class="regexp">/sites-available/</span>mywebsite.com</span><br><span class="line">    - <span class="string">source:</span> <span class="string">salt:</span><span class="comment">//mywebsite.com</span></span><br><span class="line"></span><br><span class="line">a2ensite mywebsite.<span class="string">com:</span></span><br><span class="line">  cmd.<span class="string">wait:</span></span><br><span class="line">    - <span class="string">unless:</span> test -L <span class="regexp">/etc/</span>apache2<span class="regexp">/sites-enabled/</span>mywebsite.com</span><br><span class="line">    - <span class="string">watch:</span></span><br><span class="line">      - <span class="string">file:</span> mywebsite</span><br><span class="line"></span><br><span class="line"><span class="string">apache2:</span></span><br><span class="line">  service.<span class="string">running:</span></span><br><span class="line">    - <span class="string">watch:</span></span><br><span class="line">      - <span class="string">file:</span> mywebsite</span><br></pre></td></tr></table></figure>
+<h2 id="names-声明"><a href="#names-声明" class="headerlink" title="names 声明"></a>names 声明</h2><p>另外一个更牛逼的技巧：使用 <code>names</code> 声明一次声明多个 <code>ID</code>，这样就不必在 <code>sls</code> 文件中使用一堆 <code>ungly</code> 的循环语句了。</p>
+<p>比如，本集开头的例子可以重写成这样：</p>
+<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">stooges:</span><br><span class="line">  user.present:</span><br><span class="line">    -<span class="ruby"> <span class="symbol">names:</span></span></span><br><span class="line"><span class="ruby">      - moe</span></span><br><span class="line"><span class="ruby">      - larry</span></span><br><span class="line"><span class="ruby">      - curly</span></span><br></pre></td></tr></table></figure>
+<h2 id="下集预告"><a href="#下集预告" class="headerlink" title="下集预告"></a>下集预告</h2><p>本集主要讨论了有关 <code>include</code>, <code>extend</code> 以及 <code>sls</code> 模版等高级配置语法，下集将介绍如何使用 <code>file_roots</code> 来建立一套可同时用于研发、测试、生产线的运行环境。</p>
+<p>很惭愧，今晚又做了一点微小的贡献，谢谢大家！</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay_hxzqlh.jpg" alt="hxzqlh 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    hxzqlh
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://hxzqlh.com/2016/05/05/Salt-States-基本法-二/" title="Salt States 基本法<二>">http://hxzqlh.com/2016/05/05/Salt-States-基本法-二/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/salt/" rel="tag"># salt</a>
+          
+            <a href="/tags/states/" rel="tag"># states</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/03/Salt-States-基本法-一/" rel="next" title="Salt States 基本法<一>">
+                <i class="fa fa-chevron-left"></i> Salt States 基本法<一>
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/06/Salt-States-基本法-三/" rel="prev" title="Salt States 基本法<三>">
+                Salt States 基本法<三> <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">hxzqlh</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">124</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">212</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hxzqlh" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hxzqlh@gmail.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#sls-模版"><span class="nav-number">1.</span> <span class="nav-text">sls 模版</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在-sls-模块中使用-Grains"><span class="nav-number">2.</span> <span class="nav-text">在 sls 模块中使用 Grains</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在-sls-模块中使用环境变量"><span class="nav-number">3.</span> <span class="nav-text">在 sls 模块中使用环境变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#调用其他-sls-模块"><span class="nav-number">4.</span> <span class="nav-text">调用其他 sls 模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高级-sls-语法"><span class="nav-number">5.</span> <span class="nav-text">高级 sls 语法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#include"><span class="nav-number">5.1.</span> <span class="nav-text">include</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#extend"><span class="nav-number">5.2.</span> <span class="nav-text">extend</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#命名空间"><span class="nav-number">6.</span> <span class="nav-text">命名空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#names-声明"><span class="nav-number">7.</span> <span class="nav-text">names 声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#下集预告"><span class="nav-number">8.</span> <span class="nav-text">下集预告</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hxzqlh</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

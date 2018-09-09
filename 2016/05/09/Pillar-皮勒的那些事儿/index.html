@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="salt,pillar," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="话说这 salt 里面的术语都起得特立独行，State 之所以叫 State ，我绕了半天才搞懂原来它是指期望达到的某种 状态，关于 State ，前面发了四篇文章，终于算是入门了。 今天，我来开始撸一撸 salt 中的另一个核心概念：Pillar。关于 Pillar 的更详细文档，请参考 这里">
+<meta name="keywords" content="salt,pillar">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pillar:皮勒的那些事儿">
+<meta property="og:url" content="http://hxzqlh.com/2016/05/09/Pillar-皮勒的那些事儿/index.html">
+<meta property="og:site_name" content="不忘痴心 砥砺前行">
+<meta property="og:description" content="话说这 salt 里面的术语都起得特立独行，State 之所以叫 State ，我绕了半天才搞懂原来它是指期望达到的某种 状态，关于 State ，前面发了四篇文章，终于算是入门了。 今天，我来开始撸一撸 salt 中的另一个核心概念：Pillar。关于 Pillar 的更详细文档，请参考 这里">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://hxzqlh.qiniudn.com/2016-05-09_yDNW0X">
+<meta property="og:image" content="http://hxzqlh.qiniudn.com/2016-05-09_ylv9cz">
+<meta property="og:updated_time" content="2018-03-27T15:18:57.117Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Pillar:皮勒的那些事儿">
+<meta name="twitter:description" content="话说这 salt 里面的术语都起得特立独行，State 之所以叫 State ，我绕了半天才搞懂原来它是指期望达到的某种 状态，关于 State ，前面发了四篇文章，终于算是入门了。 今天，我来开始撸一撸 salt 中的另一个核心概念：Pillar。关于 Pillar 的更详细文档，请参考 这里">
+<meta name="twitter:image" content="http://hxzqlh.qiniudn.com/2016-05-09_yDNW0X">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hxzqlh.com/2016/05/09/Pillar-皮勒的那些事儿/"/>
+
+
+
+
+
+  <title>Pillar:皮勒的那些事儿 | 不忘痴心 砥砺前行</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">不忘痴心 砥砺前行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hxzqlh.com/2016/05/09/Pillar-皮勒的那些事儿/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hxzqlh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不忘痴心 砥砺前行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Pillar:皮勒的那些事儿</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-09T20:16:54+08:00">
+                2016-05-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Ops/" itemprop="url" rel="index">
+                    <span itemprop="name">Ops</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>话说这 <code>salt</code> 里面的术语都起得特立独行，<code>State</code> 之所以叫 <code>State</code> ，我绕了半天才搞懂原来它是指期望达到的某种 <strong>状态</strong>，关于 <code>State</code> ，前面发了四篇文章，终于算是入门了。</p>
+<p>今天，我来开始撸一撸 <code>salt</code> 中的另一个核心概念：<code>Pillar</code>。<br>关于 <code>Pillar</code> 的更详细文档，请参考 <a href="https://docs.saltstack.com/en/latest/topics/pillar/index.html" target="_blank" rel="noopener">这里</a></p>
+<a id="more"></a>
+<p><code>Pillar</code> 是存储于 <code>master</code> 上面并发送给相关 <code>minions</code> 的一些树形结构数据：</p>
+<blockquote>
+<p>注意：初学者很容易混淆 <code>Grains</code> 和 <code>Pillar</code>。你只需记住，<code>Grains</code> 是跟 <code>minion</code> 自身相关的静态数据，比如硬件、系统信息；<code>Pillar</code> 是由 <code>master</code> 生成并分发给 <code>minion</code> 的信息。</p>
+</blockquote>
+<p><code>Pillar</code> 主要可以保存下面几类数据：</p>
+<ul>
+<li>高敏感度数据</li>
+</ul>
+<p>比如密钥、密码之类。通过 <code>Pillar</code> 传输的数据可以确保只有部分相关的 <code>minion</code> 能收到（你总不希望 <code>minoion A</code> 收到 <code>minion B</code> 的 mysql 登陆密码吧）。</p>
+<ul>
+<li><code>minion</code> 的配置信息</li>
+</ul>
+<p>可以在 <code>Pillar</code> 中配置 <code>minion</code> 的可执行模块、<code>states</code>、<code>returners</code>。</p>
+<ul>
+<li>变量</li>
+</ul>
+<p><code>Pillar</code> 中可以定义用于给 <code>minion</code> 分配角色、组别等变量，之后，它们就能在 <code>sls</code> 的模版语句中访问了。</p>
+<ul>
+<li>其他数据</li>
+</ul>
+<p><code>Pillar</code> 还可以包含其他任意键值对格式的数据。</p>
+<p>因此，可以说 <code>Pillar</code> 是 <code>Salt</code> 系统中最重要的组件之一，怪不得老外给它取名叫 <code>Pillar</code> 呢，字面意思是“核心的，支柱”，看来它在 <code>salt</code> 系统里面的威望也很高啊。</p>
+<p>皮勒有多重要呢，这么说吧，我们这厢经常唱红歌：“没有共产党就没有新中国”，套用到 salt 中，那就是：“没有 皮勒就没有盐”。</p>
+<p><img src="http://hxzqlh.qiniudn.com/2016-05-09_yDNW0X" alt=""></p>
+<h2 id="设置-Pillar"><a href="#设置-Pillar" class="headerlink" title="设置 Pillar"></a>设置 Pillar</h2><p>默认情况下， <code>pillar</code> 已经在 <code>salt</code> 中运行，跟 <code>State</code> 类似，<code>Pillar</code> 也是由一个 <code>top.sl</code> 和一组 <code>sls</code> 文件构成，默认的根目录是 <code>/srv/pillar</code>，你需要手动创建这个目录。</p>
+<p>首先新建一个 <code>top</code> 文件：</p>
+<p><code>/srv/pillar/top.sls</code>:</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">base:</span></span><br><span class="line"><span class="keyword"> </span> <span class="string">'*'</span>:</span><br><span class="line">    - <span class="meta">data</span></span><br></pre></td></tr></table></figure>
+<p>这个 <code>top</code> 文件会搜集 <code>data.sls</code> 里面的数据给所有的 <code>minion</code>:</p>
+<p><code>/srv/pillar/data.sls</code>:</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">info</span>: some <span class="class"><span class="keyword">data</span></span></span><br></pre></td></tr></table></figure>
+<p>为了让刚才新建的 <code>pillar</code> 生效，运行如下命令，通知 <code>minions</code> 到 <code>master</code> 上获取对应的 <code>pillar</code> 数据：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">salt</span> <span class="string">'*'</span> saltutil.refresh_pillar</span><br></pre></td></tr></table></figure>
+<p>查看最新的 <code>pillar</code>:</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">salt <span class="string">'*'</span> pillar.<span class="keyword">items</span></span><br></pre></td></tr></table></figure>
+<h2 id="更复杂点的-Pillar"><a href="#更复杂点的-Pillar" class="headerlink" title="更复杂点的 Pillar"></a>更复杂点的 Pillar</h2><p>不像 <code>State</code> 语法那么严谨，<code>pillar</code> 可以设置任意列表或字典型数据:</p>
+<p><code>/srv/pillar/users/init.sls</code>:</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">users:</span></span><br><span class="line"><span class="symbol">  thatch:</span> <span class="number">1000</span></span><br><span class="line"><span class="symbol">  shouse:</span> <span class="number">1001</span></span><br><span class="line"><span class="symbol">  utahdave:</span> <span class="number">1002</span></span><br><span class="line"><span class="symbol">  redbeard:</span> <span class="number">1003</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注：<code>pillar</code> 同样遵守和 <code>State</code> 文件一样的约定，<code>users/init.sls</code> 可以用 <code>users</code> 引用。</p>
+</blockquote>
+<p><code>/srv/pillar/top.sls</code>:</p>
+<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">base:</span><br><span class="line">  '*':</span><br><span class="line">    -<span class="ruby"> data</span></span><br><span class="line"><span class="ruby">    - users</span></span><br></pre></td></tr></table></figure>
+<p><img src="http://hxzqlh.qiniudn.com/2016-05-09_ylv9cz" alt=""></p>
+<p>现在，在 <code>state</code> 文件中使用这些 <code>pillar</code> 数据：</p>
+<p><code>/srv/salt/users/init.sls</code>:</p>
+<figure class="highlight django"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="xml"></span><span class="template-tag">&#123;% <span class="name"><span class="name">for</span></span> user, uid <span class="keyword">in</span> pillar.get('users', &#123;&#125;).items() %&#125;</span><span class="xml"></span></span><br><span class="line"><span class="xml"></span><span class="template-variable">&#123;&#123;user&#125;&#125;</span><span class="xml">:</span></span><br><span class="line"><span class="xml">  user.present:</span></span><br><span class="line"><span class="xml">    - uid: </span><span class="template-variable">&#123;&#123;uid&#125;&#125;</span><span class="xml"></span></span><br><span class="line"><span class="xml"></span><span class="template-tag">&#123;% <span class="name"><span class="name">endfor</span></span> %&#125;</span><span class="xml"></span></span><br></pre></td></tr></table></figure>
+<h2 id="Pillar-作为-State-参数"><a href="#Pillar-作为-State-参数" class="headerlink" title="Pillar 作为 State 参数"></a>Pillar 作为 State 参数</h2><p>所有的 <code>Pillar</code> （包括 <code>Grains</code>）信息在执行 <code>State</code> 之前就已经初始化完毕，<code>Pillar</code> 数据可以在 <code>State</code> 文件中使用来为不同的 <code>minion</code> 定制不同的行为。</p>
+<p>一个简单示例：在 <code>Pillar</code> 中为不同的 <code>Linux</code> 发行版设置不同的 <code>Apache</code> 安装包名。</p>
+<p><code>/srv/pillar/pkg/init.sls</code>:</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">pkg<span class="variable">s:</span></span><br><span class="line">  &#123;% <span class="keyword">if</span> grains[<span class="string">'os_family'</span>] == <span class="string">'RedHat'</span> %&#125;</span><br><span class="line">  apache: httpd</span><br><span class="line">  <span class="keyword">vim</span>: <span class="keyword">vim</span>-enhanced</span><br><span class="line">  &#123;% elif grains[<span class="string">'os_family'</span>] == <span class="string">'Debian'</span> %&#125;</span><br><span class="line">  apache: apache2</span><br><span class="line">  <span class="keyword">vim</span>: <span class="keyword">vim</span></span><br><span class="line">  &#123;% elif grains[<span class="string">'os'</span>] == <span class="string">'Arch'</span> %&#125;</span><br><span class="line">  apache: apache</span><br><span class="line">  <span class="keyword">vim</span>: <span class="keyword">vim</span></span><br><span class="line">  &#123;% <span class="keyword">endif</span> %&#125;</span><br></pre></td></tr></table></figure>
+<p>把这个新的 <code>pkg</code> 应用到 <code>top</code> 文件：</p>
+<p><code>/srv/pillar/top.sls</code>:</p>
+<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">base:</span><br><span class="line">  '*':</span><br><span class="line">    -<span class="ruby"> data</span></span><br><span class="line"><span class="ruby">    - users</span></span><br><span class="line"><span class="ruby">    - pkg</span></span><br></pre></td></tr></table></figure>
+<p><code>minions</code> 根据自身的系统信息找到其对应的 <code>pillar</code> 数据，因此 <code>state</code> 文件可以安全地实现参数化控制。</p>
+<p><code>/srv/salt/apache/init.sls</code>:</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">apache:</span></span><br><span class="line">  pkg.<span class="string">installed:</span></span><br><span class="line">    - <span class="string">name:</span> &#123;&#123; salt[<span class="string">'pillar.get'</span>](<span class="string">'pkgs:apache'</span>, <span class="string">'httpd'</span>) &#125;&#125;</span><br></pre></td></tr></table></figure>
+<p>这里，某个 <code>pillar</code> 值在 <code>minion</code> 中未定义的话，可以提供一个默认值，如：上面最后一行的 <code>httpd</code>。</p>
+<h2 id="Pillar-使-state-可扩展"><a href="#Pillar-使-state-可扩展" class="headerlink" title="Pillar 使 state 可扩展"></a>Pillar 使 state 可扩展</h2><p><code>Pillar</code> 的设计初衷之一就是让 <code>sls</code> 简单可扩展，不必每次都重新编译。</p>
+<p>比如，这样一个 <code>state</code> 文件：</p>
+<p><code>/srv/salt/edit/vim.sls</code>:</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">vim:</span></span><br><span class="line">  pkg.<span class="string">installed:</span> []</span><br><span class="line"></span><br><span class="line"><span class="regexp">/etc/</span><span class="string">vimrc:</span></span><br><span class="line">  file.<span class="string">managed:</span></span><br><span class="line">    - <span class="string">source:</span> <span class="string">salt:</span><span class="comment">//edit/vimrc</span></span><br><span class="line">    - <span class="string">mode:</span> <span class="number">644</span></span><br><span class="line">    - <span class="string">user:</span> root</span><br><span class="line">    - <span class="string">group:</span> root</span><br><span class="line">    - <span class="string">require:</span></span><br><span class="line">      - <span class="string">pkg:</span> vim</span><br></pre></td></tr></table></figure>
+<p>通过 <code>pillar</code>，可以很容易将它改造成一个更加灵活可扩展的 <code>state</code>：</p>
+<p><code>/srv/salt/edit/vim.sls</code>:</p>
+<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">vim:</span><br><span class="line">  pkg.installed:</span><br><span class="line">    -<span class="ruby"> <span class="symbol">name:</span> &#123;&#123; pillar[<span class="string">'pkgs'</span>][<span class="string">'vim'</span>] &#125;&#125;</span></span><br><span class="line"><span class="ruby"></span></span><br><span class="line"><span class="ruby">/etc/<span class="symbol">vimrc:</span></span></span><br><span class="line"><span class="ruby">  file.<span class="symbol">managed:</span></span></span><br><span class="line"><span class="ruby">    - <span class="symbol">source:</span> &#123;&#123; pillar[<span class="string">'vimrc'</span>] &#125;&#125;</span></span><br><span class="line"><span class="ruby">    - <span class="symbol">mode:</span> <span class="number">644</span></span></span><br><span class="line"><span class="ruby">    - <span class="symbol">user:</span> root</span></span><br><span class="line"><span class="ruby">    - <span class="symbol">group:</span> root</span></span><br><span class="line"><span class="ruby">    - <span class="symbol">require:</span></span></span><br><span class="line"><span class="ruby">      - <span class="symbol">pkg:</span> vim</span></span><br></pre></td></tr></table></figure>
+<p>可以看到，通过 <code>pillar</code>， <code>vimrc</code> 的路径可以根据需要来配置，而不必硬编码到 <code>state</code> 文件：</p>
+<p><code>/srv/pillar/edit/vim.sls</code>:</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;% <span class="keyword">if</span> grains[<span class="string">'id'</span>].startswith(<span class="string">'dev'</span>) %&#125;</span><br><span class="line">vimrc: <span class="keyword">sal</span><span class="variable">t:</span>//<span class="keyword">edit</span>/dev_vimrc</span><br><span class="line">&#123;% elif grains[<span class="string">'id'</span>].startswith(<span class="string">'qa'</span>) %&#125;</span><br><span class="line">vimrc: <span class="keyword">sal</span><span class="variable">t:</span>//<span class="keyword">edit</span>/qa_vimrc</span><br><span class="line">&#123;% <span class="keyword">else</span> %&#125;</span><br><span class="line">vimrc: <span class="keyword">sal</span><span class="variable">t:</span>//<span class="keyword">edit</span>/vimrc</span><br><span class="line">&#123;% <span class="keyword">endif</span> %&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="命令行传递-PILLAR-参数"><a href="#命令行传递-PILLAR-参数" class="headerlink" title="命令行传递 PILLAR 参数"></a>命令行传递 PILLAR 参数</h2><p><code>Pillar</code> 数据可以通过命令行执行：</p>
+<figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">salt '*' <span class="keyword">state</span>.apply pillar='&#123;<span class="string">"foo"</span>: <span class="string">"bar"</span>&#125;'</span><br><span class="line">salt '*' <span class="keyword">state</span>.apply my_sls_file pillar='&#123;<span class="string">"hello"</span>: <span class="string">"world"</span>&#125;'</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注：如果某个 <code>key</code> 在 <code>minion</code> 中已经存在，且 <code>pillar</code> 参数中也含有该 <code>key</code> 值，那么以命令行参数值为准。</p>
+</blockquote>
+<h2 id="姿势总结"><a href="#姿势总结" class="headerlink" title="姿势总结"></a>姿势总结</h2><p>这几天，谈的主题都是 <code>salt</code>，从宏观地介绍到具体 <code>state</code>、<code>pillar</code> 等细节，很惭愧，有些东西翻译得不到位，<code>信、达、雅</code>三重境界只勉勉强强能称得上 <code>信</code>，如有谬误之处，还请读者不吝指正。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay_hxzqlh.jpg" alt="hxzqlh 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    hxzqlh
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://hxzqlh.com/2016/05/09/Pillar-皮勒的那些事儿/" title="Pillar:皮勒的那些事儿">http://hxzqlh.com/2016/05/09/Pillar-皮勒的那些事儿/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/salt/" rel="tag"># salt</a>
+          
+            <a href="/tags/pillar/" rel="tag"># pillar</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/07/Salt-States-基本法-四/" rel="next" title="Salt States 基本法<四>">
+                <i class="fa fa-chevron-left"></i> Salt States 基本法<四>
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/10/微信给我搞的原创这个东西啊-Excited/" rel="prev" title="微信给我搞的原创这个东西啊,Excited">
+                微信给我搞的原创这个东西啊,Excited <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">hxzqlh</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">124</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">212</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hxzqlh" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hxzqlh@gmail.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#设置-Pillar"><span class="nav-number">1.</span> <span class="nav-text">设置 Pillar</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更复杂点的-Pillar"><span class="nav-number">2.</span> <span class="nav-text">更复杂点的 Pillar</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pillar-作为-State-参数"><span class="nav-number">3.</span> <span class="nav-text">Pillar 作为 State 参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pillar-使-state-可扩展"><span class="nav-number">4.</span> <span class="nav-text">Pillar 使 state 可扩展</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#命令行传递-PILLAR-参数"><span class="nav-number">5.</span> <span class="nav-text">命令行传递 PILLAR 参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#姿势总结"><span class="nav-number">6.</span> <span class="nav-text">姿势总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hxzqlh</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

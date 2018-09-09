@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="ffmpeg,命令行," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="本文档翻译自:https://ffmpeg.org/ffmpeg.html 中间加入了部分笔者的个人理解。有翻译生硬之处，难登“信、达、雅”之境界。望读者不吝指正。 语法1ffmpeg [global_options] &amp;#123;[input_file_options] -i input_file&amp;#125; ... &amp;#123;[output_file_options] output_file">
+<meta name="keywords" content="ffmpeg,命令行">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ffmpeg 使用指南">
+<meta property="og:url" content="http://hxzqlh.com/2016/01/07/ffmpeg-使用指南/index.html">
+<meta property="og:site_name" content="不忘痴心 砥砺前行">
+<meta property="og:description" content="本文档翻译自:https://ffmpeg.org/ffmpeg.html 中间加入了部分笔者的个人理解。有翻译生硬之处，难登“信、达、雅”之境界。望读者不吝指正。 语法1ffmpeg [global_options] &amp;#123;[input_file_options] -i input_file&amp;#125; ... &amp;#123;[output_file_options] output_file">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-03-27T15:18:57.120Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ffmpeg 使用指南">
+<meta name="twitter:description" content="本文档翻译自:https://ffmpeg.org/ffmpeg.html 中间加入了部分笔者的个人理解。有翻译生硬之处，难登“信、达、雅”之境界。望读者不吝指正。 语法1ffmpeg [global_options] &amp;#123;[input_file_options] -i input_file&amp;#125; ... &amp;#123;[output_file_options] output_file">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hxzqlh.com/2016/01/07/ffmpeg-使用指南/"/>
+
+
+
+
+
+  <title>ffmpeg 使用指南 | 不忘痴心 砥砺前行</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">不忘痴心 砥砺前行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hxzqlh.com/2016/01/07/ffmpeg-使用指南/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hxzqlh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不忘痴心 砥砺前行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ffmpeg 使用指南</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-07T17:32:10+08:00">
+                2016-01-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ffmpeg/" itemprop="url" rel="index">
+                    <span itemprop="name">ffmpeg</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文档翻译自:<a href="https://ffmpeg.org/ffmpeg.html" target="_blank" rel="noopener">https://ffmpeg.org/ffmpeg.html</a> 中间加入了部分笔者的个人理解。有翻译生硬之处，难登“信、达、雅”之境界。望读者不吝指正。</p>
+<h2 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h2><figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg [global_options] &#123;[input_file_options] -i input_file&#125; ... &#123;[output_file_options] output_file&#125; ...</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p><code>ffmpeg</code> 是一个快速的音视频转换工具，它能在任意的采样率和视频大小之间转换并且获得高质量多态的过滤。</p>
+<p><code>ffmpeg</code> 根据  <code>-i</code> 选项读取任意数量的输入<code>文件</code>（普通文件、管道流、网络流、可抓取设备等等），将转换结果写入到指定的多个输出 <code>文件</code>。命令行参数中不能被解析为选项的所有参数都被视为一个输出文件名。</p>
+<p>理论上讲，每个输入或输出文件都可以包含任意数量的多媒体流（视频、音频、字幕、附件及额外信息），但实际允许的多媒体流数量可能受限于转换格式。 通过 <code>map</code> 选项（参考流筛选章节）可自动地从某个输入文件的某个多媒体流映射到某个输出文件。</p>
+<p>为了指定输入文件，你必须遵从从 <code>0</code> 开始的索引规律，第一个输入文件的索引为 0，第二个输入文件的索引为 1，以此类推。类似的，文件内的多媒体流也是从  <code>0</code> 开始计数，比如 <code>2:3</code> 指第三个输入文件的第四个多媒体流。 </p>
+<p>一般来说，参数选项都将应用于下一个文件。因此，命令行参数都顺序非常重要，你可以在命令行中多次使用同一个参数，将它用于不同的文件，每个参数都会应用于下一个输入或输出文件。除非是全局选项，它们必须在命令行中的最前面。</p>
+<p>切勿混合使用输入和输出文件：首先指定输入文件选项，然后再指定输出文件选项。同样地，不要在不同文件间混合使用参数，所有的选项都只会应用于紧挨着它都下一个输入或输出文件。</p>
+<ul>
+<li>将输出文件的比特率置为 64 kbit/s: <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -<span class="selector-tag">i</span> <span class="selector-tag">input</span><span class="selector-class">.avi</span> -<span class="selector-tag">b</span>:v <span class="number">64</span>k -bufsize <span class="number">64</span>k output.avi</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><p>强制输出文件的帧率为 24 fps:</p>
+ <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -<span class="selector-tag">i</span> <span class="selector-tag">input</span><span class="selector-class">.avi</span> -r <span class="number">24</span> output.avi</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>强制输入文件（仅限于原始格式）的帧率为 1 fps，输出文件的帧率为 24 fps:</p>
+ <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -r <span class="number">1</span> -<span class="selector-tag">i</span> <span class="selector-tag">input</span><span class="selector-class">.m2v</span> -r <span class="number">24</span> output.avi</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="详细说明"><a href="#详细说明" class="headerlink" title="详细说明"></a>详细说明</h2><p><code>ffmpeg</code> 的转码过程可以用如下图表示：</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"> _______              ______________</span><br><span class="line">|<span class="string">       </span>|<span class="string">            </span>|<span class="string">              </span>|</span><br><span class="line">|<span class="string"> input </span>|<span class="string">  demuxer   </span>|<span class="string"> encoded data </span>|<span class="string">   decoder</span></span><br><span class="line">|<span class="string"> file  </span>|<span class="string"> ---------&gt; </span>|<span class="string"> packets      </span>|<span class="string"> -----+</span></span><br><span class="line">|<span class="string">_______</span>|<span class="string">            </span>|<span class="string">______________</span>|<span class="string">      </span>|</span><br><span class="line">                                           v</span><br><span class="line">                                       _________</span><br><span class="line">                                      |<span class="string">         </span>|</span><br><span class="line">                                      |<span class="string"> decoded </span>|</span><br><span class="line">                                      |<span class="string"> frames  </span>|</span><br><span class="line">                                      |<span class="string">_________</span>|</span><br><span class="line"> ________             ______________       |</span><br><span class="line">|<span class="string">        </span>|<span class="string">           </span>|<span class="string">              </span>|<span class="string">      </span>|</span><br><span class="line">|<span class="string"> output </span>|<span class="string"> &lt;-------- </span>|<span class="string"> encoded data </span>|<span class="string"> &lt;----+</span></span><br><span class="line">|<span class="string"> file   </span>|<span class="string">   muxer   </span>|<span class="string"> packets      </span>|<span class="string">   encoder</span></span><br><span class="line">|<span class="string">________</span>|<span class="string">           </span>|<span class="string">______________</span>|</span><br></pre></td></tr></table></figure>
+<p><code>ffmpeg</code> 调用 <code>libavformat</code>库来读取输入文件，从中获得压缩数据包，如果输入文件为多个，<code>ffmpeg</code> 尝试在每一个有效的输入流中将它们同步并记录最小时间戳。</p>
+<p>然后，压缩数据包传递给相应的流解码器，输出原始的未压缩的数据流（原始视频或者 pcm 音频……），这些数据流经过过滤后传递给相应的编码器，对其进行编码、压缩，最后将压缩数据包写入到输出文件。</p>
+<h2 id="过滤"><a href="#过滤" class="headerlink" title="过滤"></a>过滤</h2><p>Before encoding, ffmpeg can process raw audio and video frames using filters from the libavfilter library. Several chained filters form a filter graph. ffmpeg distinguishes between two types of filtergraphs: simple and complex.</p>
+<p>在编码之前，<code>ffmpeg</code> 能通过 <code>libavfilter</code>库对原始音视频流进行过滤，多个过滤器构成了一幅过滤图，<code>ffmpeg</code>识别<code>简单</code>和<code>复杂</code>的两种过滤图。</p>
+<h3 id="简单过滤"><a href="#简单过滤" class="headerlink" title="简单过滤"></a>简单过滤</h3><p>只有一种类型的输入和输出，如上图中，可在解码和编码之间插入一个简单过滤：</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"> _________                        ______________</span><br><span class="line">|<span class="string">         </span>|<span class="string">                      </span>|<span class="string">              </span>|</span><br><span class="line">|<span class="string"> decoded </span>|<span class="string">                      </span>|<span class="string"> encoded data </span>|</span><br><span class="line">|<span class="string"> frames  </span>|<span class="string">\                   _ </span>|<span class="string"> packets      </span>|</span><br><span class="line">|<span class="string">_________</span>|<span class="string"> \                  /</span>||<span class="string">______________</span>|</span><br><span class="line">             \   __________   /</span><br><span class="line">  simple     _\||<span class="string">          </span>|<span class="string"> /  encoder</span></span><br><span class="line"><span class="string">  filtergraph   </span>|<span class="string"> filtered </span>|<span class="string">/</span></span><br><span class="line"><span class="string">                </span>|<span class="string"> frames   </span>|</span><br><span class="line">                |<span class="string">__________</span>|</span><br></pre></td></tr></table></figure>
+<p>简单过滤根据每一个流的过滤选项（<code>-vf</code> 和 <code>-af</code>）来配置，一个简单的视频过滤示例如下：</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> _______        _____________        _______        ________</span><br><span class="line">|<span class="string">       </span>|<span class="string">      </span>|<span class="string">             </span>|<span class="string">      </span>|<span class="string">       </span>|<span class="string">      </span>|<span class="string">        </span>|</span><br><span class="line">|<span class="string"> input </span>|<span class="string"> ---&gt; </span>|<span class="string"> deinterlace </span>|<span class="string"> ---&gt; </span>|<span class="string"> scale </span>|<span class="string"> ---&gt; </span>|<span class="string"> output </span>|</span><br><span class="line">|<span class="string">_______</span>|<span class="string">      </span>|<span class="string">_____________</span>|<span class="string">      </span>|<span class="string">_______</span>|<span class="string">      </span>|<span class="string">________</span>|</span><br></pre></td></tr></table></figure>
+<h3 id="复杂过滤"><a href="#复杂过滤" class="headerlink" title="复杂过滤"></a>复杂过滤</h3><p>当输入或输出为多个，或者输入和输出文件的媒体流类型不同时，不能对流进行简单地进行线性过程处理，这个过程如下图：</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"> _________</span><br><span class="line">|<span class="string">         </span>|</span><br><span class="line">|<span class="string"> input 0 </span>|<span class="string">\                    __________</span></span><br><span class="line">|<span class="string">_________</span>|<span class="string"> \                  </span>|<span class="string">          </span>|</span><br><span class="line">             \   _________    /|<span class="string"> output 0 </span>|</span><br><span class="line">              \ |<span class="string">         </span>|<span class="string">  / </span>|<span class="string">__________</span>|</span><br><span class="line"> _________     \|<span class="string"> complex </span>|<span class="string"> /</span></span><br><span class="line">|<span class="string">         </span>|<span class="string">     </span>|<span class="string">         </span>|<span class="string">/</span></span><br><span class="line">|<span class="string"> input 1 </span>|<span class="string">----&gt;</span>|<span class="string"> filter  </span>|<span class="string">\</span></span><br><span class="line">|<span class="string">_________</span>|<span class="string">     </span>|<span class="string">         </span>|<span class="string"> \   __________</span></span><br><span class="line"><span class="string">               /</span>|<span class="string"> graph   </span>|<span class="string">  \ </span>|<span class="string">          </span>|</span><br><span class="line">              / |<span class="string">         </span>|<span class="string">   \</span>|<span class="string"> output 1 </span>|</span><br><span class="line"> _________   /  |<span class="string">_________</span>|<span class="string">    </span>|<span class="string">__________</span>|</span><br><span class="line">|<span class="string">         </span>|<span class="string"> /</span></span><br><span class="line">|<span class="string"> input 2 </span>|<span class="string">/</span></span><br><span class="line">|<span class="string">_________</span>|</span><br></pre></td></tr></table></figure>
+<p>通过 <code>-filter_complex</code> 全局选项指定，<code>-lavfi</code>  等同于  <code>-filter_complex</code>.</p>
+<h2 id="流拷贝"><a href="#流拷贝" class="headerlink" title="流拷贝"></a>流拷贝</h2><p>流拷贝是提供给 <code>-codec</code> 选项的一种流筛选模式，它让 <code>ffmpeg</code> 跳过解码和编码步骤，因此它只有解复用步骤。流拷贝对于修改容器格式或容器级别的元数据是很实用的。</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"> _______              ______________            ________</span><br><span class="line">|<span class="string">       </span>|<span class="string">            </span>|<span class="string">              </span>|<span class="string">          </span>|<span class="string">        </span>|</span><br><span class="line">|<span class="string"> input </span>|<span class="string">  demuxer   </span>|<span class="string"> encoded data </span>|<span class="string">  muxer   </span>|<span class="string"> output </span>|</span><br><span class="line">|<span class="string"> file  </span>|<span class="string"> ---------&gt; </span>|<span class="string"> packets      </span>|<span class="string"> -------&gt; </span>|<span class="string"> file   </span>|</span><br><span class="line">|<span class="string">_______</span>|<span class="string">            </span>|<span class="string">______________</span>|<span class="string">          </span>|<span class="string">________</span>|</span><br></pre></td></tr></table></figure>
+<p>少了解码和编码步骤，拷贝过程是很快并且无损的。但是，受多种因素影响，在某些情况下它可能无法应用。流过滤因此也显然不可用，因为过滤必须工作于未压缩的原始数据上。</p>
+<h2 id="流筛选"><a href="#流筛选" class="headerlink" title="流筛选"></a>流筛选</h2><p><code>ffmpeg</code> 默认只从输入文件中选择一个同种流媒体类型（音频、视频、字幕等），将它们包装到输出文件中。基于如下标准，它挑选出最 <code>好</code> 的那个流：</p>
+<ul>
+<li>对于视频，它是最高分辨率的那个流；</li>
+<li>对于音频，它是通道数最大的那个流；</li>
+<li>对于字幕，它是第一个字幕流。</li>
+<li>如果有多个同类型流都符合标准，那么选择索引最小的那个流。</li>
+</ul>
+<p>你可以通过 <code>-vn/-an/-sn</code> 等选项移除默认筛选的这些流，若要人工控制选择哪些流，可用 <code>-map</code>选项。</p>
+<h2 id="参数选项"><a href="#参数选项" class="headerlink" title="参数选项"></a>参数选项</h2><p>所有数值选项，如果没有另外的规定，表示接受数字作为输入，其可以随后 <code>SI单位</code> 前缀之一的字符串，例如：<code>K</code>，<code>M</code>，或<code>G</code>。</p>
+<p>如果<code>i</code>被附加在SI单位前缀，则完整的前缀将被解释为一个以 <code>1024</code> （而非 1000 ）为基数的二进制倍数的单元前缀，将  <code>B</code>   附加到SI单位后缀将乘以 8。这允许使用，例如：“KB”，“MIB”，“G”和“B”为数字后缀。</p>
+<p>选项不带参数的布尔选项，并设置相应的值设置为 <code>true</code>,  它们可以通过与<code>no</code>的前缀选项名称设置为 <code>false</code>。例如使用<code>-nofoo</code>将设置名称为<code>foo</code>为<code>flalse</code>的布尔选项。</p>
+<h3 id="流选择器"><a href="#流选择器" class="headerlink" title="流选择器"></a>流选择器</h3><p>有些选项适用于每个媒体流，比如 <code>bitrat</code> 和 <code>codec</code>。流选择器用于精确指定给定的选项适用于哪个流。</p>
+<p>一个流选择器是一个字符串，它被追加到一个选项中并且用 <code>:</code>分隔，比如 <code>-codec:a:1 ac3</code> 包含流 <code>a:1</code>, 它匹配第二个音频流，因此，这个流选择器将在第二个音频流上采用 <code>ac3</code>编码器。</p>
+<p>一个流选择器可以匹配多个流，因此选项将默认用于所有的流。比如 <code>-b:a 128k</code>将所有的音频流的比特率置为 128k。</p>
+<p>一个空的流选择器匹配所有流，比如 <code>-codec copy</code> 或 <code>-codec:copy</code> 将拷贝所有的流。</p>
+<p>流选择器的形式有：</p>
+<ul>
+<li><p><strong><em>stream_index</em></strong><br>匹配中这个索引指代的流，比如，<code>-threads:1 4</code>将会把第二个流的线程数设置为 4.</p>
+</li>
+<li><p><strong><em>stream_type[:stream_index]</em></strong><br><strong><em>stream_type</em></strong>可以是：<code>v</code> or <code>V</code> for video, <code>a</code>for audio, <code>s</code>for subtitle, <code>d</code>for data, and <code>t</code>for attachments。<code>v</code> 匹配所有的视频流，<code>V</code>之匹配没有附加图片、视频缩略图或者封面的视频流。如果指定了<strong><em>stream_index</em></strong>，那么它指定该<strong><em>stream_index</em></strong> 索引对应的那个流，否则，它匹配该类型的所有流。</p>
+</li>
+<li><p><strong><em>p:program_id[:stream_index]</em></strong><br>If stream_index is given, then it matches the stream with number stream_index in the program with the id program_id. Otherwise, it matches all streams in the program.</p>
+</li>
+<li><p><strong><em>stream_id</em></strong> or <strong><em>i:stream_id</em></strong><br>Match the stream by stream id (e.g. PID in MPEG-TS container).</p>
+</li>
+<li><p><strong><em>m:key[:value]</em></strong><br>Matches streams with the metadata tag key having the specified value. If value is not given, matches streams that contain the given tag with any value.</p>
+</li>
+<li><p>u<br>Matches streams with usable configuration, the codec must be defined and the essential information such as video dimension or audio sample rate must be present.<br>Note that in ffmpeg, matching by metadata will only work properly for input files.</p>
+</li>
+</ul>
+<h2 id="时间戳格式"><a href="#时间戳格式" class="headerlink" title="时间戳格式"></a>时间戳格式</h2><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">-</span>][<span class="symbol">HH:</span>]MM:SS[.m...]</span><br></pre></td></tr></table></figure>
+<p>或者</p>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[-]</span>S<span class="string">[.m...]</span></span><br></pre></td></tr></table></figure>
+<p>示例：<code>55</code>,<code>12:03:45</code>,<code>23.189</code>, 适用于 <code>-t</code>,<code>-ss</code>,<code>-sseof</code>,<code>-t</code>等选项。</p>
+<h2 id="常用选项"><a href="#常用选项" class="headerlink" title="常用选项"></a>常用选项</h2><ul>
+<li><p>-f <strong><em>fmt (input/output)</em></strong></p>
+<p>  强制输入/输出的媒体格式。一般情况下，<strong><em><code>ffmpeg</code> 会自动从输入文件中识别出媒体格式，并且从输出文件名后缀猜测出输出格式</em></strong>，因此，大多数情况下，不需要此选项。</p>
+</li>
+<li><p>-y <strong><em>(global)</em></strong></p>
+<p>  不提示，覆盖同名的输出文件。</p>
+</li>
+<li><p>-n (global)</p>
+<p>  不准覆盖输出文件，如果存在同名文件，则立即退出程序。</p>
+</li>
+<li><p>-c[:<strong><em>stream_specifier</em></strong>] <strong><em>codec (input/output,per-stream)</em></strong></p>
+</li>
+<li><p>-codec[:<strong><em>stream_specifier</em></strong>] <strong><em>codec (input/output,per-stream)</em></strong></p>
+<pre><code>ffmpeg -i INPUT -map 0 -c:v libx264 -c:a copy OUTPUT
+</code></pre><p>  将所有视频流以 libx264 编码并且拷贝所有的音频流。<br>  对每个流，起作用的是<strong>最后一个</strong><code>-c</code>选项。</p>
+<pre><code>ffmpeg -i INPUT -map 0 -c copy -c:v:1 libx264 -c:a:137 libvorbis OUTPUT
+</code></pre><p>  将拷贝所有的流，除了第二个视频流以 libx264 编码，第 138 个音频流以 libvorbis 编码。</p>
+</li>
+<li><p>-t <strong><em>duration (input/output)</em></strong></p>
+<p>  当用于输入选项（<code>-i</code>  之前），限制从输入文件中最多读取的时长。<br>  当用于输出选项（<code>output_file</code> 之前），当写入时长超过该时长时，将停止写入。<br>  <code>-to</code>和<code>-t</code>不允许同时存在，<code>-t</code>优先。 </p>
+</li>
+<li><p>-to <strong><em>position (output)</em></strong></p>
+<p>  指定在何时停止写入，必须以 ffmpeg  允许的时间格式表示。</p>
+</li>
+<li><p>-ss <strong><em>position (input/output)</em></strong></p>
+<p>  当用于输入选项时，定位到该文件的这个位置开始解码。<br>  当用于输出选项时，解码当前位置前面的媒体但是忽略这些输入直到读取到该时间戳。 </p>
+</li>
+<li><p>-sseof position (input/output)</p>
+<p>  和 <code>-ss</code>类似，但是相对于文件尾部而言，它是距离文件尾部的非正值，<code>0</code> 代表 <code>EOF</code>。 </p>
+<pre><code>ffmpeg -sseof -00:06 -t 00:05 -i input output
+</code></pre><p>  将从距离 input 末尾 6 秒的地方开始，解码 5 秒。</p>
+</li>
+</ul>
+<h3 id="视频选项"><a href="#视频选项" class="headerlink" title="视频选项"></a>视频选项</h3><ul>
+<li><p>-vframes <strong><em>number (output)</em></strong></p>
+<p>  指定输出多少视频帧，等同于<code>-frames:v</code>。</p>
+</li>
+<li><p>-r[:<strong><em>stream_specifier</em></strong>] <strong><em>fps (input/output,per-stream)</em></strong></p>
+<p>  指定帧率 <code>fps</code>。<br>  作为输入，忽略原有的时间戳并且用新生成的时间戳代替。</p>
+<blockquote>
+<p>它和用于某些输入媒体的格式如 <code>image2</code>或<code>v4l2</code> 的 <code>-framerate</code> 选项不同，如有疑问，请用 <code>-framerate</code>代替<code>-r</code>选项。</p>
+</blockquote>
+<p>  作为输出，复制或丢弃某些帧以达到指定的帧率。</p>
+</li>
+<li><p>-s[:<strong><em>stream_specifier</em></strong>] <strong><em>size (input/output,per-stream)</em></strong></p>
+<p>  指定帧尺寸， <code>w*h</code> 或 <code>wxh</code>。</p>
+</li>
+<li><p>-aspect[:<strong><em>stream_specifier</em></strong>] <strong><em>aspect (output,per-stream)</em></strong></p>
+<p>  指定视频的显示宽高比，<code>4:3</code>, <code>16:9</code>, <code>1.3333</code>, <code>1.7777</code>等。</p>
+</li>
+<li><p>-vn <strong><em>(output)</em></strong></p>
+<p>  不输出视频内容</p>
+</li>
+<li><p>-vcodec <strong><em>codec (output)</em></strong></p>
+<p>  指定视频编码器，等同于 <code>-codec:v</code>。</p>
+</li>
+</ul>
+<h2 id="音频选项"><a href="#音频选项" class="headerlink" title="音频选项"></a>音频选项</h2><ul>
+<li><p>-aframes <strong><em>number (output)</em></strong></p>
+<p>  指定输出多少音频帧，等同于<code>-frames:a</code>。</p>
+</li>
+<li><p>-ar[:<strong><em>stream_specifier</em></strong>] <strong><em>freq (input/output,per-stream)</em></strong></p>
+<p>  指定音频采样率。</p>
+</li>
+<li><p>-ac[:<strong><em>stream_specifier</em></strong>] <strong><em>channels (input/output,per-stream)</em></strong></p>
+<p>  指定音频声道数。</p>
+</li>
+<li><p>-an <strong><em>(output)</em></strong></p>
+<p>  不输出音频内容</p>
+</li>
+<li><p>-acodec <strong><em>codec (input/output)</em></strong></p>
+<p>  设置音频编解码器，等同于 <code>-codec:a</code> .</p>
+</li>
+<li><p>-sample_fmt[:<strong><em>stream_specifier</em></strong>] <strong><em>sample_fmt (output,per-stream)</em></strong></p>
+<p>  指定音频采样格式。</p>
+</li>
+</ul>
+<h2 id="高级选项"><a href="#高级选项" class="headerlink" title="高级选项"></a>高级选项</h2><ul>
+<li><p>-map [-]<strong><em>input_file_id</em></strong>[:<strong><em>stream_specifier</em></strong>][,<strong><em>sync_file_id</em></strong>[:<strong><em>stream_specifier</em></strong>]] | <strong><em>[linklabel] (output)</em></strong></p>
+<p>  指定一个或多个输入流作为输出源。<br>  每个输入流根据输入文件索引、输入文件id和输入流索引来标示。所有的索引从 <code>0</code> 开始。第一个 <code>-map</code>选项确定输出流 <code>0</code>, 第二个 <code>-map</code> 选项确定输出流 <code>1</code>,  以此类推。<br>  <code>-</code>符号表示不对该输入流进行映射。</p>
+</li>
+</ul>
+<p>示例：</p>
+<ul>
+<li><p>将第一个输入文件的所有流映射至输出：</p>
+<pre><code>ffmpeg -i INPUT -map 0 -f FORMAT output
+ffmpeg -i INPUT -map 0 output.mp4
+</code></pre></li>
+<li><p>假设你有一个输入文件，其中含有两个音频流，分别以<code>0:0</code>,<code>0:1</code>标示，只将第二个音频流输出：</p>
+<pre><code>ffmpeg -i INPUT -map 0:1 out.wav
+</code></pre></li>
+<li><p>选取输入文件 <code>a.mov</code>中第三个输入流，标示为<code>0:2</code> ，和输入文件 <code>b.mov</code> 中第 7 个输入，流标示为<code>1:6</code> ，将它们拷贝到输出文件<code>out.mov</code>：</p>
+<pre><code>ffmpeg -i a.mov -i b.mov -c copy -map 0:2 -map 1:6 out.mov
+</code></pre></li>
+<li><p>从输入文件中选中所有的视频流和第三个音频流：</p>
+<pre><code>ffmpeg -i INPUT -map 0:v -map 0:a:2 OUTPUT
+</code></pre></li>
+<li><p>将所有流，除了第二个音频流，映射至输出：</p>
+<pre><code>ffmpeg -i INPUT -map 0 -map -0:a:1 OUTPUT
+</code></pre></li>
+</ul>
+<h2 id="音视频转换"><a href="#音视频转换" class="headerlink" title="音视频转换"></a>音视频转换</h2><ul>
+<li><p>视频  ==&gt; yuv</p>
+<pre><code>ffmpeg -i 2.mp4 2.yuv
+ffmpeg -i input.mp4 -f rawvideo -vcodec rawvideo -pix_fmt yuv420p -s 1920x1080 -r 25 rawvideo.yuv
+</code></pre></li>
+<li><p>yuv ==&gt; 视频</p>
+<p>  必须指定输入的 <code>yuv</code> 分辨率 <code>-s</code></p>
+<pre><code>ffmpeg -s 320x240 -i 2.yuv -c:v mpeg4 output.mp4
+ffmpeg -f rawvideo -vcodec rawvideo -s 1920x1080 -r 25 -pix_fmt yuv420p -i inputfile.yuv -s 320x240 -c:v libx264  -qp 0 output.mp4
+</code></pre></li>
+<li><p>audio + yuv ==&gt;  视频</p>
+<pre><code>ffmpeg -i /tmp/a.wav -s 640x480 -i /tmp/a.yuv /tmp/a.mpg
+</code></pre></li>
+<li><p>音频转换</p>
+<pre><code>ffmpeg -i /tmp/a.wav -ar 22050 /tmp/a.mp2
+</code></pre></li>
+<li><p>通过映射流，将输入同时编码成多种格式到不同输出:</p>
+<pre><code>ffmpeg -i /tmp/a.wav -map 0:a -b:a 64k /tmp/a.mp2 -map 0:a -b:a 128k /tmp/b.mp2
+</code></pre></li>
+<li><p>从视频中抽取图像</p>
+<p>  从 <code>foo.avi</code> 中每一秒抽取一张大小为 <code>320x240</code> 的图像到 <code>foo-001.jpeg</code>, <code>foo-002.jpeg</code>…</p>
+<pre><code>ffmpeg -i foo.avi -r 1 -s 320x240 -f image2 foo-%03d.jpeg
+</code></pre><p>  如果只想抽取指定数量的图像帧，可搭配使用 <code>-vframes`</code>-t<code></code>-ss`等选项。</p>
+</li>
+<li><p>根据图像序列生成视频</p>
+<pre><code>ffmpeg -f image2 -framerate 12 -i foo-%03d.jpeg -s 480x240 foo.avi
+</code></pre></li>
+<li><p>将多个 <strong><em>同类型</em></strong> 的输入媒体映射至输出</p>
+<pre><code>ffmpeg -i test1.avi -i test2.avi -map 1:1 -map 1:0 -map 0:1 -map 0:0 -c copy -y test12.nut
+</code></pre><p>  将 <code>test1.avi</code> 和 <code>test2.avi</code> 的音视频流逆序映射至 <code>test12.nt</code> 。（<strong>注意：这不是拼接视频</strong>，用 <code>ffplay</code>  播放的话，可以看出只播放了前面的 <code>test.avi</code> 部分）</p>
+</li>
+<li><p>从视频中生成 GIF</p>
+<pre><code>ffmpeg -ss 00:10:00 -t 10 -i capx.mp4  -s 320x240  jilu.gif
+</code></pre></li>
+</ul>
+<h2 id="拼接视频"><a href="#拼接视频" class="headerlink" title="拼接视频"></a>拼接视频</h2><h3 id="前提条件"><a href="#前提条件" class="headerlink" title="前提条件"></a>前提条件</h3><ul>
+<li>视频图像尺寸一样</li>
+</ul>
+<h3 id="编码格式相同"><a href="#编码格式相同" class="headerlink" title="编码格式相同"></a>编码格式相同</h3><ul>
+<li><p>protocol</p>
+<p>  支持<strong>文件</strong>级别拼接(MPEG-1, MPEG-2 PS, DV)，媒体类型必须一致。</p>
+</li>
+</ul>
+<pre><code>    ffmpeg -i &apos;concat:input1|input2&apos; -codec copy output
+
+~~~在 `OS X 10.11` 下 `ffmpeg 2.8.2` 用该方式拼接后，只有 `input1`  部分。~~~  
+</code></pre><ul>
+<li><p>demuxer</p>
+<p>  <strong><em>推荐使用此方法</em></strong></p>
+<p>  支持<strong>媒体流</strong>级别拼接，比 protocol 更灵活，可用于不同的媒体类型。</p>
+  <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ cat mylist.txt</span><br><span class="line">file <span class="string">'/path/to/file1'</span></span><br><span class="line">file <span class="string">'/path/to/file2'</span></span><br><span class="line">file <span class="string">'/path/to/file3'</span></span><br><span class="line"></span><br><span class="line">$ ffmpeg -f concat -<span class="selector-tag">i</span> mylist<span class="selector-class">.txt</span> -c copy output</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="编码格式不同"><a href="#编码格式不同" class="headerlink" title="编码格式不同"></a>编码格式不同</h3><ul>
+<li><p>video filter<br>适用于不同编码格式、不同媒体类型的文件拼接。</p>
+  <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -<span class="selector-tag">i</span> opening<span class="selector-class">.mkv</span> -<span class="selector-tag">i</span> episode<span class="selector-class">.mkv</span> -<span class="selector-tag">i</span> ending<span class="selector-class">.mkv</span> -filter_complex <span class="string">'[0:0] [0:1] [1:0] [1:1] [2:0] [2:1] concat=n=3:v=1:a=1 [v] [a]'</span> -map <span class="string">'[v]'</span> -map <span class="string">'[a]'</span> output.mkv</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a href="https://ffmpeg.org/ffmpeg.html" target="_blank" rel="noopener">https://ffmpeg.org/ffmpeg.html</a> </li>
+<li><a href="http://stackoverflow.com/questions/15778774/using-ffmpeg-to-losslessly-convert-yuv-to-another-format-for-editing-in-adobe-pr" target="_blank" rel="noopener">http://stackoverflow.com/questions/15778774/using-ffmpeg-to-losslessly-convert-yuv-to-another-format-for-editing-in-adobe-pr</a> </li>
+<li><a href="https://trac.ffmpeg.org/wiki/Concatenate" target="_blank" rel="noopener">https://trac.ffmpeg.org/wiki/Concatenate</a> </li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay_hxzqlh.jpg" alt="hxzqlh 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    hxzqlh
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://hxzqlh.com/2016/01/07/ffmpeg-使用指南/" title="ffmpeg 使用指南">http://hxzqlh.com/2016/01/07/ffmpeg-使用指南/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ffmpeg/" rel="tag"># ffmpeg</a>
+          
+            <a href="/tags/命令行/" rel="tag"># 命令行</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/12/26/请按那个橙色键/" rel="next" title="请按那个橙色键">
+                <i class="fa fa-chevron-left"></i> 请按那个橙色键
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/01/08/到底哪个西方国家他没去过/" rel="prev" title="到底哪个西方国家他没去过?">
+                到底哪个西方国家他没去过? <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">hxzqlh</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">124</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">212</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hxzqlh" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hxzqlh@gmail.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#语法"><span class="nav-number">1.</span> <span class="nav-text">语法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#概述"><span class="nav-number">2.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#详细说明"><span class="nav-number">3.</span> <span class="nav-text">详细说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#过滤"><span class="nav-number">4.</span> <span class="nav-text">过滤</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简单过滤"><span class="nav-number">4.1.</span> <span class="nav-text">简单过滤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#复杂过滤"><span class="nav-number">4.2.</span> <span class="nav-text">复杂过滤</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#流拷贝"><span class="nav-number">5.</span> <span class="nav-text">流拷贝</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#流筛选"><span class="nav-number">6.</span> <span class="nav-text">流筛选</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参数选项"><span class="nav-number">7.</span> <span class="nav-text">参数选项</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#流选择器"><span class="nav-number">7.1.</span> <span class="nav-text">流选择器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#时间戳格式"><span class="nav-number">8.</span> <span class="nav-text">时间戳格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用选项"><span class="nav-number">9.</span> <span class="nav-text">常用选项</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#视频选项"><span class="nav-number">9.1.</span> <span class="nav-text">视频选项</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#音频选项"><span class="nav-number">10.</span> <span class="nav-text">音频选项</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高级选项"><span class="nav-number">11.</span> <span class="nav-text">高级选项</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#音视频转换"><span class="nav-number">12.</span> <span class="nav-text">音视频转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#拼接视频"><span class="nav-number">13.</span> <span class="nav-text">拼接视频</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#前提条件"><span class="nav-number">13.1.</span> <span class="nav-text">前提条件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编码格式相同"><span class="nav-number">13.2.</span> <span class="nav-text">编码格式相同</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编码格式不同"><span class="nav-number">13.3.</span> <span class="nav-text">编码格式不同</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">14.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hxzqlh</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

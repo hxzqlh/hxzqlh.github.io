@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="填坑,mingw,NOERROR," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="我司给客户开发客户端工具，号称「跨平台」，其实，在此之前，只是跨了两个平台：windows 和 linux， mac 平台最近因为小明的加盟才得以支持，蛤蛤。 linux 下跨平台倒好办：主流的 Debian 系的下面的 deb 包和 RedHat 系的 rpm 包都可以很方便地编译、打包。 mac 平台下也容易折腾，和 linux同宗同源，都是自己人，移植下来也不是难事。 恶心我的是 windo">
+<meta name="keywords" content="填坑,mingw,NOERROR">
+<meta property="og:type" content="article">
+<meta property="og:title" content="坑太多兮，老衲 one by one 地填">
+<meta property="og:url" content="http://hxzqlh.com/2016/03/28/坑太多兮，老衲one-by-one地填/index.html">
+<meta property="og:site_name" content="不忘痴心 砥砺前行">
+<meta property="og:description" content="我司给客户开发客户端工具，号称「跨平台」，其实，在此之前，只是跨了两个平台：windows 和 linux， mac 平台最近因为小明的加盟才得以支持，蛤蛤。 linux 下跨平台倒好办：主流的 Debian 系的下面的 deb 包和 RedHat 系的 rpm 包都可以很方便地编译、打包。 mac 平台下也容易折腾，和 linux同宗同源，都是自己人，移植下来也不是难事。 恶心我的是 windo">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://hxzqlh.qiniudn.com/tiankeng.png">
+<meta property="og:updated_time" content="2018-03-27T15:18:57.133Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="坑太多兮，老衲 one by one 地填">
+<meta name="twitter:description" content="我司给客户开发客户端工具，号称「跨平台」，其实，在此之前，只是跨了两个平台：windows 和 linux， mac 平台最近因为小明的加盟才得以支持，蛤蛤。 linux 下跨平台倒好办：主流的 Debian 系的下面的 deb 包和 RedHat 系的 rpm 包都可以很方便地编译、打包。 mac 平台下也容易折腾，和 linux同宗同源，都是自己人，移植下来也不是难事。 恶心我的是 windo">
+<meta name="twitter:image" content="http://hxzqlh.qiniudn.com/tiankeng.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hxzqlh.com/2016/03/28/坑太多兮，老衲one-by-one地填/"/>
+
+
+
+
+
+  <title>坑太多兮，老衲 one by one 地填 | 不忘痴心 砥砺前行</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">不忘痴心 砥砺前行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hxzqlh.com/2016/03/28/坑太多兮，老衲one-by-one地填/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hxzqlh">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不忘痴心 砥砺前行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">坑太多兮，老衲 one by one 地填</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-28T14:34:22+08:00">
+                2016-03-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/" itemprop="url" rel="index">
+                    <span itemprop="name">C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>我司给客户开发客户端工具，号称「跨平台」，其实，在此之前，只是跨了两个平台：<code>windows</code> 和 <code>linux</code>， <code>mac</code> 平台最近因为小明的加盟才得以支持，蛤蛤。</p>
+<p><code>linux</code> 下跨平台倒好办：主流的 <code>Debian</code> 系的下面的 <code>deb</code> 包和 <code>RedHat</code> 系的 <code>rpm</code> 包都可以很方便地编译、打包。</p>
+<p><code>mac</code> 平台下也容易折腾，和 <code>linux</code>同宗同源，都是自己人，移植下来也不是难事。</p>
+<p>恶心我的是 <code>windows</code> 编译环境。</p>
+<p><img src="http://hxzqlh.qiniudn.com/tiankeng.png" alt=""></p>
+<a id="more"></a>
+<p><code>windows</code> 下面的编译工具用的是 <code>mingw</code>，呵呵，大名鼎鼎的 <code>mingw</code>。But，这套编译环境真的是 <strong><em>too old</em></strong>：系统是 <code>xp sp2</code>，<code>1/11/2006</code> 年装的系统（都满十周岁了耶），一个 <code>512MB</code> 内存的虚拟机，不知道哪位前辈在 <code>2009</code> 年装完 <code>mingw</code> 后 <code>C 盘</code>只剩下 <code>700</code> 多 MB 了，不能升级系统到 <code>sp 3</code>，不能升级 <code>mingw</code>，不然硬盘空间不足，升级失败，回滚，小可屡败屡试、屡试不爽。</p>
+<p>软硬件条件如此之差，以至于都不能装个像样版本的 <code>svn</code>，用 <code>SSH</code> 图形界面拷贝文件还会显示乱码。我忍了，还好我只拿这东西编译下 <code>windows</code> 平台的命令行客户端，每次编译完、用 <code>SSH</code> <code>copy</code> 到别的开发机器，<code>copy</code> 完走人，连眼珠子都不转过去一下，真的是太 <code>ugly</code> 、太 <code>disgusting</code> 了。</p>
+<p>为什么不重新搞一套 <code>mingw</code> 编译环境？一直以来都有这股冲动，最近闲了几天，终于下定决心，把这个坑填了。</p>
+<p>考虑到兼容性，系统这次还是选择了 <code>winsdows xp</code>，不过是 <code>sp 3</code> 了， 首先来点体力活，重新装个 <code>mingw</code>，从 <code>3.4.5</code> 升级到 <code>4.5.2</code>。 </p>
+<p>接下来，正式开始编译，出问题了：</p>
+<h2 id="坑之一"><a href="#坑之一" class="headerlink" title="坑之一"></a>坑之一</h2><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">In file included from ..<span class="regexp">/include/</span>jpeglib.<span class="string">h:</span><span class="number">30</span>:<span class="number">0</span>,</span><br><span class="line">                 from dna_gen.thread.<span class="string">cpp:</span><span class="number">33</span>:</span><br><span class="line">..<span class="regexp">/include/</span>jmorecfg.<span class="string">h:</span><span class="number">229</span>:<span class="number">13</span>: <span class="string">error:</span> conflicting declaration <span class="string">'typedef int boolean'</span></span><br><span class="line"><span class="string">c:</span>\mingw\bin\..<span class="regexp">/lib/</span>gcc<span class="regexp">/mingw32/</span><span class="number">4.5</span><span class="number">.2</span><span class="regexp">/../</span>..<span class="regexp">/../</span>..<span class="regexp">/include/</span>rpcndr.<span class="string">h:</span><span class="number">52</span>:<span class="number">23</span>: <span class="string">error:</span></span><br><span class="line"><span class="string">'boolean'</span> has a previous declaration <span class="keyword">as</span> <span class="string">'typedef unsigned char boolean'</span></span><br><span class="line"><span class="string">make:</span> *** [thread] Error <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p>好熟悉的编译 Error：<strong>类型声明冲突</strong>。</p>
+<p>由于 <code>#include &lt;windows.h&gt;</code>, 这个头文件经过几层 <code>include</code> 后会引入 <code>rpcndr.h</code> 头文件，人家在第 <code>52</code> 行已经声明 <code>boolean</code> 为 <code>unsigned char</code> 了：</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">51</span>: <span class="keyword">typedef</span> <span class="keyword">unsigned</span> <span class="keyword">char</span> <span class="keyword">byte</span>;</span><br><span class="line"><span class="number">52</span>: <span class="keyword">typedef</span> <span class="keyword">unsigned</span> <span class="keyword">char</span> <span class="keyword">boolean</span>;</span><br><span class="line"><span class="number">53</span>: <span class="meta">#<span class="meta-keyword">define</span> NDRSContextValue(hContext) (&amp;(hContext)-&gt;userContext)</span></span><br><span class="line"><span class="number">54</span>: <span class="meta">#<span class="meta-keyword">define</span> cbNDRContext 20</span></span><br></pre></td></tr></table></figure>
+<p>然后该 <code>.cpp</code> 文件又在 <code>windows.h</code> 后 <code>#include &quot;jpeglib.h&quot;</code> ，而 <code>jpeglib.h</code> 又引入 <code>jmorecfg.h</code>，这个头文件的第 <code>229</code> 行又试图再次声明 <code>boolean</code> 为 <code>int</code>：</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">221</span>:<span class="comment">/*</span></span><br><span class="line"><span class="comment">222: * On a few systems, type boolean and/or its values FALSE, TRUE may appear</span></span><br><span class="line"><span class="comment">223: * in standard header files.  Or you may have conflicts with application-</span></span><br><span class="line"><span class="comment">224: * specific header files that you want to include together with these files.</span></span><br><span class="line"><span class="comment">225: * Defining HAVE_BOOLEAN before including jpeglib.h should make it work.</span></span><br><span class="line"><span class="comment">226: */</span></span><br><span class="line"><span class="number">227</span>:</span><br><span class="line"><span class="number">228</span>: <span class="meta">#<span class="meta-keyword">ifndef</span> HAVE_BOOLEAN</span></span><br><span class="line"><span class="number">229</span>: <span class="keyword">typedef</span> <span class="keyword">int</span> <span class="keyword">boolean</span>;</span><br><span class="line"><span class="number">230</span>: <span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="number">231</span>: <span class="meta">#<span class="meta-keyword">ifndef</span> FALSE			<span class="comment">/* in case these macros already exist */</span></span></span><br><span class="line"><span class="number">232</span>: <span class="meta">#<span class="meta-keyword">define</span> FALSE	0		<span class="comment">/* values of boolean */</span></span></span><br><span class="line"><span class="number">233</span>: <span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="number">234</span>: <span class="meta">#<span class="meta-keyword">ifndef</span> TRUE</span></span><br><span class="line"><span class="number">235</span>: <span class="meta">#<span class="meta-keyword">define</span> TRUE	1</span></span><br><span class="line"><span class="number">236</span>: <span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+<p>原因找到了，解决方法也很简单：按照<code>jmorecfg.h</code>中<code>221~226</code>行的注释，如果在<code>#include &quot;jpeglib.h&quot;</code>之前已声明了 <code>boolean</code> 类型的话，需要在前面加宏 <code>＃define HAVE_BOOLEAN</code>。</p>
+<h2 id="坑之二"><a href="#坑之二" class="headerlink" title="坑之二"></a>坑之二</h2><figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">In <span class="built_in">file</span> included <span class="built_in">from</span> ../<span class="built_in">include</span>/afp_wrap.h:<span class="number">18</span>:<span class="number">0</span>,</span><br><span class="line">				  <span class="built_in">from</span> dna_gen.thread.cpp:<span class="number">30</span>:</span><br><span class="line">../<span class="built_in">include</span>/afp.h:<span class="number">170</span>:<span class="number">2</span>: error: expected identifier <span class="keyword">before</span> <span class="string">'('</span> <span class="keyword">token</span></span><br><span class="line">../<span class="built_in">include</span>/afp.h:<span class="number">170</span>:<span class="number">2</span>: error: expected <span class="string">'&#125;'</span> <span class="keyword">before</span> <span class="string">'('</span> <span class="keyword">token</span></span><br><span class="line">../<span class="built_in">include</span>/afp.h:<span class="number">170</span>:<span class="number">2</span>: error: expected <span class="string">')'</span> <span class="keyword">before</span> <span class="keyword">numeric</span> <span class="built_in">constant</span></span><br><span class="line">In <span class="built_in">file</span> included <span class="built_in">from</span> dna_gen.thread.cpp:<span class="number">30</span>:<span class="number">0</span>:</span><br><span class="line">../<span class="built_in">include</span>/afp_wrap.h:<span class="number">116</span>:<span class="number">1</span>: error: expected declaration <span class="keyword">before</span> <span class="string">'&#125;'</span> <span class="keyword">token</span></span><br><span class="line">make: *** [thread] Error <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p>莫名其妙的 Error。查看了 <code>afp.h</code> 并没有所说的 <code>(</code>和<code>)</code>、 <code>{</code>和<code>}</code> 括号不匹配的情况啊？初步怀疑是经过预处理后，头文件被<code>#define</code>指令篡改了。为了验证此想法，使用 <code>g++ ... -E -o</code> 生成经过预处理后的源文件。果然，有这么段：</p>
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">enum</span> <span class="title">error_type</span>&#123;</span></span><br><span class="line"> ((HRESULT)<span class="number">0x00000000</span>L) = <span class="number">0</span>,</span><br><span class="line"> GENERICERROR = -<span class="number">1</span>,</span><br><span class="line"> MEMORYERROR = -<span class="number">2</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>对应的头文件<code>afp.h</code>在 <code>170</code> 行附近内容：</p>
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">169</span>: <span class="class"><span class="keyword">enum</span> <span class="title">error_type</span>&#123;</span></span><br><span class="line"><span class="number">170</span>:	NOERROR = <span class="number">0</span>,</span><br><span class="line"><span class="number">171</span>:	GENERICERROR = -<span class="number">1</span>,</span><br><span class="line"><span class="number">172</span>:	MEMORYERROR = -<span class="number">2</span></span><br><span class="line"><span class="number">173</span>:&#125;;</span><br></pre></td></tr></table></figure>
+<p>看样子是 <code>NOERROR</code>被其他 <code>define</code> 指令替换成 <code>((HRESULT)0x00000000L)</code> 了。 </p>
+<p>在 windows 系统中，<code>NOERROR</code>是系统的一个预定义符号。该<code>.cpp</code>文件首先 <code>#include &lt;windows.h&gt;</code>，该头文件又会引入 <code>winerror.h</code>,在此头文件第 <code>1888~1913</code>行：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1888</span>: <span class="meta">#<span class="meta-keyword">define</span> NOERROR S_OK</span></span><br><span class="line">...</span><br><span class="line"><span class="number">1913</span>: <span class="meta">#<span class="meta-keyword">define</span> S_OK ((HRESULT)0x00000000L)</span></span><br></pre></td></tr></table></figure>
+<p>因此， <code>NOERROR</code> —&gt; <code>((HRESULT)0x00000000L)</code>。</p>
+<p>由于先引入了<code>windows.h</code>，再引入<code>afp_wrap.h</code>，导致 <code>#include &lt;windows.h&gt;</code> 这行代码后面所有被引入的文件都会将 <code>NOERROR</code> 替换成 <code>((HRESULT)0x00000000L)</code> 了，这就是 <code>((HRESULT)0x00000000L) = 0,</code>的原因。</p>
+<p>可以看出，当年写这个头文件的人有两大问题：</p>
+<ul>
+<li>对 windows 不熟悉。<code>NOERROR</code>是 <code>windows</code> 系统的预置常量啊，亲～</li>
+<li>不专业。一般在头文件中声明常量名都会加个公司名或项目代号之类的前缀，就是未来避免和系统中已存在或其它项目中的常量名同名。</li>
+</ul>
+<p>解决办法：我是不敢乱改 <code>afp.h</code> 的这位 Zorro “大神”的代码哦～To make compiler happy，姑且先<code>#include &quot;afp_wrap.h&quot;</code>，再<code>#include &lt;windows.h&gt;</code>。</p>
+<h2 id="坑之三"><a href="#坑之三" class="headerlink" title="坑之三"></a>坑之三</h2><p>还有些小坑，都 <code>one by one</code> 地 <code>fix</code> 了～</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay_hxzqlh.jpg" alt="hxzqlh 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    hxzqlh
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://hxzqlh.com/2016/03/28/坑太多兮，老衲one-by-one地填/" title="坑太多兮，老衲 one by one 地填">http://hxzqlh.com/2016/03/28/坑太多兮，老衲one-by-one地填/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/填坑/" rel="tag"># 填坑</a>
+          
+            <a href="/tags/mingw/" rel="tag"># mingw</a>
+          
+            <a href="/tags/NOERROR/" rel="tag"># NOERROR</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/03/24/老许盖浇饭/" rel="next" title="老许盖浇饭">
+                <i class="fa fa-chevron-left"></i> 老许盖浇饭
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/04/01/我在阜博通这两年/" rel="prev" title="我在阜博通这两年">
+                我在阜博通这两年 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">hxzqlh</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">124</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">212</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hxzqlh" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hxzqlh@gmail.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#坑之一"><span class="nav-number">1.</span> <span class="nav-text">坑之一</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#坑之二"><span class="nav-number">2.</span> <span class="nav-text">坑之二</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#坑之三"><span class="nav-number">3.</span> <span class="nav-text">坑之三</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hxzqlh</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
