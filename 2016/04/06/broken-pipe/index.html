@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="hxzqlh, 黄学忠" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="最近遇到一个这样的问题：ffmpeg 解码出 yuv 输出至管道，我写的程序从管道读取 yuv。 e.g: 1D:\huang_xuezhong\build_win32_VDNAGen&amp;gt;ffmpeg -i test.mkv -c:v rawvideo -s 320x240 -f rawvideo - | my_tool -o output 就上面这行命令，在 Linux 和 osx 下面运行">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一个 Broken pipe 引发的血案">
+<meta property="og:url" content="http://hxz.ink/2016/04/06/broken-pipe/index.html">
+<meta property="og:site_name" content="不忘痴心 砥砺前行">
+<meta property="og:description" content="最近遇到一个这样的问题：ffmpeg 解码出 yuv 输出至管道，我写的程序从管道读取 yuv。 e.g: 1D:\huang_xuezhong\build_win32_VDNAGen&amp;gt;ffmpeg -i test.mkv -c:v rawvideo -s 320x240 -f rawvideo - | my_tool -o output 就上面这行命令，在 Linux 和 osx 下面运行">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://media.hxz.ink/2016-04-28_1m2eS4">
+<meta property="og:updated_time" content="2021-01-12T13:04:00.699Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一个 Broken pipe 引发的血案">
+<meta name="twitter:description" content="最近遇到一个这样的问题：ffmpeg 解码出 yuv 输出至管道，我写的程序从管道读取 yuv。 e.g: 1D:\huang_xuezhong\build_win32_VDNAGen&amp;gt;ffmpeg -i test.mkv -c:v rawvideo -s 320x240 -f rawvideo - | my_tool -o output 就上面这行命令，在 Linux 和 osx 下面运行">
+<meta name="twitter:image" content="http://media.hxz.ink/2016-04-28_1m2eS4">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hxz.ink/2016/04/06/broken-pipe/"/>
+
+
+
+
+
+  <title>一个 Broken pipe 引发的血案 | 不忘痴心 砥砺前行</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">不忘痴心 砥砺前行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hxz.ink/2016/04/06/broken-pipe/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="彦祖老师">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不忘痴心 砥砺前行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">一个 Broken pipe 引发的血案</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-04-06T19:05:23+08:00">
+                2016-04-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Coder/" itemprop="url" rel="index">
+                    <span itemprop="name">Coder</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近遇到一个这样的问题：<code>ffmpeg</code> 解码出 yuv 输出至管道，我写的程序从管道读取 yuv。</p>
+<p>e.g:</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">D:</span>\huang_xuezhong\build_win32_VDNAGen&gt;ffmpeg -i test.mkv -<span class="string">c:</span>v rawvideo -s <span class="number">320</span>x240 -f rawvideo - | my_tool -o output</span><br></pre></td></tr></table></figure>
+<p>就上面这行命令，在 <code>Linux</code> 和 <code>osx</code> 下面运行都正常，唯独在 <code>windows</code> 下面，ffmpeg 报错 <code>av_interleaved_write_frame(): Broken pipe</code> :</p>
+<p>怎么会出错了呢？当时我的表情是这样的：</p>
+<p><img src="http://media.hxz.ink/2016-04-28_1m2eS4" alt=""></p>
+<a id="more"></a>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Output #<span class="number">0</span>, rawvideo, <span class="keyword">to</span> <span class="string">'pipe:'</span>:</span><br><span class="line">  Metadat<span class="variable">a:</span></span><br><span class="line">    encoder         : Lavf56.<span class="number">4.101</span></span><br><span class="line">    Stream #<span class="number">0</span>:<span class="number">0</span>: Video: rawvideo (I420 / <span class="number">0</span>x30323449), yuv420p, <span class="number">320</span>x240 [SAR <span class="number">120</span>:</span><br><span class="line"><span class="number">91</span> DAR <span class="number">160</span>:<span class="number">91</span>], q=<span class="number">2</span>-<span class="number">31</span>, <span class="number">200</span> kb/s, <span class="number">24</span> fps, <span class="number">24</span> tbn, <span class="number">24</span> tbc (default)</span><br><span class="line">    Metadat<span class="variable">a:</span></span><br><span class="line">      encoder         : Lavc56.<span class="number">1.100</span> rawvideo</span><br><span class="line">Stream mappin<span class="variable">g:</span></span><br><span class="line">  Stream #<span class="number">0</span>:<span class="number">0</span> -&gt; #<span class="number">0</span>:<span class="number">0</span> (h264 (native) -&gt; rawvideo (native))</span><br><span class="line">Press [q] <span class="keyword">to</span> <span class="keyword">stop</span>, [?] <span class="keyword">for</span> <span class="keyword">help</span></span><br><span class="line">processing yuv <span class="built_in">complete</span></span><br><span class="line">av_interleaved_write_frame(): Broken pipe</span><br><span class="line">frame=    <span class="number">1</span> fps=<span class="number">0.0</span> q=<span class="number">0.0</span> Lsize=     <span class="number">112</span>kB time=<span class="number">00</span>:<span class="number">00</span>:<span class="number">00.04</span> bitrate=<span class="number">22118.2</span>kbits/s</span><br><span class="line">video:<span class="number">112</span>kB audio:<span class="number">0</span>kB subtitle:<span class="number">0</span>kB other stream<span class="variable">s:0kB</span> <span class="keyword">global</span> header<span class="variable">s:0kB</span> muxing <span class="keyword">o</span></span><br><span class="line">verhead: <span class="number">0.000000</span>%</span><br><span class="line">Conversion failed!</span><br></pre></td></tr></table></figure>
+<p>在我的程序中，<code>my_tool</code> 从 <code>stdin</code> 中每次尝试读取一帧大小的 yuv 文件，若不足，则继续读取，直到满一帧，然后处理这一帧。代码逻辑如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">process_yuv</span> <span class="params">(<span class="keyword">int</span> jpg_width, <span class="keyword">int</span> jpg_height)</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> ret = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    FILE *yuv_fp = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> * yuv_buf = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">int</span> frame_size = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> try_cnt = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    frame_size = jpg_width * jpg_height * <span class="number">3</span> / <span class="number">2</span>;</span><br><span class="line">    va_log (vfp_log, <span class="string">"a frame size:%d\n"</span>, frame_size);</span><br><span class="line"></span><br><span class="line">    yuv_fp = <span class="built_in">stdin</span>;</span><br><span class="line"></span><br><span class="line">    yuv_buf = (<span class="keyword">unsigned</span> <span class="keyword">char</span> *) aligned_malloc_int(</span><br><span class="line">            <span class="keyword">sizeof</span>(<span class="keyword">char</span>) * (cf-&gt;jpg_width + <span class="number">1</span>) * (cf-&gt;jpg_height + <span class="number">1</span>) * <span class="number">3</span>, <span class="number">128</span>);</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (!yuv_buf) &#123;</span><br><span class="line">        <span class="built_in">fprintf</span> (<span class="built_in">stderr</span>, <span class="string">"malloc yuv buf error\n"</span>);</span><br><span class="line">        <span class="keyword">goto</span> end;</span><br><span class="line">    &#125; </span><br><span class="line"></span><br><span class="line">    <span class="built_in">memset</span> (yuv_buf, <span class="number">0</span>, frame_size);</span><br><span class="line">    <span class="keyword">while</span> (!feof (yuv_fp)) &#123;</span><br><span class="line"></span><br><span class="line">        try_cnt++;</span><br><span class="line">        va_log (vfp_log, <span class="string">"try_cnt is %d\n"</span>, try_cnt);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//MAX_TRY_TIMES = 1000</span></span><br><span class="line">        <span class="keyword">if</span> (try_cnt &gt; MAX_TRY_TIMES) &#123;</span><br><span class="line">            va_log (vfp_log, <span class="string">"try time out\n"</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        count = fread (yuv_buf + last_pos, <span class="number">1</span>, frame_size - last_pos, yuv_fp);</span><br><span class="line">        <span class="keyword">if</span> (last_pos + count &lt; frame_size) &#123;</span><br><span class="line">            va_log (vfp_log, <span class="string">"already read yuv: %d, this time:%d\n"</span>, last_pos + count, count);</span><br><span class="line">            last_pos += count;</span><br><span class="line">			<span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// some_personal_work ();</span></span><br><span class="line"></span><br><span class="line">        <span class="built_in">memset</span> (yuv_buf, <span class="number">0</span>, frame_size);</span><br><span class="line">        last_pos = <span class="number">0</span>;</span><br><span class="line">        try_cnt = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="built_in">fprintf</span> (<span class="built_in">stderr</span>, <span class="string">"processing yuv complete\n"</span>);</span><br><span class="line">    </span><br><span class="line">end:</span><br><span class="line">    <span class="keyword">if</span> (yuv_buf) &#123;</span><br><span class="line">        aligned_free_int (yuv_buf);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>windows</code> 下出错，打出的 log 十分诡异，读取一段内容后就读不出东西了：</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">2016</span>/<span class="selector-tag">04</span>/<span class="selector-tag">05</span> <span class="selector-tag">15</span><span class="selector-pseudo">:20</span><span class="selector-pseudo">:38</span>: <span class="selector-tag">a</span> <span class="selector-tag">frame</span> <span class="selector-tag">size</span><span class="selector-pseudo">:115200</span></span><br><span class="line"><span class="selector-tag">2016</span>/<span class="selector-tag">04</span>/<span class="selector-tag">05</span> <span class="selector-tag">15</span><span class="selector-pseudo">:20</span><span class="selector-pseudo">:38</span>: <span class="selector-tag">try_cnt</span> <span class="selector-tag">is</span> <span class="selector-tag">1</span></span><br><span class="line"><span class="selector-tag">2016</span>/<span class="selector-tag">04</span>/<span class="selector-tag">05</span> <span class="selector-tag">15</span><span class="selector-pseudo">:20</span><span class="selector-pseudo">:38</span>: <span class="selector-tag">already</span> <span class="selector-tag">read</span> <span class="selector-tag">yuv</span>: <span class="selector-tag">49365</span>, <span class="selector-tag">this</span> <span class="selector-tag">time</span><span class="selector-pseudo">:49365</span></span><br><span class="line"><span class="selector-tag">2016</span>/<span class="selector-tag">04</span>/<span class="selector-tag">05</span> <span class="selector-tag">15</span><span class="selector-pseudo">:20</span><span class="selector-pseudo">:38</span>: <span class="selector-tag">try_cnt</span> <span class="selector-tag">is</span> <span class="selector-tag">2</span></span><br><span class="line"><span class="selector-tag">2016</span>/<span class="selector-tag">04</span>/<span class="selector-tag">05</span> <span class="selector-tag">15</span><span class="selector-pseudo">:20</span><span class="selector-pseudo">:38</span>: <span class="selector-tag">already</span> <span class="selector-tag">read</span> <span class="selector-tag">yuv</span>: <span class="selector-tag">49365</span>, <span class="selector-tag">this</span> <span class="selector-tag">time</span><span class="selector-pseudo">:0</span></span><br><span class="line"><span class="selector-tag">2016</span>/<span class="selector-tag">04</span>/<span class="selector-tag">05</span> <span class="selector-tag">15</span><span class="selector-pseudo">:20</span><span class="selector-pseudo">:38</span>: <span class="selector-tag">try_cnt</span> <span class="selector-tag">is</span> <span class="selector-tag">3</span></span><br><span class="line"><span class="selector-tag">2016</span>/<span class="selector-tag">04</span>/<span class="selector-tag">05</span> <span class="selector-tag">15</span><span class="selector-pseudo">:20</span><span class="selector-pseudo">:38</span>: <span class="selector-tag">already</span> <span class="selector-tag">read</span> <span class="selector-tag">yuv</span>: <span class="selector-tag">49365</span>, <span class="selector-tag">this</span> <span class="selector-tag">time</span><span class="selector-pseudo">:0</span></span><br><span class="line"><span class="selector-tag">2016</span>/<span class="selector-tag">04</span>/<span class="selector-tag">05</span> <span class="selector-tag">15</span><span class="selector-pseudo">:20</span><span class="selector-pseudo">:38</span>: <span class="selector-tag">try_cnt</span> <span class="selector-tag">is</span> <span class="selector-tag">4</span></span><br><span class="line"><span class="selector-tag">2016</span>/<span class="selector-tag">04</span>/<span class="selector-tag">05</span> <span class="selector-tag">15</span><span class="selector-pseudo">:20</span><span class="selector-pseudo">:38</span>: <span class="selector-tag">already</span> <span class="selector-tag">read</span> <span class="selector-tag">yuv</span>: <span class="selector-tag">49365</span>, <span class="selector-tag">this</span> <span class="selector-tag">time</span><span class="selector-pseudo">:0</span></span><br><span class="line"><span class="selector-tag">2016</span>/<span class="selector-tag">04</span>/<span class="selector-tag">05</span> <span class="selector-tag">15</span><span class="selector-pseudo">:20</span><span class="selector-pseudo">:38</span>: <span class="selector-tag">try_cnt</span> <span class="selector-tag">is</span> <span class="selector-tag">5</span></span><br><span class="line"><span class="selector-tag">2016</span>/<span class="selector-tag">04</span>/<span class="selector-tag">05</span> <span class="selector-tag">15</span><span class="selector-pseudo">:20</span><span class="selector-pseudo">:38</span>: <span class="selector-tag">already</span> <span class="selector-tag">read</span> <span class="selector-tag">yuv</span>: <span class="selector-tag">49365</span>, <span class="selector-tag">this</span> <span class="selector-tag">time</span><span class="selector-pseudo">:0</span></span><br><span class="line"><span class="selector-tag">2016</span>/<span class="selector-tag">04</span>/<span class="selector-tag">05</span> <span class="selector-tag">15</span><span class="selector-pseudo">:20</span><span class="selector-pseudo">:38</span>: <span class="selector-tag">try_cnt</span> <span class="selector-tag">is</span> <span class="selector-tag">6</span></span><br><span class="line"><span class="selector-tag">2016</span>/<span class="selector-tag">04</span>/<span class="selector-tag">05</span> <span class="selector-tag">15</span><span class="selector-pseudo">:20</span><span class="selector-pseudo">:38</span>: <span class="selector-tag">already</span> <span class="selector-tag">read</span> <span class="selector-tag">yuv</span>: <span class="selector-tag">49365</span>, <span class="selector-tag">this</span> <span class="selector-tag">time</span><span class="selector-pseudo">:0</span></span><br><span class="line"><span class="selector-tag">2016</span>/<span class="selector-tag">04</span>/<span class="selector-tag">05</span> <span class="selector-tag">15</span><span class="selector-pseudo">:20</span><span class="selector-pseudo">:38</span>: <span class="selector-tag">try_cnt</span> <span class="selector-tag">is</span> <span class="selector-tag">7</span></span><br><span class="line"><span class="selector-tag">2016</span>/<span class="selector-tag">04</span>/<span class="selector-tag">05</span> <span class="selector-tag">15</span><span class="selector-pseudo">:20</span><span class="selector-pseudo">:38</span>: <span class="selector-tag">already</span> <span class="selector-tag">read</span> <span class="selector-tag">yuv</span>: <span class="selector-tag">49365</span>, <span class="selector-tag">this</span> <span class="selector-tag">time</span><span class="selector-pseudo">:0</span></span><br><span class="line"><span class="selector-tag">2016</span>/<span class="selector-tag">04</span>/<span class="selector-tag">05</span> <span class="selector-tag">15</span><span class="selector-pseudo">:20</span><span class="selector-pseudo">:38</span>: <span class="selector-tag">try_cnt</span> <span class="selector-tag">is</span> <span class="selector-tag">8</span></span><br><span class="line"><span class="selector-tag">2016</span>/<span class="selector-tag">04</span>/<span class="selector-tag">05</span> <span class="selector-tag">15</span><span class="selector-pseudo">:20</span><span class="selector-pseudo">:38</span>: <span class="selector-tag">already</span> <span class="selector-tag">read</span> <span class="selector-tag">yuv</span>: <span class="selector-tag">49365</span>, <span class="selector-tag">this</span> <span class="selector-tag">time</span><span class="selector-pseudo">:0</span></span><br><span class="line"><span class="selector-tag">2016</span>/<span class="selector-tag">04</span>/<span class="selector-tag">05</span> <span class="selector-tag">15</span><span class="selector-pseudo">:20</span><span class="selector-pseudo">:38</span>: <span class="selector-tag">try_cnt</span> <span class="selector-tag">is</span> <span class="selector-tag">9</span></span><br><span class="line"><span class="selector-tag">2016</span>/<span class="selector-tag">04</span>/<span class="selector-tag">05</span> <span class="selector-tag">15</span><span class="selector-pseudo">:20</span><span class="selector-pseudo">:38</span>: <span class="selector-tag">already</span> <span class="selector-tag">read</span> <span class="selector-tag">yuv</span>: <span class="selector-tag">49365</span>, <span class="selector-tag">this</span> <span class="selector-tag">time</span><span class="selector-pseudo">:0</span></span><br><span class="line"><span class="selector-tag">2016</span>/<span class="selector-tag">04</span>/<span class="selector-tag">05</span> <span class="selector-tag">15</span><span class="selector-pseudo">:20</span><span class="selector-pseudo">:38</span>: <span class="selector-tag">try_cnt</span> <span class="selector-tag">is</span> <span class="selector-tag">10</span></span><br><span class="line"><span class="selector-tag">2016</span>/<span class="selector-tag">04</span>/<span class="selector-tag">05</span> <span class="selector-tag">15</span><span class="selector-pseudo">:20</span><span class="selector-pseudo">:38</span>: <span class="selector-tag">already</span> <span class="selector-tag">read</span> <span class="selector-tag">yuv</span>: <span class="selector-tag">49365</span>, <span class="selector-tag">this</span> <span class="selector-tag">time</span><span class="selector-pseudo">:0</span></span><br><span class="line"><span class="selector-tag">2016</span>/<span class="selector-tag">04</span>/<span class="selector-tag">05</span> <span class="selector-tag">15</span><span class="selector-pseudo">:20</span><span class="selector-pseudo">:38</span>: <span class="selector-tag">try_cnt</span> <span class="selector-tag">is</span> <span class="selector-tag">11</span></span><br><span class="line">...</span><br><span class="line">...</span><br><span class="line"><span class="selector-tag">2016</span>/<span class="selector-tag">04</span>/<span class="selector-tag">05</span> <span class="selector-tag">15</span><span class="selector-pseudo">:20</span><span class="selector-pseudo">:38</span>: <span class="selector-tag">already</span> <span class="selector-tag">read</span> <span class="selector-tag">yuv</span>: <span class="selector-tag">49365</span>, <span class="selector-tag">this</span> <span class="selector-tag">time</span><span class="selector-pseudo">:0</span></span><br><span class="line"><span class="selector-tag">2016</span>/<span class="selector-tag">04</span>/<span class="selector-tag">05</span> <span class="selector-tag">15</span><span class="selector-pseudo">:20</span><span class="selector-pseudo">:38</span>: <span class="selector-tag">try_cnt</span> <span class="selector-tag">is</span> <span class="selector-tag">1000</span></span><br><span class="line"><span class="selector-tag">2016</span>/<span class="selector-tag">04</span>/<span class="selector-tag">05</span> <span class="selector-tag">15</span><span class="selector-pseudo">:20</span><span class="selector-pseudo">:38</span>: <span class="selector-tag">already</span> <span class="selector-tag">read</span> <span class="selector-tag">yuv</span>: <span class="selector-tag">49365</span>, <span class="selector-tag">this</span> <span class="selector-tag">time</span><span class="selector-pseudo">:0</span></span><br><span class="line"><span class="selector-tag">2016</span>/<span class="selector-tag">04</span>/<span class="selector-tag">05</span> <span class="selector-tag">15</span><span class="selector-pseudo">:20</span><span class="selector-pseudo">:38</span>: <span class="selector-tag">try_cnt</span> <span class="selector-tag">is</span> <span class="selector-tag">1001</span></span><br><span class="line"><span class="selector-tag">2016</span>/<span class="selector-tag">04</span>/<span class="selector-tag">05</span> <span class="selector-tag">15</span><span class="selector-pseudo">:20</span><span class="selector-pseudo">:38</span>: <span class="selector-tag">try</span> <span class="selector-tag">time</span> <span class="selector-tag">out</span></span><br></pre></td></tr></table></figure>
+<h2 id="表面和真相"><a href="#表面和真相" class="headerlink" title="表面和真相"></a>表面和真相</h2><p>google 一下有关 <code>Broken pipe</code> 的信息：</p>
+<ul>
+<li>这是个系统错误，字面意思是“管道破裂”。</li>
+<li>触发原因是该管道的读端被关闭，而写端还尝试往管道里面写，从而系统异常退出。</li>
+<li>经常发生在 <code>socket</code> 关闭之后（或者其他的描述符关闭之后）的 <code>write</code> 操作中。</li>
+<li>发生此错误时，进程将收到 <code>SIGPIPE</code> 信号，默认动作是进程终止。</li>
+</ul>
+<p>回过头去，细看下 <code>my_tool</code> 的这段代码，莫非在 <code>windows</code> 下面，从管道里面读取一段内容后，由于某种原因，<code>feof</code> 条件就为真了吗？导致整个程序执行完毕，管道读端早于写端关闭。</p>
+<p>那么，问题来了，是什么导致 <code>feof</code> 了呢？往这个方向搜索下相关资料后，折腾一番，终于找到原因了， 原来是<code>ASCII</code> 码 <code>0x1A</code> 在作怪：</p>
+<blockquote>
+<p>在 <code>Unix</code> 系统中，<code>stdin</code>，<code>stdout</code> 和 <code>stderr</code> 默认都是以二进制模式打开的，众所周知，用二进制模式打开一个文件的时候，文件本身的内容和你编写程序时读到的内容完全相同。但是在 <code>windows</code> 下面，<code>stdin</code>，<code>stdout</code> 和 <code>stderr</code> 默认都是以文本模式打开的，这就意味着它会对部分读到的特殊字符进行转义，比如 <code>\r\n(0x0D0x0A)</code> 转义成 <code>\n(0x0A)</code> 。另外，千万别忽略 <code>0x1A</code> 字符（也称<code>Ctrl+Z（^z）</code>) ，除了 <code>EOF</code>，它也被系统认为是文件结束符。</p>
+</blockquote>
+<p>因此，极有可能，<code>Broken pipe</code> 的原因是：<code>windows</code> 以文本模式从 <code>stdin</code> 中读取 yuv 内容，如果 yuv 中含有 <code>0x1A</code> 字符时, 系统认为已到达文件尾，从而退出 while 循环，结束程序，管道读端关闭，而写端 <code>ffmpeg</code> 还在解码，往管道写……</p>
+<p>为了验证在 <code>windows</code> 中以文本方式读取文件时，中途读到<code>0x1A</code> 导致 <code>feof()</code> 条件为真，写个小程序测试下：</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#incldue &lt;stdio.h&gt;</span></span><br><span class="line">int main(void)</span><br><span class="line">&#123;</span><br><span class="line">    int i<span class="comment">;</span></span><br><span class="line">    unsigned char c<span class="comment">;</span></span><br><span class="line">    FILE *<span class="built_in">fp</span><span class="comment">;        </span></span><br><span class="line">    <span class="built_in">fp</span> = fopen (<span class="string">"test.dat"</span>, <span class="string">"w"</span>)<span class="comment">;</span></span><br><span class="line">    fprintf(<span class="built_in">fp</span>, <span class="string">"abc%c def"</span>,<span class="number">0x1A</span>)<span class="comment">;</span></span><br><span class="line">    fclose (<span class="built_in">fp</span>)<span class="comment">;</span></span><br><span class="line">    </span><br><span class="line">    <span class="built_in">fp</span> = fopen(<span class="string">"test.dat"</span>, <span class="string">"r"</span>)<span class="comment">;</span></span><br><span class="line">    for(i=<span class="number">0</span><span class="comment">; i&lt;=7; ++i) &#123;</span></span><br><span class="line">        fread(&amp;c, sizeof(char), <span class="number">1</span>, <span class="built_in">fp</span>)<span class="comment">;</span></span><br><span class="line">        printf(<span class="string">"%02X feof=%d\n"</span>, c, feof(<span class="built_in">fp</span>))<span class="comment">;</span></span><br><span class="line">    &#125;</span><br><span class="line">    fclose (<span class="built_in">fp</span>)<span class="comment">;</span></span><br><span class="line">    return <span class="number">0</span><span class="comment">;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行的结果是：</p>
+<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">61 </span>feof=<span class="number">0</span></span><br><span class="line"><span class="symbol">62 </span>feof=<span class="number">0</span></span><br><span class="line"><span class="symbol">63 </span>feof=<span class="number">0</span></span><br><span class="line"><span class="symbol">63 </span>feof=<span class="number">16</span></span><br><span class="line"><span class="symbol">63 </span>feof=<span class="number">16</span></span><br><span class="line"><span class="symbol">63 </span>feof=<span class="number">16</span></span><br><span class="line"><span class="symbol">63 </span>feof=<span class="number">16</span></span><br><span class="line"><span class="symbol">63 </span>feof=<span class="number">16</span></span><br></pre></td></tr></table></figure>
+<p>从以上结果可见，在读到第四个字符 <code>0x1A</code> 的时候，<code>feof</code> 为真了。这种现象目前只发现存在于 <code>windows</code> 中，<code>unix</code> 中没有。Surprised！</p>
+<p>一个表面上看似 <code>Broken pipe</code> 的错误，引发它的最初缘由居然是 <code>windows</code> 的特立独行，NND，又被这奇葩的 <code>windows</code> 坑了一把。</p>
+<h2 id="经验教训"><a href="#经验教训" class="headerlink" title="经验教训"></a>经验教训</h2><p>由于 <code>ffmpeg</code> 解码出来的 yuv 是用二进制模式写出的，当然，你读也要用二进制模式。在 <code>windows</code> 下，手动设置 <code>stdin</code> 的读取方式为二进制模式。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># <span class="meta-keyword">include</span> <span class="meta-string">&lt;fcntl.h&gt;</span></span></span><br><span class="line">setmode (fileno(<span class="built_in">stdin</span>), O_BINARY);</span><br></pre></td></tr></table></figure>
+<p>从 这个 <code>Broken pipe</code> 引发的血案，可以得出两条经验教训：</p>
+<ul>
+<li>二进制模式写出的文件，要用二进制模式读，同理，文本模式写的文件，要用文本模式读，不然，出了问题，系统可不会为你负责。</li>
+<li>千万记住， <code>windows</code> 默认以 <strong><em>文本模式</em></strong> 打开文件。</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/images/qrcode-hxzqlh.jpg" alt="彦祖老师 wechat" style="width: 200px; max-width: 100%;"/>
+    <div></div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    彦祖老师
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://hxz.ink/2016/04/06/broken-pipe/" title="一个 Broken pipe 引发的血案">http://hxz.ink/2016/04/06/broken-pipe/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/04/01/two-years-in-Vobile/" rel="next" title="我在阜博通这两年">
+                <i class="fa fa-chevron-left"></i> 我在阜博通这两年
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/04/08/Chongqing-Hot-Pot/" rel="prev" title="也谈《火锅英雄》">
+                也谈《火锅英雄》 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">彦祖老师</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">114</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hxzqlh" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hxzqlh@gmail.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#表面和真相"><span class="nav-number">1.</span> <span class="nav-text">表面和真相</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#经验教训"><span class="nav-number">2.</span> <span class="nav-text">经验教训</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">彦祖老师</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="hxzqlh, 黄学忠" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="This articl records my experience with development on “NW.js + Angular”, implementing https request by $http.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Angular CQRS https request in nw.js">
+<meta property="og:url" content="http://hxz.ink/2016/01/14/angular_cqrs_https_request_in_nw.js/index.html">
+<meta property="og:site_name" content="不忘痴心 砥砺前行">
+<meta property="og:description" content="This articl records my experience with development on “NW.js + Angular”, implementing https request by $http.">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://media.hxz.ink/2016-04-28_ilf1If">
+<meta property="og:updated_time" content="2021-01-12T13:04:00.698Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Angular CQRS https request in nw.js">
+<meta name="twitter:description" content="This articl records my experience with development on “NW.js + Angular”, implementing https request by $http.">
+<meta name="twitter:image" content="http://media.hxz.ink/2016-04-28_ilf1If">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hxz.ink/2016/01/14/angular_cqrs_https_request_in_nw.js/"/>
+
+
+
+
+
+  <title>Angular CQRS https request in nw.js | 不忘痴心 砥砺前行</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">不忘痴心 砥砺前行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hxz.ink/2016/01/14/angular_cqrs_https_request_in_nw.js/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="彦祖老师">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不忘痴心 砥砺前行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Angular CQRS https request in nw.js</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-14T17:05:23+08:00">
+                2016-01-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Coder/" itemprop="url" rel="index">
+                    <span itemprop="name">Coder</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>This articl records my experience with development on “NW.js + Angular”, implementing https request by <code>$http</code>.</p>
+<a id="more"></a>
+<h2 id="pure-http"><a href="#pure-http" class="headerlink" title="pure $http"></a>pure $http</h2><p>in nw.js + angualr:</p>
+<pre><code>host = &quot;192.168.10.69&quot;;
+
+$http({
+     method : &apos;POST&apos;,
+     url : &quot;https://&quot; + host + &apos;/mediawise/auth&apos;,
+     data: &apos;{&quot;protocols&quot;: [&quot;5.2.6&quot;], &quot;user&quot;: &quot;&apos;+ $scope.user.name + &apos;&quot;,&quot;password&quot;:&quot;&apos; + $scope.user.pwd +&apos;&quot;}&apos;,
+ })
+.then (function(res) {
+    setLocalStorage(&quot;cur_user&quot;, $scope.user.name);
+    setLocalStorage(&quot;vdnaGenPwd_&quot; + $scope.user.name, $scope.user.pwd);                                                           
+    if($scope.remember == true){
+         $scope.remPwd();
+    } else {
+         setLocalStorage(&quot;pwd_&quot; + $scope.user.name, null);
+    }           
+    $scope.user = {name : &apos;&apos;, pwd : &apos;&apos;};
+    $scope.remember = false;
+
+    window.location = &quot;main.html&quot;;
+}, function(res) {
+    console.log (JSON.stringigy (res.data));
+});
+</code></pre><p>in Nginx config:</p>
+<pre><code>if ($request_method = &apos;OPTIONS&apos;) {
+   add_header &apos;Access-Control-Allow-Origin&apos; &apos;*&apos;;
+   add_header &apos;Access-Control-Allow-Credentials&apos; &apos;true&apos;;
+   add_header &apos;Access-Control-Allow-Methods&apos; &apos;GET, POST, OPTIONS&apos;;
+   add_header &apos;Access-Control-Allow-Headers&apos; &apos;DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type&apos;;
+   add_header &apos;Access-Control-Max-Age&apos; 1728000;
+   add_header &apos;Content-Type&apos; &apos;text/plain charset=UTF-8&apos;;
+   add_header &apos;Content-Length&apos; 0;
+   return 204;
+}   
+if ($request_method = &apos;POST&apos;) {
+   add_header &apos;Access-Control-Allow-Origin&apos; &apos;*&apos;;
+   add_header &apos;Access-Control-Allow-Credentials&apos; &apos;true&apos;;
+   add_header &apos;Access-Control-Allow-Methods&apos; &apos;GET, POST, OPTIONS&apos;;
+   add_header &apos;Access-Control-Allow-Headers&apos; &apos;DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type&apos;;
+}   
+if ($request_method = &apos;GET&apos;) {
+   add_header &apos;Access-Control-Allow-Origin&apos; &apos;*&apos;;
+   add_header &apos;Access-Control-Allow-Credentials&apos; &apos;true&apos;;
+   add_header &apos;Access-Control-Allow-Methods&apos; &apos;GET, POST, OPTIONS&apos;;
+   add_header &apos;Access-Control-Allow-Headers&apos; &apos;DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type&apos;;
+}   
+</code></pre><p>if you meet this error:</p>
+<p><img src="http://media.hxz.ink/2016-04-28_ilf1If" alt=""> </p>
+<p>Basically you need to use:</p>
+<pre><code>&quot;chromium-args&quot;: &quot;--allow-running-insecure-content --ignore-certificate-errors&quot;,
+</code></pre><p>And it has to go outside of the window object (e.g. after <code>name</code> property) in the <code>package.json</code> file.</p>
+<p>eg:</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"name"</span>: <span class="string">"VDNA"</span>,</span><br><span class="line">    <span class="attr">"chromium-args"</span>: <span class="string">"--enable-file-cookies --allow-running-insecure-content --ignore-certificate-errors"</span>,</span><br><span class="line">    <span class="attr">"main"</span>: <span class="string">"index.html"</span>,</span><br><span class="line">    <span class="attr">"descrption"</span>: <span class="string">"client for Ingesting, Query and manage VDNA meta"</span>,</span><br><span class="line">    <span class="attr">"version"</span>: <span class="string">"0.1.0"</span>,</span><br><span class="line">    <span class="attr">"dependencies"</span>: &#123;</span><br><span class="line">        <span class="attr">"request"</span>: <span class="string">"^2.49.0"</span></span><br><span class="line">     &#125;,  </span><br><span class="line">    <span class="attr">"window"</span>: &#123;                                                                                                                            </span><br><span class="line">        <span class="attr">"title"</span>: <span class="string">"VDNA"</span>,</span><br><span class="line">        <span class="attr">"icon"</span>: <span class="string">"images/login_bg.png"</span>,</span><br><span class="line">        <span class="attr">"toolbar"</span>: <span class="literal">true</span>,</span><br><span class="line">        <span class="attr">"frame"</span>: <span class="literal">true</span>,</span><br><span class="line">        <span class="attr">"width"</span>: <span class="number">1180</span>,</span><br><span class="line">        <span class="attr">"height"</span>: <span class="number">820</span>,</span><br><span class="line">        <span class="attr">"position"</span>: <span class="string">"center"</span>,</span><br><span class="line">        <span class="attr">"min_width"</span>: <span class="number">960</span>,</span><br><span class="line">        <span class="attr">"min_height"</span>: <span class="number">660</span> </span><br><span class="line">    &#125;   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="node-request"><a href="#node-request" class="headerlink" title="node request()"></a>node request()</h2><figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">do_request</span> <span class="params">(method, path, data, callback)</span></span></span><br><span class="line">&#123;</span><br><span class="line">    var request = <span class="built_in">require</span>(<span class="string">'request'</span>);</span><br><span class="line">    var options = &#123; </span><br><span class="line">      url: <span class="string">'https://192.168.10.111'</span> + <span class="built_in">path</span>,</span><br><span class="line">      method: method,</span><br><span class="line">      rejectUnauthorized: <span class="literal">false</span>, //very important</span><br><span class="line">      headers: &#123;</span><br><span class="line">        //<span class="string">'Content-Type'</span>: <span class="string">'application/x-www-form-urlencoded'</span>,</span><br><span class="line">        //<span class="string">'Content-Length'</span>: data.length,</span><br><span class="line">        <span class="string">'Cookie'</span>: getLocalStorage (<span class="string">"auth_token"</span>)</span><br><span class="line">      &#125;,  </span><br><span class="line">    &#125;;  </span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (method != <span class="string">'GET'</span> &amp;&amp; data != null) &#123;</span><br><span class="line">        options.body = data;</span><br><span class="line">    &#125;   </span><br><span class="line"></span><br><span class="line">    request (options, callback);</span><br><span class="line">    /*  </span><br><span class="line">    callback = <span class="function"><span class="keyword">function</span> <span class="params">(error, response, body)</span></span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="built_in">error</span> &amp;&amp; response.statusCode == <span class="number">200</span>) &#123;</span><br><span class="line">            ...</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    */</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>or</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">do_request2</span> <span class="params">(method, path, data, callback)</span></span>                                                                                       </span><br><span class="line">&#123;</span><br><span class="line">    //process.env.NODE_TLS_REJECT_UNAUTHORIZED = <span class="string">"0"</span>;</span><br><span class="line">        </span><br><span class="line">    var https = <span class="built_in">require</span>(<span class="string">'https'</span>);</span><br><span class="line"></span><br><span class="line">    var options = &#123; </span><br><span class="line">      host: <span class="string">'192.168.10.113'</span>,</span><br><span class="line">      port: <span class="number">443</span>,</span><br><span class="line">      <span class="built_in">path</span>: <span class="built_in">path</span>,</span><br><span class="line">      method: method,</span><br><span class="line">      rejectUnauthorized: <span class="literal">false</span>,</span><br><span class="line">      headers: &#123;</span><br><span class="line">        <span class="string">'Content-Type'</span>: <span class="string">'application/x-www-form-urlencoded'</span>,</span><br><span class="line">        <span class="string">'Content-Length'</span>: data.length,</span><br><span class="line">        <span class="string">'Cookie'</span>: getLocalStorage (<span class="string">"auth_token"</span>)</span><br><span class="line">      &#125;   </span><br><span class="line">    &#125;;  </span><br><span class="line"></span><br><span class="line">    var req = https.request(options, callback);</span><br><span class="line"></span><br><span class="line">    req.on(<span class="string">'error'</span>, <span class="function"><span class="keyword">function</span><span class="params">(e)</span></span> &#123;</span><br><span class="line">        console.<span class="built_in">error</span>(e);</span><br><span class="line">    &#125;); </span><br><span class="line"></span><br><span class="line">    req.<span class="built_in">write</span>(data);</span><br><span class="line">    req.<span class="keyword">end</span>();</span><br><span class="line"></span><br><span class="line">    /*  </span><br><span class="line">    //callback eg:</span><br><span class="line">    callback = <span class="function"><span class="keyword">function</span> <span class="params">(res)</span></span> &#123;</span><br><span class="line">        var xxx = <span class="string">""</span>;</span><br><span class="line">        res.on(<span class="string">'data'</span>, <span class="function"><span class="keyword">function</span> <span class="params">(d)</span></span> &#123;</span><br><span class="line">            process.<span class="built_in">stdout</span>.<span class="built_in">write</span>(<span class="string">'RESPONSE:'</span> + d);</span><br><span class="line">            xxx += d;</span><br><span class="line">        &#125;);</span><br><span class="line">        res.on (<span class="string">'end'</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span></span> &#123;   </span><br><span class="line">            <span class="keyword">if</span> (res.statusCode == <span class="number">200</span>) &#123;</span><br><span class="line">                //handle received data:xxx</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    */</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://github.com/nwjs/nw.js/issues/3123#issuecomment-96393512" target="_blank" rel="noopener">https://github.com/nwjs/nw.js/issues/3123#issuecomment-96393512</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/images/qrcode-hxzqlh.jpg" alt="彦祖老师 wechat" style="width: 200px; max-width: 100%;"/>
+    <div></div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    彦祖老师
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://hxz.ink/2016/01/14/angular_cqrs_https_request_in_nw.js/" title="Angular CQRS https request in nw.js">http://hxz.ink/2016/01/14/angular_cqrs_https_request_in_nw.js/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/01/13/Stay-Young-Stay-Simple/" rel="next" title="Stay Young Stay Simple | 全球首届蛤丝大会暨张宝华成都见面会">
+                <i class="fa fa-chevron-left"></i> Stay Young Stay Simple | 全球首届蛤丝大会暨张宝华成都见面会
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/01/18/it-says-today-will-be-rain/" rel="prev" title="本来天气预报说今天有雨">
+                本来天气预报说今天有雨 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">彦祖老师</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">114</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hxzqlh" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hxzqlh@gmail.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#pure-http"><span class="nav-number">1.</span> <span class="nav-text">pure $http</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#node-request"><span class="nav-number">2.</span> <span class="nav-text">node request()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">彦祖老师</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

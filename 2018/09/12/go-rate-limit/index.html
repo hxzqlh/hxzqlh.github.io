@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="hxzqlh, 黄学忠" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="在开发高并发系统时，为了保证系统的高可用和稳定性，业内流传着“三把斧”：  缓存：提升系统访问速度，增大系统处理容量 降级：当服务出现故障或影响到核心业务时，暂时屏蔽掉，待高峰期过后或故障解决后再打开 限流：通过对并发（或者一定时间窗口内）请求进行限速来保护系统，一旦达到限制速率则拒绝服务（定向到错误页或告知资源没有了）、排队等待（比如秒杀、评论、下单）、降级（返回兜底数据或默认数据）  最近，由">
+<meta property="og:type" content="article">
+<meta property="og:title" content="限流 | Go 实现速率限制">
+<meta property="og:url" content="http://hxz.ink/2018/09/12/go-rate-limit/index.html">
+<meta property="og:site_name" content="不忘痴心 砥砺前行">
+<meta property="og:description" content="在开发高并发系统时，为了保证系统的高可用和稳定性，业内流传着“三把斧”：  缓存：提升系统访问速度，增大系统处理容量 降级：当服务出现故障或影响到核心业务时，暂时屏蔽掉，待高峰期过后或故障解决后再打开 限流：通过对并发（或者一定时间窗口内）请求进行限速来保护系统，一旦达到限制速率则拒绝服务（定向到错误页或告知资源没有了）、排队等待（比如秒杀、评论、下单）、降级（返回兜底数据或默认数据）  最近，由">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://media.hxz.ink/2018-09-12_4T3X_B">
+<meta property="og:image" content="http://media.hxz.ink/2018-09-12_dV8NDd">
+<meta property="og:image" content="http://media.hxz.ink/2018-09-12_mQZraA">
+<meta property="og:image" content="http://media.hxz.ink/2018-09-12_sxJxY5">
+<meta property="og:image" content="http://media.hxz.ink/2018-09-12_CFDtNa">
+<meta property="og:image" content="http://media.hxz.ink/2018-09-12_Qw1zAh">
+<meta property="og:updated_time" content="2021-01-12T13:04:00.710Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="限流 | Go 实现速率限制">
+<meta name="twitter:description" content="在开发高并发系统时，为了保证系统的高可用和稳定性，业内流传着“三把斧”：  缓存：提升系统访问速度，增大系统处理容量 降级：当服务出现故障或影响到核心业务时，暂时屏蔽掉，待高峰期过后或故障解决后再打开 限流：通过对并发（或者一定时间窗口内）请求进行限速来保护系统，一旦达到限制速率则拒绝服务（定向到错误页或告知资源没有了）、排队等待（比如秒杀、评论、下单）、降级（返回兜底数据或默认数据）  最近，由">
+<meta name="twitter:image" content="http://media.hxz.ink/2018-09-12_4T3X_B">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hxz.ink/2018/09/12/go-rate-limit/"/>
+
+
+
+
+
+  <title>限流 | Go 实现速率限制 | 不忘痴心 砥砺前行</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">不忘痴心 砥砺前行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hxz.ink/2018/09/12/go-rate-limit/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="彦祖老师">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不忘痴心 砥砺前行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">限流 | Go 实现速率限制</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-12T10:37:10+08:00">
+                2018-09-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Coder/" itemprop="url" rel="index">
+                    <span itemprop="name">Coder</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在开发高并发系统时，为了保证系统的高可用和稳定性，业内流传着“三把斧”：</p>
+<ul>
+<li>缓存：提升系统访问速度，增大系统处理容量</li>
+<li>降级：当服务出现故障或影响到核心业务时，暂时屏蔽掉，待高峰期过后或故障解决后再打开</li>
+<li>限流：通过对并发（或者一定时间窗口内）请求进行限速来保护系统，一旦达到限制速率则拒绝服务（定向到错误页或告知资源没有了）、排队等待（比如秒杀、评论、下单）、降级（返回兜底数据或默认数据）</li>
+</ul>
+<p>最近，由于我负责的一个项目后端这边需要控制 API 的访问频率，于是研究了下 <strong>限流</strong> 相关的技术。</p>
+<p><img src="http://media.hxz.ink/2018-09-12_4T3X_B" alt=""></p>
+<a id="more"></a>
+<p>一般来说，限流的常用处理手段有：</p>
+<ul>
+<li>计数器</li>
+<li>滑动窗口</li>
+<li>漏桶</li>
+<li>令牌桶</li>
+</ul>
+<h2 id="计数器"><a href="#计数器" class="headerlink" title="计数器"></a>计数器</h2><p>计数器是一种比较简单粗暴的限流算法：</p>
+<blockquote>
+<p>在一段时间间隔内，对请求进行计数，与阀值进行比较判断是否需要限流，一旦到了时间临界点，将计数器清零。</p>
+</blockquote>
+<p><img src="http://media.hxz.ink/2018-09-12_dV8NDd" alt=""></p>
+<p>讨论两种通用做法。</p>
+<h3 id="方案一"><a href="#方案一" class="headerlink" title="方案一"></a>方案一</h3><p>当请求频率过快时，直接抛弃后续请求。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"sync"</span></span><br><span class="line">	<span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> LimitRate <span class="keyword">struct</span> &#123;</span><br><span class="line">	rate  <span class="keyword">int</span>           <span class="comment">//计数周期内最多允许的请求数</span></span><br><span class="line">	begin time.Time     <span class="comment">//计数开始时间</span></span><br><span class="line">	cycle time.Duration <span class="comment">//计数周期</span></span><br><span class="line">	count <span class="keyword">int</span>           <span class="comment">//计数周期内累计收到的请求数</span></span><br><span class="line">	lock  sync.Mutex</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(l *LimitRate)</span> <span class="title">Allow</span><span class="params">()</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">	l.lock.Lock()</span><br><span class="line">	<span class="keyword">defer</span> l.lock.Unlock()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> l.count == l.rate<span class="number">-1</span> &#123;</span><br><span class="line">		now := time.Now()</span><br><span class="line">		<span class="keyword">if</span> now.Sub(l.begin) &gt;= l.cycle &#123;</span><br><span class="line">			<span class="comment">//速度允许范围内， 重置计数器</span></span><br><span class="line">			l.Reset(now)</span><br><span class="line">			<span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="comment">//没有达到速率限制，计数加1</span></span><br><span class="line">		l.count++</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(l *LimitRate)</span> <span class="title">Set</span><span class="params">(r <span class="keyword">int</span>, cycle time.Duration)</span></span> &#123;</span><br><span class="line">	l.rate = r</span><br><span class="line">	l.begin = time.Now()</span><br><span class="line">	l.cycle = cycle</span><br><span class="line">	l.count = <span class="number">0</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(l *LimitRate)</span> <span class="title">Reset</span><span class="params">(t time.Time)</span></span> &#123;</span><br><span class="line">	l.begin = t</span><br><span class="line">	l.count = <span class="number">0</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">	<span class="keyword">var</span> lr LimitRate</span><br><span class="line">	lr.Set(<span class="number">3</span>, time.Second) <span class="comment">// 1s内最多请求3次</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123;</span><br><span class="line">		wg.Add(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">		fmt.Println(<span class="string">"Create req"</span>, i, time.Now())</span><br><span class="line">		<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(i <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">			<span class="keyword">if</span> lr.Allow() &#123;</span><br><span class="line">				fmt.Println(<span class="string">"Respon req"</span>, i, time.Now())</span><br><span class="line">			&#125;</span><br><span class="line">			wg.Done()</span><br><span class="line">		&#125;(i)</span><br><span class="line"></span><br><span class="line">		time.Sleep(<span class="number">200</span> * time.Millisecond)</span><br><span class="line">	&#125;</span><br><span class="line">	wg.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>例子里面每 <code>200ms</code> 创建一个请求，速率明显高于 <code>1s内最多3个</code> 的限制， 我们把请求的创建时间和结果返回时间打印出来，方便观察。运行显示：</p>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Create req 0 2018<span class="string">-09</span><span class="string">-12</span> 17:03:43.759413 <span class="string">+0800</span> CST m=<span class="string">+0</span>.000297262</span><br><span class="line">Respon req 0 2018<span class="string">-09</span><span class="string">-12</span> 17:03:43.759539 <span class="string">+0800</span> CST m=<span class="string">+0</span>.000422748</span><br><span class="line">Create req 1 2018<span class="string">-09</span><span class="string">-12</span> 17:03:43.961558 <span class="string">+0800</span> CST m=<span class="string">+0</span>.202436188</span><br><span class="line">Respon req 1 2018<span class="string">-09</span><span class="string">-12</span> 17:03:43.961637 <span class="string">+0800</span> CST m=<span class="string">+0</span>.202515351</span><br><span class="line">Create req 2 2018<span class="string">-09</span><span class="string">-12</span> 17:03:44.165453 <span class="string">+0800</span> CST m=<span class="string">+0</span>.406321427 x</span><br><span class="line">Create req 3 2018<span class="string">-09</span><span class="string">-12</span> 17:03:44.365722 <span class="string">+0800</span> CST m=<span class="string">+0</span>.606573032 x</span><br><span class="line">Create req 4 2018<span class="string">-09</span><span class="string">-12</span> 17:03:44.567892 <span class="string">+0800</span> CST m=<span class="string">+0</span>.808749192 x</span><br><span class="line">Create req 5 2018<span class="string">-09</span><span class="string">-12</span> 17:03:44.769219 <span class="string">+0800</span> CST m=<span class="string">+1</span>.010065632</span><br><span class="line">Respon req 5 2018<span class="string">-09</span><span class="string">-12</span> 17:03:44.769377 <span class="string">+0800</span> CST m=<span class="string">+1</span>.010231224</span><br><span class="line">Create req 6 2018<span class="string">-09</span><span class="string">-12</span> 17:03:44.970477 <span class="string">+0800</span> CST m=<span class="string">+1</span>.211325152</span><br><span class="line">Respon req 6 2018<span class="string">-09</span><span class="string">-12</span> 17:03:44.970539 <span class="string">+0800</span> CST m=<span class="string">+1</span>.211387021</span><br><span class="line">Create req 7 2018<span class="string">-09</span><span class="string">-12</span> 17:03:45.171685 <span class="string">+0800</span> CST m=<span class="string">+1</span>.412526161</span><br><span class="line">Respon req 7 2018<span class="string">-09</span><span class="string">-12</span> 17:03:45.171741 <span class="string">+0800</span> CST m=<span class="string">+1</span>.412583132</span><br><span class="line">Create req 8 2018<span class="string">-09</span><span class="string">-12</span> 17:03:45.372879 <span class="string">+0800</span> CST m=<span class="string">+1</span>.613709972 x</span><br><span class="line">Create req 9 2018<span class="string">-09</span><span class="string">-12</span> 17:03:45.573016 <span class="string">+0800</span> CST m=<span class="string">+1</span>.813845388 x</span><br></pre></td></tr></table></figure>
+<p>平均每秒最多只显示 3 次 “Respon req”，请求 <code>2、3、4、8、9</code> 被丢弃，说明限速成功。</p>
+<h3 id="方案二"><a href="#方案二" class="headerlink" title="方案二"></a>方案二</h3><p>当请求频率太快时，后续的请求等待之前的请求完成后才进行，稍微修改下 <code>Allow</code> 方法：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">func (l *LimitRate) Allow() bool &#123;</span><br><span class="line">	l<span class="selector-class">.lock</span><span class="selector-class">.Lock</span>()</span><br><span class="line">	defer l<span class="selector-class">.lock</span><span class="selector-class">.Unlock</span>()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> l<span class="selector-class">.count</span> == l<span class="selector-class">.rate-1</span> &#123;</span><br><span class="line">		<span class="keyword">for</span> &#123;</span><br><span class="line">			now := <span class="selector-tag">time</span>.Now()</span><br><span class="line">			<span class="keyword">if</span> now.Sub(l.begin) &gt;= l<span class="selector-class">.cycle</span> &#123;</span><br><span class="line">				<span class="comment">//速度允许范围内， 重置计数器</span></span><br><span class="line">				l.Reset(now)</span><br><span class="line">				return true</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				<span class="comment">// wait</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="comment">//没有达到速率限制，计数加1</span></span><br><span class="line">		l.count++</span><br><span class="line">		return true</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行显示，10 次请求总共花费了 3s 多，符合预期，超过请求速率的后续请求依次被排队处理成功，最明显的是请求 <code>9</code>，创建后等待近 2s 才返回结果：</p>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">Create req 0 2018<span class="string">-09</span><span class="string">-12</span> 17:09:26.177354 <span class="string">+0800</span> CST m=<span class="string">+0</span>.000317504</span><br><span class="line">Respon req 0 2018<span class="string">-09</span><span class="string">-12</span> 17:09:26.177489 <span class="string">+0800</span> CST m=<span class="string">+0</span>.000452028</span><br><span class="line">Create req 1 2018<span class="string">-09</span><span class="string">-12</span> 17:09:26.377706 <span class="string">+0800</span> CST m=<span class="string">+0</span>.200662813</span><br><span class="line">Respon req 1 2018<span class="string">-09</span><span class="string">-12</span> 17:09:26.377743 <span class="string">+0800</span> CST m=<span class="string">+0</span>.200700428</span><br><span class="line">Create req 2 2018<span class="string">-09</span><span class="string">-12</span> 17:09:26.577843 <span class="string">+0800</span> CST m=<span class="string">+0</span>.400793565</span><br><span class="line">Create req 3 2018<span class="string">-09</span><span class="string">-12</span> 17:09:26.778119 <span class="string">+0800</span> CST m=<span class="string">+0</span>.601064014</span><br><span class="line">Create req 4 2018<span class="string">-09</span><span class="string">-12</span> 17:09:26.978772 <span class="string">+0800</span> CST m=<span class="string">+0</span>.801710852</span><br><span class="line">Respon req 2 2018<span class="string">-09</span><span class="string">-12</span> 17:09:27.177392 <span class="string">+0800</span> CST m=<span class="string">+1</span>.000325104</span><br><span class="line">Respon req 4 2018<span class="string">-09</span><span class="string">-12</span> 17:09:27.177469 <span class="string">+0800</span> CST m=<span class="string">+1</span>.000401716</span><br><span class="line">Respon req 3 2018<span class="string">-09</span><span class="string">-12</span> 17:09:27.177439 <span class="string">+0800</span> CST m=<span class="string">+1</span>.000372204</span><br><span class="line">Create req 5 2018<span class="string">-09</span><span class="string">-12</span> 17:09:27.179018 <span class="string">+0800</span> CST m=<span class="string">+1</span>.001942192 </span><br><span class="line">Create req 6 2018<span class="string">-09</span><span class="string">-12</span> 17:09:27.379832 <span class="string">+0800</span> CST m=<span class="string">+1</span>.202758661</span><br><span class="line">Create req 7 2018<span class="string">-09</span><span class="string">-12</span> 17:09:27.580378 <span class="string">+0800</span> CST m=<span class="string">+1</span>.403297124</span><br><span class="line">Create req 8 2018<span class="string">-09</span><span class="string">-12</span> 17:09:27.781084 <span class="string">+0800</span> CST m=<span class="string">+1</span>.603998402</span><br><span class="line">Create req 9 2018<span class="string">-09</span><span class="string">-12</span> 17:09:27.981209 <span class="string">+0800</span> CST m=<span class="string">+1</span>.804117865 //</span><br><span class="line">Respon req 5 2018<span class="string">-09</span><span class="string">-12</span> 17:09:28.177425 <span class="string">+0800</span> CST m=<span class="string">+2</span>.000323426</span><br><span class="line">Respon req 6 2018<span class="string">-09</span><span class="string">-12</span> 17:09:28.177456 <span class="string">+0800</span> CST m=<span class="string">+2</span>.000358896</span><br><span class="line">Respon req 7 2018<span class="string">-09</span><span class="string">-12</span> 17:09:28.177473 <span class="string">+0800</span> CST m=<span class="string">+2</span>.000375963</span><br><span class="line">Respon req 8 2018<span class="string">-09</span><span class="string">-12</span> 17:09:29.177453 <span class="string">+0800</span> CST m=<span class="string">+3</span>.000326135</span><br><span class="line">Respon req 9 2018<span class="string">-09</span><span class="string">-12</span> 17:09:29.177477 <span class="string">+0800</span> CST m=<span class="string">+3</span>.000350214 //</span><br><span class="line"></span><br><span class="line">real    0m3.302s</span><br><span class="line">user    0m1.802s</span><br><span class="line">sys     0m1.021s</span><br></pre></td></tr></table></figure>
+<p>计数器算法存在“时间临界点”缺陷。比如每一分钟限速 100 个请求（也就是说每秒最多 1.7 个请求），在 <code>00:00:00</code> 到 <code>00:00:58</code> 这段时间内没有用户请求，然后在 <code>00:00:59</code>这一瞬时发出100个请求，这是允许的，然后在 <code>00:01:00</code> 这一瞬时又发出了 100 个请求，短短 1s 内发出了 200 个请求，系统可能会承受恶意用户的大量请求，甚至击穿系统。</p>
+<p><img src="http://media.hxz.ink/2018-09-12_mQZraA" alt=""></p>
+<h2 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h2><p>针对计数器存在的临界点缺陷:</p>
+<blockquote>
+<p>滑动窗口把固定时间片进行划分，并且随着时间的流逝，进行移动，固定数量的可以移动的格子，进行计数并判断阀值。</p>
+</blockquote>
+<p>格子的数量影响着滑动窗口算法的精度，依然有时间片的概念，无法根本解决临界点问题。</p>
+<p><img src="http://media.hxz.ink/2018-09-12_sxJxY5" alt=""></p>
+<h2 id="漏桶"><a href="#漏桶" class="headerlink" title="漏桶"></a>漏桶</h2><p>漏桶算法描述如下：</p>
+<ul>
+<li>一个固定容量的漏桶，按照固定速率流出水滴；</li>
+<li>如果桶是空的，则不需流出水滴；</li>
+<li>可以以任意速率流入水滴到漏桶；</li>
+<li>如果流入水滴超出了桶的容量，则溢出（被丢弃）</li>
+</ul>
+<p><img src="http://media.hxz.ink/2018-09-12_CFDtNa" alt=""></p>
+<p>通俗点来说，我们有一个固定容量的桶，有水流进来，也有水流出去。对于流进来的水（请求）来说，我们无法预计一共有多少水会流进来，也无法预计水流的速度。但是对于流出去的水来说，这个桶可以固定水流出的速率（处理速度），从而达到 <strong>流量整形</strong> 和 <strong>流量控制</strong> 的效果。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"math"</span></span><br><span class="line">	<span class="string">"sync"</span></span><br><span class="line">	<span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> LeakyBucket <span class="keyword">struct</span> &#123;</span><br><span class="line">	rate       <span class="keyword">float64</span> <span class="comment">//固定每秒出水速率</span></span><br><span class="line">	capacity   <span class="keyword">float64</span> <span class="comment">//桶的容量</span></span><br><span class="line">	water      <span class="keyword">float64</span> <span class="comment">//桶中当前水量</span></span><br><span class="line">	lastLeakMs <span class="keyword">int64</span>   <span class="comment">//桶上次漏水时间戳 ms</span></span><br><span class="line"></span><br><span class="line">	lock sync.Mutex</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(l *LeakyBucket)</span> <span class="title">Allow</span><span class="params">()</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">	l.lock.Lock()</span><br><span class="line">	<span class="keyword">defer</span> l.lock.Unlock()</span><br><span class="line"></span><br><span class="line">	now := time.Now().UnixNano() / <span class="number">1e6</span></span><br><span class="line">	eclipse := <span class="keyword">float64</span>((now - l.lastLeakMs)) * l.rate / <span class="number">1000</span> <span class="comment">//先执行漏水</span></span><br><span class="line">	l.water = l.water - eclipse                              <span class="comment">//计算剩余水量</span></span><br><span class="line">	l.water = math.Max(<span class="number">0</span>, l.water)                           <span class="comment">//桶干了</span></span><br><span class="line">	l.lastLeakMs = now</span><br><span class="line">	<span class="keyword">if</span> (l.water + <span class="number">1</span>) &lt; l.capacity &#123;</span><br><span class="line">		<span class="comment">// 尝试加水,并且水还未满</span></span><br><span class="line">		l.water++</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="comment">// 水满，拒绝加水</span></span><br><span class="line">		<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(l *LeakyBucket)</span> <span class="title">Set</span><span class="params">(r, c <span class="keyword">float64</span>)</span></span> &#123;</span><br><span class="line">	l.rate = r</span><br><span class="line">	l.capacity = c</span><br><span class="line">	l.water = <span class="number">0</span></span><br><span class="line">	l.lastLeakMs = time.Now().UnixNano() / <span class="number">1e6</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">	<span class="keyword">var</span> lr LeakyBucket</span><br><span class="line">	lr.Set(<span class="number">3</span>, <span class="number">3</span>) <span class="comment">//每秒访问速率限制为3个请求，桶容量为3</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123;</span><br><span class="line">		wg.Add(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">		fmt.Println(<span class="string">"Create req"</span>, i, time.Now())</span><br><span class="line">		<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(i <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">			<span class="keyword">if</span> lr.Allow() &#123;</span><br><span class="line">				fmt.Println(<span class="string">"Respon req"</span>, i, time.Now())</span><br><span class="line">			&#125;</span><br><span class="line">			wg.Done()</span><br><span class="line">		&#125;(i)</span><br><span class="line"></span><br><span class="line">		time.Sleep(<span class="number">100</span> * time.Millisecond)</span><br><span class="line">	&#125;</span><br><span class="line">	wg.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里初始化桶容量为 3 个单位，桶内无水，1s 内创建了 10 个请求，随着请求往里面“滴水”，桶按照每秒3 个单位的速率流出水，处理时，部分请求被丢弃：</p>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Create req 0 2018<span class="string">-09</span><span class="string">-12</span> 20:13:47.742497 <span class="string">+0800</span> CST m=<span class="string">+0</span>.000314490</span><br><span class="line">Respon req 0 2018<span class="string">-09</span><span class="string">-12</span> 20:13:47.742634 <span class="string">+0800</span> CST m=<span class="string">+0</span>.000451781</span><br><span class="line">Create req 1 2018<span class="string">-09</span><span class="string">-12</span> 20:13:47.847836 <span class="string">+0800</span> CST m=<span class="string">+0</span>.105648928</span><br><span class="line">Respon req 1 2018<span class="string">-09</span><span class="string">-12</span> 20:13:47.847971 <span class="string">+0800</span> CST m=<span class="string">+0</span>.105785251</span><br><span class="line">Create req 2 2018<span class="string">-09</span><span class="string">-12</span> 20:13:47.948029 <span class="string">+0800</span> CST m=<span class="string">+0</span>.205839614</span><br><span class="line">Respon req 2 2018<span class="string">-09</span><span class="string">-12</span> 20:13:47.948093 <span class="string">+0800</span> CST m=<span class="string">+0</span>.205901092</span><br><span class="line">Create req 3 2018<span class="string">-09</span><span class="string">-12</span> 20:13:48.053237 <span class="string">+0800</span> CST m=<span class="string">+0</span>.311044273 x</span><br><span class="line">Create req 4 2018<span class="string">-09</span><span class="string">-12</span> 20:13:48.153545 <span class="string">+0800</span> CST m=<span class="string">+0</span>.411304284 </span><br><span class="line">Respon req 4 2018<span class="string">-09</span><span class="string">-12</span> 20:13:48.153564 <span class="string">+0800</span> CST m=<span class="string">+0</span>.411369118 </span><br><span class="line">Create req 5 2018<span class="string">-09</span><span class="string">-12</span> 20:13:48.254636 <span class="string">+0800</span> CST m=<span class="string">+0</span>.512437744 x</span><br><span class="line">Create req 6 2018<span class="string">-09</span><span class="string">-12</span> 20:13:48.355816 <span class="string">+0800</span> CST m=<span class="string">+0</span>.613609405 x</span><br><span class="line">Create req 7 2018<span class="string">-09</span><span class="string">-12</span> 20:13:48.456968 <span class="string">+0800</span> CST m=<span class="string">+0</span>.714763347</span><br><span class="line">Respon req 7 2018<span class="string">-09</span><span class="string">-12</span> 20:13:48.457017 <span class="string">+0800</span> CST m=<span class="string">+0</span>.714812815</span><br><span class="line">Create req 8 2018<span class="string">-09</span><span class="string">-12</span> 20:13:48.557203 <span class="string">+0800</span> CST m=<span class="string">+0</span>.814995585 x</span><br><span class="line">Create req 9 2018<span class="string">-09</span><span class="string">-12</span> 20:13:48.658431 <span class="string">+0800</span> CST m=<span class="string">+0</span>.916216265 x</span><br></pre></td></tr></table></figure>
+<h2 id="令牌桶"><a href="#令牌桶" class="headerlink" title="令牌桶"></a>令牌桶</h2><p>由于漏桶的出水速度是恒定的，如果瞬时爆发大流量的话，将有大部分请求被丢弃掉（溢出）。</p>
+<p>为了解决这个问题，令牌桶进行了算法改进，算法描述如下：</p>
+<ul>
+<li>有一个固定容量的桶，桶一开始是空的；</li>
+<li>以固定的速率 <code>r</code> 往桶里填充 <code>token</code>，直到达到桶的容量，多余的令牌将会被丢弃；</li>
+<li>每当一个请求过来时，就尝试从桶里移除一个令牌，如果没有令牌的话，请求无法通过。</li>
+</ul>
+<p><img src="http://media.hxz.ink/2018-09-12_Qw1zAh" alt=""></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"sync"</span></span><br><span class="line">	<span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> TokenBucket <span class="keyword">struct</span> &#123;</span><br><span class="line">	rate         <span class="keyword">int64</span> <span class="comment">//固定的token放入速率, r/s</span></span><br><span class="line">	capacity     <span class="keyword">int64</span> <span class="comment">//桶的容量</span></span><br><span class="line">	tokens       <span class="keyword">int64</span> <span class="comment">//桶中当前token数量</span></span><br><span class="line">	lastTokenSec <span class="keyword">int64</span> <span class="comment">//桶上次放token的时间戳 s</span></span><br><span class="line"></span><br><span class="line">	lock sync.Mutex</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(l *TokenBucket)</span> <span class="title">Allow</span><span class="params">()</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">	l.lock.Lock()</span><br><span class="line">	<span class="keyword">defer</span> l.lock.Unlock()</span><br><span class="line"></span><br><span class="line">	now := time.Now().Unix()</span><br><span class="line">	l.tokens = l.tokens + (now-l.lastTokenSec)*l.rate <span class="comment">// 先添加令牌</span></span><br><span class="line">	<span class="keyword">if</span> l.tokens &gt; l.capacity &#123;</span><br><span class="line">		l.tokens = l.capacity</span><br><span class="line">	&#125;</span><br><span class="line">	l.lastTokenSec = now</span><br><span class="line">	<span class="keyword">if</span> l.tokens &gt; <span class="number">0</span> &#123;</span><br><span class="line">		<span class="comment">// 还有令牌，领取令牌</span></span><br><span class="line">		l.tokens--</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="comment">// 没有令牌,则拒绝</span></span><br><span class="line">		<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(l *TokenBucket)</span> <span class="title">Set</span><span class="params">(r, c <span class="keyword">int64</span>)</span></span> &#123;</span><br><span class="line">	l.rate = r</span><br><span class="line">	l.capacity = c</span><br><span class="line">	l.tokens = <span class="number">0</span></span><br><span class="line">	l.lastTokenSec = time.Now().Unix()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line">	<span class="keyword">var</span> lr TokenBucket</span><br><span class="line">	lr.Set(<span class="number">3</span>, <span class="number">3</span>) <span class="comment">//每秒访问速率限制为3个请求，桶容量为3</span></span><br><span class="line"></span><br><span class="line">	time.Sleep(time.Second)</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123;</span><br><span class="line">		wg.Add(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">		fmt.Println(<span class="string">"Create req"</span>, i, time.Now())</span><br><span class="line">		<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(i <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">			<span class="keyword">if</span> lr.Allow() &#123;</span><br><span class="line">				fmt.Println(<span class="string">"Respon req"</span>, i, time.Now())</span><br><span class="line">			&#125;</span><br><span class="line">			wg.Done()</span><br><span class="line">		&#125;(i)</span><br><span class="line"></span><br><span class="line">		time.Sleep(<span class="number">200</span> * time.Millisecond)</span><br><span class="line">	&#125;</span><br><span class="line">	wg.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>类似的，这里初始化桶容量为 3 个单位，桶内无令牌，每 1s 产生 3 个令牌，主程序阻塞 1s 以便让桶中储备好 3 个令牌，而后每 1s 创建 5 个请求，获取访问令牌：</p>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">Create req 0 2018<span class="string">-09</span><span class="string">-12</span> 20:56:30.926267 <span class="string">+0800</span> CST m=<span class="string">+1</span>.002077637</span><br><span class="line">Respon req 0 2018<span class="string">-09</span><span class="string">-12</span> 20:56:30.926512 <span class="string">+0800</span> CST m=<span class="string">+1</span>.002322722</span><br><span class="line">Create req 1 2018<span class="string">-09</span><span class="string">-12</span> 20:56:31.127552 <span class="string">+0800</span> CST m=<span class="string">+1</span>.203356343</span><br><span class="line">Respon req 1 2018<span class="string">-09</span><span class="string">-12</span> 20:56:31.127643 <span class="string">+0800</span> CST m=<span class="string">+1</span>.203445860</span><br><span class="line">Create req 2 2018<span class="string">-09</span><span class="string">-12</span> 20:56:31.328242 <span class="string">+0800</span> CST m=<span class="string">+1</span>.404040714</span><br><span class="line">Respon req 2 2018<span class="string">-09</span><span class="string">-12</span> 20:56:31.328311 <span class="string">+0800</span> CST m=<span class="string">+1</span>.404110620</span><br><span class="line">Create req 3 2018<span class="string">-09</span><span class="string">-12</span> 20:56:31.529957 <span class="string">+0800</span> CST m=<span class="string">+1</span>.605746538</span><br><span class="line">Respon req 3 2018<span class="string">-09</span><span class="string">-12</span> 20:56:31.530069 <span class="string">+0800</span> CST m=<span class="string">+1</span>.605862175</span><br><span class="line">Create req 4 2018<span class="string">-09</span><span class="string">-12</span> 20:56:31.734506 <span class="string">+0800</span> CST m=<span class="string">+1</span>.810291673 x</span><br><span class="line">Create req 5 2018<span class="string">-09</span><span class="string">-12</span> 20:56:31.938578 <span class="string">+0800</span> CST m=<span class="string">+2</span>.014347368 x</span><br><span class="line">Create req 6 2018<span class="string">-09</span><span class="string">-12</span> 20:56:32.141289 <span class="string">+0800</span> CST m=<span class="string">+2</span>.217061017</span><br><span class="line">Respon req 6 2018<span class="string">-09</span><span class="string">-12</span> 20:56:32.141379 <span class="string">+0800</span> CST m=<span class="string">+2</span>.217153670</span><br><span class="line">Create req 7 2018<span class="string">-09</span><span class="string">-12</span> 20:56:32.341492 <span class="string">+0800</span> CST m=<span class="string">+2</span>.417260734</span><br><span class="line">Respon req 7 2018<span class="string">-09</span><span class="string">-12</span> 20:56:32.341571 <span class="string">+0800</span> CST m=<span class="string">+2</span>.417339558</span><br><span class="line">Create req 8 2018<span class="string">-09</span><span class="string">-12</span> 20:56:32.543497 <span class="string">+0800</span> CST m=<span class="string">+2</span>.619259765</span><br><span class="line">Respon req 8 2018<span class="string">-09</span><span class="string">-12</span> 20:56:32.543554 <span class="string">+0800</span> CST m=<span class="string">+2</span>.619317332</span><br><span class="line">Create req 9 2018<span class="string">-09</span><span class="string">-12</span> 20:56:32.746344 <span class="string">+0800</span> CST m=<span class="string">+2</span>.822096642 x</span><br></pre></td></tr></table></figure>
+<p>由于桶中可以储备令牌，这使得令牌桶算法支持一定程度突发的大流量并发访问，也就是说，假设桶内有 100 个 token 时，那么可以瞬间允许 100 个请求通过。这点，对用户比较友好，因而业内多半采用该算法。</p>
+<p>当然，不论是对于令牌桶拿不到令牌被拒绝，还是漏桶的水满了溢出，都是为了保证大部分流量的正常访问，而牺牲掉了少部分流量，这是合理的。</p>
+<h2 id="rate包"><a href="#rate包" class="headerlink" title="rate包"></a><code>rate</code>包</h2><p>Go 语言中的 <code>golang.org/x/time/rate</code> 包采用了令牌桶算法来实现速率限制，简单介绍下这个包的用法：</p>
+<p>这个包的核心部分在 <code>Limit</code> 类型和 <code>NewLimiter</code>接口：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Limit 定义了事件的最大频率。</span></span><br><span class="line"><span class="comment">// Limit 被表示为每秒事件的数量。</span></span><br><span class="line"><span class="comment">// 值为0的Limit不允许任何事件。</span></span><br><span class="line"><span class="keyword">type</span> Limit <span class="keyword">float64</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 返回一个新的Limiter实例，</span></span><br><span class="line"><span class="comment">// 事件发生率为r，并允许至多b个令牌爆发。</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewLimiter</span><span class="params">(r Limit, b <span class="keyword">int</span>)</span> *<span class="title">Limiter</span></span></span><br></pre></td></tr></table></figure>
+<p>在 <code>NewLimiter</code> 中，我们看到了两个熟悉的参数：<code>r</code> 和 <code>b</code>，b 是我们之前讨论过的桶的深度。</p>
+<p><code>rate</code> 包还定义了一个有用的帮助函数 <code>Every</code>，将 <code>time.Duration</code> 转换为<code>Limit</code>对象：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Every 将事件之间的最小时间间隔转换为 Limit。</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Every</span><span class="params">(interval time.Duration)</span></span> <span class="type">Limit</span></span><br></pre></td></tr></table></figure>
+<p>创建 <code>Limiter</code> 对象后，我们使用 <code>Wait</code>,<code>Allow</code>或 <code>Reserve</code> 方法来阻塞我们的请求，直到获得访问令牌：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// WaitN(ctx, 1)的简写。</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(lim *Limiter)</span></span> <span class="type">Wait</span>(ctx context.<span class="type">Context</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// WaitN 会发生阻塞直到 lim 允许的 n 个事件执行。</span></span><br><span class="line"><span class="comment">// 如果 n 超过了令牌池的容量大小则报错。</span></span><br><span class="line"><span class="comment">// 如果 ctx 被取消或等待时间超过了 ctx 的超时时间则报错。</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(lim *Limiter)</span></span> <span class="type">WaitN</span>(ctx context.<span class="type">Context</span>, n int) (err error)</span><br><span class="line"></span><br><span class="line"><span class="comment">// AllowN(time.Now(), 1)的简写。</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(lim *Limiter)</span></span> <span class="type">Allow</span>() bool</span><br><span class="line"></span><br><span class="line"><span class="comment">// AllowN 标识在时间 now 的时候，n 个事件是否可以同时发生，</span></span><br><span class="line"><span class="comment">// 意思就是 now 的时候是否可以从令牌池中取 n 个令牌，</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(lim *Limiter)</span></span> <span class="type">AllowN</span>(now time.<span class="type">Time</span>, n int) bool</span><br><span class="line"></span><br><span class="line"><span class="comment">// ReserveN(time.Now(), 1)的简写。</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(lim *Limiter)</span></span> <span class="type">Reserve</span>() *<span class="type">Reservation</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ReserveN 返回对象 Reservation ，标识调用者需要等多久才能等到 n 个事件发生，</span></span><br><span class="line"><span class="comment">// 意思就是 等多久令牌池中至少含有 n 个令牌。</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(lim *Limiter)</span></span> <span class="type">ReserveN</span>(now time.<span class="type">Time</span>, n int) *<span class="type">Reservation</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// eg:</span></span><br><span class="line">r := lim.<span class="type">ReserveN</span>(time.<span class="type">Now</span>(), <span class="number">1</span>)</span><br><span class="line"><span class="keyword">if</span> !r.<span class="type">OK</span>() &#123;</span><br><span class="line">	<span class="comment">// Not allowed to act! Did you remember to set lim.burst to be &gt; 0 ?</span></span><br><span class="line">	<span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line">time.<span class="type">Sleep</span>(r.<span class="type">Delay</span>())</span><br><span class="line"><span class="type">Act</span>()</span><br></pre></td></tr></table></figure>
+<ul>
+<li>如果要使用context 的截止日期或 cancel 方法的话，使用 WaitN。</li>
+<li>如果需要在事件超出频率的时候丢弃或跳过事件，就使用 Allow,否则使用 Reserve 或 Wait。</li>
+<li>如果事件发生的频率是可以由调用者控制的话，可以用 ReserveN 来控制事件发生的速度而不丢掉事件。</li>
+</ul>
+<p>使用 <code>rate</code> 包来实现一个简单的 <code>http</code> 限流中间件:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"net/http"</span></span><br><span class="line"></span><br><span class="line">	<span class="string">"golang.org/x/time/rate"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> limiter = rate.NewLimiter(<span class="number">2</span>, <span class="number">5</span>) </span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">limit</span><span class="params">(next http.Handler)</span> <span class="title">http</span>.<span class="title">Handler</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> http.HandlerFunc(<span class="function"><span class="keyword">func</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">		<span class="keyword">if</span> !limiter.Allow() &#123;</span><br><span class="line">			http.Error(w, http.StatusText(http.StatusTooManyRequests), http.StatusTooManyRequests)</span><br><span class="line">			<span class="keyword">return</span></span><br><span class="line">		&#125;</span><br><span class="line">		next.ServeHTTP(w, r)</span><br><span class="line">	&#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">okHandler</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">	w.Write([]<span class="keyword">byte</span>(<span class="string">"OK\n"</span>))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	mux := http.NewServeMux()</span><br><span class="line">	mux.HandleFunc(<span class="string">"/"</span>, okHandler)</span><br><span class="line">	http.ListenAndServe(<span class="string">":4000"</span>, limit(mux))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>测试：</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">hxzdeMac-mini:~ $ while true; do</span><br><span class="line">&gt; curl http://localhost:4000/</span><br><span class="line">&gt; sleep 0.1s</span><br><span class="line">&gt; done</span><br><span class="line"><span class="symbol">OK</span></span><br><span class="line"><span class="symbol">OK</span></span><br><span class="line"><span class="symbol">OK</span></span><br><span class="line"><span class="symbol">OK</span></span><br><span class="line"><span class="symbol">OK</span>                 //首次爆发5个请求</span><br><span class="line"><span class="symbol">OK</span></span><br><span class="line">Too Many Requests</span><br><span class="line">Too Many Requests</span><br><span class="line">Too Many Requests</span><br><span class="line"><span class="symbol">OK</span>                 //之后每秒2个请求</span><br><span class="line">Too Many Requests</span><br><span class="line">Too Many Requests</span><br><span class="line">Too Many Requests</span><br><span class="line"><span class="symbol">OK</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>稍微修改下这个程序还可以实现 <strong>用户粒度的限流</strong>，基于IP地址或API密钥等标识符为每个用户实施速率限制器。</p>
+<p>更健全的 http 限流中间件推荐看看这个库：<code>https://github.com/didip/tollbooth</code></p>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>上面的几种算法实现比较直白，只是算法语言的翻译，没有充分利用 Go 语言里面 goroutine、channel、定时器等特性，感兴趣的读者可以改造下。</p>
+<p>另外，《聊聊高并发系统之限流特技》的两篇文章，非常棒，详细介绍了各种限流算法以及应用级限流、分布式限流、接入层限流等非常实用的技术。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://mp.weixin.qq.com/s?__biz=MzIwODA4NjMwNA==&amp;mid=2652897781&amp;idx=1&amp;sn=ae121ce4c3c37b7158bc9f067fa024c0" target="_blank" rel="noopener">聊聊高并发系统之限流特技-1</a></li>
+<li><a href="https://mp.weixin.qq.com/s?__biz=MzIwODA4NjMwNA==&amp;mid=2652897782&amp;idx=1&amp;sn=cb46b23b2778f14ea3bcc419eb0392ce" target="_blank" rel="noopener">聊聊高并发系统之限流特技-2</a></li>
+<li><a href="https://gobyexample.com/rate-limiting" target="_blank" rel="noopener">rate-limit-example-in-go</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/images/qrcode-hxzqlh.jpg" alt="彦祖老师 wechat" style="width: 200px; max-width: 100%;"/>
+    <div></div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    彦祖老师
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://hxz.ink/2018/09/12/go-rate-limit/" title="限流 | Go 实现速率限制">http://hxz.ink/2018/09/12/go-rate-limit/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/07/22/cross-chain-3-IBC/" rel="next" title="跨链三部曲-3：IBC">
+                <i class="fa fa-chevron-left"></i> 跨链三部曲-3：IBC
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/24/three-year-itch/" rel="prev" title="三年之痒：习惯了被你养成一个「废物」">
+                三年之痒：习惯了被你养成一个「废物」 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">彦祖老师</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">114</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hxzqlh" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hxzqlh@gmail.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#计数器"><span class="nav-number">1.</span> <span class="nav-text">计数器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#方案一"><span class="nav-number">1.1.</span> <span class="nav-text">方案一</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方案二"><span class="nav-number">1.2.</span> <span class="nav-text">方案二</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#滑动窗口"><span class="nav-number">2.</span> <span class="nav-text">滑动窗口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#漏桶"><span class="nav-number">3.</span> <span class="nav-text">漏桶</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#令牌桶"><span class="nav-number">4.</span> <span class="nav-text">令牌桶</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rate包"><span class="nav-number">5.</span> <span class="nav-text">rate包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#最后"><span class="nav-number">6.</span> <span class="nav-text">最后</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">彦祖老师</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

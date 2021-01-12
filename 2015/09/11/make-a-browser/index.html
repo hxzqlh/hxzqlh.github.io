@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="hxzqlh, 黄学忠" />
+
+
+
+
+
+
+
+
+
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="手把手教你开发浏览器">
+<meta property="og:url" content="http://hxz.ink/2015/09/11/make-a-browser/index.html">
+<meta property="og:site_name" content="不忘痴心 砥砺前行">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://media.hxz.ink/2016-04-28_z6r3BA">
+<meta property="og:image" content="http://media.hxz.ink/2016-04-28_z6r3BA">
+<meta property="og:updated_time" content="2021-01-12T13:04:00.719Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="手把手教你开发浏览器">
+<meta name="twitter:image" content="http://media.hxz.ink/2016-04-28_z6r3BA">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hxz.ink/2015/09/11/make-a-browser/"/>
+
+
+
+
+
+  <title>手把手教你开发浏览器 | 不忘痴心 砥砺前行</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">不忘痴心 砥砺前行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hxz.ink/2015/09/11/make-a-browser/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="彦祖老师">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不忘痴心 砥砺前行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">手把手教你开发浏览器</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-09-11T14:09:21+08:00">
+                2015-09-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Coder/" itemprop="url" rel="index">
+                    <span itemprop="name">Coder</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="http://media.hxz.ink/2016-04-28_z6r3BA" alt=""></p>
+<a id="more"></a>
+<p>浏览器大家都不陌生，想要上网，就不得不用到浏览器。</p>
+<p>国内网民计算机上常见的网页浏览器有，QQ 浏览器、Internet Explorer、Firefox、Safari，Opera、Google Chrome、百度浏览器、搜狗浏览器、猎豹浏览器、360 浏览器、UC 浏览器、傲游浏览器、世界之窗浏览器等。</p>
+<p>Safari 浏览器、Opera 浏览器、谷歌浏览器用的都是 WebKit 引擎，其他浏览器引擎还有 Gecko（Mozilla Firefox 等使用）和 Trident（也称 MSHTML，IE 使用）</p>
+<h2 id="什么是-WebKit？"><a href="#什么是-WebKit？" class="headerlink" title="什么是 WebKit？"></a>什么是 WebKit？</h2><p>WebKit 是开源的 Web 浏览器引擎，它就像一个黑盒，我们把 HTML、CSS、JS 和其他一大堆东西丢进去，然后 WebKit 魔法般的以某种方式把一个看起来不错的网页展现给我们。</p>
+<p>WebKit 内核在手机上的应用也十分广泛，例如 Android、iPhone、Nokia’s 60 系列的手机浏览器所使用的内核引擎，都是基于 WebKit。</p>
+<h2 id="一个浏览器的诞生"><a href="#一个浏览器的诞生" class="headerlink" title="一个浏览器的诞生"></a>一个浏览器的诞生</h2><p>既然是开发浏览器，很重要的一点就是如何展示浏览器界面，WebView 控件是 OS X 平台上负责展现 Web 内容、实现和用户交互的核心控件，相比 IOS 平台上同类型的 UIWebView，它功能更强大（<code>先挖个坑，以后有机会再介绍手机浏览器上的 UIWebView</code>）。</p>
+<p>下面用一个 Demo（源码：<code>https://github.com/hxzqlh/WebView-Tutorial</code>）来说明一下 WebView 主要的 api 接口, 最终效果如下图所示：</p>
+<p><img src="http://media.hxz.ink/2016-04-28_z6r3BA" alt=""></p>
+<p>该 Demo 实现的是一个微型浏览器，包含了基本的前进、后退、刷新、回车访问 url，点击 Go 按钮访问 url，在标题栏显示网站的标题等功能。</p>
+<h2 id="实现过程："><a href="#实现过程：" class="headerlink" title="实现过程："></a>实现过程：</h2><p>一、首先要引入 <code>WebKit.framework</code>。</p>
+<pre><code>#import &lt;WebKit/WebKit.h&gt;
+</code></pre><p>二、从 Library 面板拉一个 WebView 控件，在程序创建该 WebView 控件的object，比如名字为 webView，并通过 IBOutlet 关联起来。通过发送下面的消息让 WebView 控件加载一个网页。</p>
+<pre><code>[[webView mainFrame] loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@&quot;www.google.com&quot;]];
+</code></pre><p>至此，WebView 控件就可以展示网页了。也就是说只要一行代码就可以简单实现一个浏览器展示页面的功能。</p>
+<p>三、跟踪 WebView 整个 loading 的过程，用到 <strong>WebFrameLoadDelegate</strong>。</p>
+<p>1.加载过程：</p>
+<p>在访问一个网页的的整个过程，包括开始加载、加载标题、加载结束等。webkit 都会发送相应的消息给 WebFrameLoadDelegate 。</p>
+<ul>
+<li><strong>webView:didStartProvisionalLoadForFrame:</strong>—开始加载，我们可以在这里获取加载的 url，并展示出来</li>
+<li><strong>webView:didReceiveTitle:forFrame:</strong>—获取到网页标题</li>
+<li><strong>webView:didFinishLoadForFrame:</strong>—加载完成，我们可以在这里设置前进后退按钮的状态</li>
+</ul>
+<p>2.错误的处理：</p>
+<p>加载的过程当中，有可能会发生错误。错误的消息也会发送给WebFrameLoadDelegate。我们可以在这两个函数里面对错误信息进行处理</p>
+<ul>
+<li><strong>webView:didFailProvisionalLoadWithError:forFrame:</strong> 这个错误发生在请求数据之前，最常见是发生在无效的URL或者网络断开无法发送请求</li>
+<li><strong>webView:didFailLoadWithError:forFrame:</strong> 这个错误发生在请求数据之后</li>
+</ul>
+<p>3.显示 loading 状态：</p>
+<p>网页只有在加载完成后，才会被展示出来。加载过程如果很久的话，会一片空白然后才出来网页。为了让我们的网页更加人性化，可以在<strong>webView:didStartProvisionalLoadForFrame:</strong> 加一些 loading 的状态</p>
+<p>四、处理加载策略，用到 <strong>WebPolicyDelegate</strong></p>
+<p>在 safari 浏览器，对于网页里面有 <code>target=_blank</code> 的链接，默认行为是点击后会弹出新的标签窗口。</p>
+<p>如果在我们的 webView 控件里面点击此类链接的时候，会触发该消息并会发送给 WebPolicyDelegate，然后我们可以在这里控制对该事件的处理。比如我们可以使用我们自定义的控件打开该url。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//网页里面target=_blank的链接，在这里捕获，并在这里控制对该事件的处理。</span></span><br><span class="line">- (<span class="keyword">void</span>)<span class="string">webView:</span>(WebView *)sender <span class="string">decidePolicyForNewWindowAction:</span>(NSDictionary *)actionInformation <span class="string">request:</span>(NSURLRequest *)request <span class="string">newFrameName:</span>(NSString *)frameName <span class="string">decisionListener:</span>(id &lt; WebPolicyDecisionListener &gt;)listener</span><br><span class="line">&#123;</span><br><span class="line">    NSURL *URL = [request URL];</span><br><span class="line">    <span class="comment">//在当前窗口打开</span></span><br><span class="line">    [[webView mainFrame] <span class="string">loadRequest:</span>[NSURLRequest <span class="string">requestWithURL:</span>URL]];</span><br><span class="line">    <span class="comment">//也可以用默认浏览器打开</span></span><br><span class="line">    <span class="comment">//[[NSWorkspace sharedWorkspace] openURL:URL];</span></span><br><span class="line">    <span class="comment">//或者也可以加代码，新建一个tab打开</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>前进，后退，刷新等按钮的事件，可以直接绑定到 WebView 控件的 goForward、goBack、reload 事件，而不需要我们自己写事件去处理。</p>
+<h2 id="主要代码："><a href="#主要代码：" class="headerlink" title="主要代码："></a>主要代码：</h2><figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  AppDelegate.h</span></span><br><span class="line"><span class="comment">//  WebView-Tutorial</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by hxz on 9/9/15.</span></span><br><span class="line"><span class="comment">//  Copyright (c) 2015 vobile. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;Cocoa/Cocoa.h&gt;</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;WebKit/WebKit.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">AppDelegate</span> : <span class="title">NSObject</span> &lt;<span class="title">NSApplicationDelegate</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">weak</span>) <span class="keyword">IBOutlet</span> <span class="built_in">NSWindow</span> *window;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">weak</span>) <span class="keyword">IBOutlet</span> WebView *webView;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">weak</span>) <span class="keyword">IBOutlet</span> <span class="built_in">NSButton</span> *btnGoBack;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">weak</span>) <span class="keyword">IBOutlet</span> <span class="built_in">NSButton</span> *btnGoForward;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">weak</span>) <span class="keyword">IBOutlet</span> <span class="built_in">NSButton</span> *btnReload;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">weak</span>) <span class="keyword">IBOutlet</span> <span class="built_in">NSTextField</span> *navBar;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">weak</span>) <span class="keyword">IBOutlet</span> <span class="built_in">NSButton</span> *btnGo;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">IBAction</span>)clickGo:(<span class="keyword">id</span>)sender;</span><br><span class="line">- (<span class="keyword">IBAction</span>)enterTogo:(<span class="keyword">id</span>)sender;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  AppDelegate.m</span></span><br><span class="line"><span class="comment">//  WebView-Tutorial</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by hxz on 9/9/15.</span></span><br><span class="line"><span class="comment">//  Copyright (c) 2015 vobile. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"AppDelegate.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">AppDelegate</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@synthesize</span> btnGoBack;</span><br><span class="line"><span class="keyword">@synthesize</span> btnGoForward;</span><br><span class="line"><span class="keyword">@synthesize</span> btnReload;</span><br><span class="line"><span class="keyword">@synthesize</span> navBar;</span><br><span class="line"><span class="keyword">@synthesize</span> webView;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)applicationDidFinishLaunching:(<span class="built_in">NSNotification</span> *)aNotification &#123;</span><br><span class="line">    <span class="comment">// Insert code here to initialize your application</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)applicationWillTerminate:(<span class="built_in">NSNotification</span> *)aNotification &#123;</span><br><span class="line">    <span class="comment">// Insert code here to tear down your application</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>) awakeFromNib &#123;</span><br><span class="line">    <span class="comment">//设置delegate</span></span><br><span class="line">    [webView setFrameLoadDelegate:<span class="keyword">self</span>];</span><br><span class="line">    [webView setPolicyDelegate:<span class="keyword">self</span>];</span><br><span class="line">    </span><br><span class="line">    [[webView preferences] setPlugInsEnabled:<span class="literal">YES</span>];</span><br><span class="line">    [navBar setStringValue:<span class="string">@"http://www.baidu.com"</span>];</span><br><span class="line">    [<span class="keyword">self</span> onGo];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//加载网站</span></span><br><span class="line">- (<span class="keyword">void</span>)onGo</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">NSString</span> *urlString =  [navBar stringValue];</span><br><span class="line">    <span class="keyword">if</span>(![urlString hasPrefix:<span class="string">@"http://"</span>])&#123;</span><br><span class="line">        urlString = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"http://%@"</span>,urlString];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"onGo url:%@"</span>,urlString);</span><br><span class="line">    [[webView mainFrame] loadRequest:[<span class="built_in">NSURLRequest</span> requestWithURL:[<span class="built_in">NSURL</span> URLWithString:urlString]]];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">IBAction</span>)clickGo:(<span class="keyword">id</span>)sender</span><br><span class="line">&#123;</span><br><span class="line">    [<span class="keyword">self</span> onGo];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//回车访问网站</span></span><br><span class="line">- (<span class="keyword">IBAction</span>)enterTogo:(<span class="keyword">id</span>)sender</span><br><span class="line">&#123;</span><br><span class="line">    [<span class="keyword">self</span> onGo];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//开始加载,可以在这里加loading</span></span><br><span class="line">- (<span class="keyword">void</span>)webView:(WebView *)sender didStartProvisionalLoadForFrame:(WebFrame *)frame</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">NSString</span> * currentURL = [webView mainFrameURL];</span><br><span class="line">    [navBar setStringValue:currentURL];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"webview url:%@"</span>,currentURL);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//收到标题，把标题展示到窗口上面</span></span><br><span class="line">- (<span class="keyword">void</span>)webView:(WebView *)sender didReceiveTitle:(<span class="built_in">NSString</span> *)title forFrame:(WebFrame *)frame</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"receive title:%@"</span>,title);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// Report feedback only for the main frame.</span></span><br><span class="line">    <span class="keyword">if</span> (frame == [sender mainFrame])&#123;</span><br><span class="line">        [[sender window] setTitle:title];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//加载完成</span></span><br><span class="line">- (<span class="keyword">void</span>)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">//设置前进，后退按钮的状态</span></span><br><span class="line">    <span class="keyword">if</span> (frame == [sender mainFrame])&#123;</span><br><span class="line">        [btnGoBack setEnabled:[sender canGoBack]];</span><br><span class="line">        [btnGoForward setEnabled:[sender canGoForward]];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//错误处理:如无效的URL或者网络断开无法发送请求</span></span><br><span class="line">- (<span class="keyword">void</span>)webView:(WebView *)sender didFailProvisionalLoadWithError:(<span class="built_in">NSError</span> *)error forFrame:(WebFrame *)frame</span><br><span class="line">&#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//错误处理</span></span><br><span class="line">- (<span class="keyword">void</span>)webView:(WebView *)sender didFailLoadWithError:(<span class="built_in">NSError</span> *)error forFrame:(WebFrame *)frame</span><br><span class="line">&#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//网页里面target=_blank的链接，在这里捕获，并在这里控制对该事件的处理。</span></span><br><span class="line">- (<span class="keyword">void</span>)webView:(WebView *)sender decidePolicyForNewWindowAction:(<span class="built_in">NSDictionary</span> *)actionInformation request:(<span class="built_in">NSURLRequest</span> *)request newFrameName:(<span class="built_in">NSString</span> *)frameName decisionListener:(<span class="keyword">id</span> &lt; WebPolicyDecisionListener &gt;)listener</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">NSURL</span> *URL = [request URL];</span><br><span class="line">    <span class="comment">//在当前窗口打开</span></span><br><span class="line">    [[webView mainFrame] loadRequest:[<span class="built_in">NSURLRequest</span> requestWithURL:URL]];</span><br><span class="line">    <span class="comment">//也可以用默认浏览器打开</span></span><br><span class="line">    <span class="comment">//[[NSWorkspace sharedWorkspace] openURL:URL];</span></span><br><span class="line">    <span class="comment">//或者也可以加代码，新建一个tab打开</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/images/qrcode-hxzqlh.jpg" alt="彦祖老师 wechat" style="width: 200px; max-width: 100%;"/>
+    <div></div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    彦祖老师
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://hxz.ink/2015/09/11/make-a-browser/" title="手把手教你开发浏览器">http://hxz.ink/2015/09/11/make-a-browser/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/09/12/you-and-me/" rel="prev" title="你中有我，我中有你。">
+                你中有我，我中有你。 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">彦祖老师</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">114</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hxzqlh" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hxzqlh@gmail.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是-WebKit？"><span class="nav-number">1.</span> <span class="nav-text">什么是 WebKit？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一个浏览器的诞生"><span class="nav-number">2.</span> <span class="nav-text">一个浏览器的诞生</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现过程："><span class="nav-number">3.</span> <span class="nav-text">实现过程：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#主要代码："><span class="nav-number">4.</span> <span class="nav-text">主要代码：</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">彦祖老师</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

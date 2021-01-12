@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="hxzqlh, 黄学忠" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="先来热身一下，下面的代码能编译吗？为什么？ 1234567891011package maintype stack []uintptrfunc callers() stack &amp;#123;    return make([]uintptr, 20)&amp;#125;func main() &amp;#123;    callers()&amp;#125; (此处省略一分钟冥思苦想状….)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go 迷思之 Named 和 Unnamed Types">
+<meta property="og:url" content="http://hxz.ink/2017/11/27/go-Named-and-Unnamed-Types/index.html">
+<meta property="og:site_name" content="不忘痴心 砥砺前行">
+<meta property="og:description" content="先来热身一下，下面的代码能编译吗？为什么？ 1234567891011package maintype stack []uintptrfunc callers() stack &amp;#123;    return make([]uintptr, 20)&amp;#125;func main() &amp;#123;    callers()&amp;#125; (此处省略一分钟冥思苦想状….)">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2021-01-12T13:04:00.709Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Go 迷思之 Named 和 Unnamed Types">
+<meta name="twitter:description" content="先来热身一下，下面的代码能编译吗？为什么？ 1234567891011package maintype stack []uintptrfunc callers() stack &amp;#123;    return make([]uintptr, 20)&amp;#125;func main() &amp;#123;    callers()&amp;#125; (此处省略一分钟冥思苦想状….)">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hxz.ink/2017/11/27/go-Named-and-Unnamed-Types/"/>
+
+
+
+
+
+  <title>Go 迷思之 Named 和 Unnamed Types | 不忘痴心 砥砺前行</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">不忘痴心 砥砺前行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hxz.ink/2017/11/27/go-Named-and-Unnamed-Types/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="彦祖老师">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不忘痴心 砥砺前行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Go 迷思之 Named 和 Unnamed Types</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-27T10:11:34+08:00">
+                2017-11-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Coder/" itemprop="url" rel="index">
+                    <span itemprop="name">Coder</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>先来热身一下，下面的代码能编译吗？为什么？</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> stack []<span class="keyword">uintptr</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">callers</span><span class="params">()</span> <span class="title">stack</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">make</span>([]<span class="keyword">uintptr</span>, <span class="number">20</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    callers()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>(此处省略一分钟冥思苦想状….)</p>
+<a id="more"></a>
+<p>好啦，不用多想了，当然可以编译。</p>
+<p>但是……这个问题重要吗？</p>
+<p>是的，很重要。</p>
+<p>如果上面这份代码不能编译，那意味着你无法写这样的代码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> stack []<span class="keyword">uintptr</span></span><br><span class="line"><span class="keyword">var</span> st stack = <span class="built_in">make</span>([]<span class="keyword">uintptr</span>, <span class="number">20</span>)</span><br></pre></td></tr></table></figure>
+<p>而我们知道，这样的代码几乎无处不在。</p>
+<p>再来，下面的代码能通过编译吗？</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> T <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">F</span><span class="params">(t T)</span></span> &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> q <span class="keyword">int</span></span><br><span class="line">    F(q)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>结合你平时写的代码，再思考一分钟……</p>
+<p>Ops, it couldn’t。</p>
+<p>稍微改动如下，它能通过编译吗？</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> T []<span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">F</span><span class="params">(t T)</span></span> &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> q []<span class="keyword">int</span></span><br><span class="line">    F(q)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Yes, it does.</p>
+<p>Surprised?! How could this happen？</p>
+<h2 id="Read-The-Fxxking-Manual"><a href="#Read-The-Fxxking-Manual" class="headerlink" title="Read The Fxxking Manual"></a>Read The Fxxking Manual</h2><p>言归正传，先来看下这又臭又长的 <a href="https://golang.org/ref/spec#Types" target="_blank" rel="noopener">《Go 规范手册》</a> 是怎么解释 Types 的。</p>
+<blockquote>
+<p>A type determines a set of values together with operations and methods specific to those values. A type may be denoted by a type name, if it has one, or specified using a type literal, which composes a type from existing types.</p>
+</blockquote>
+<blockquote>
+<p>Named instances of the boolean, numeric, and string types are predeclared. Other named types are introduced with type declarations. Composite types—array, struct, pointer, function, interface, slice, map, and channel types—may be constructed using type literals.</p>
+</blockquote>
+<blockquote>
+<p>Each type T has an underlying type: If T is one of the predeclared boolean, numeric, or string types, or a type literal, the corresponding underlying type is T itself. Otherwise, T’s underlying type is the underlying type of the type to which T refers in its type declaration.</p>
+</blockquote>
+<h2 id="Named-vs-Unnamed-Type"><a href="#Named-vs-Unnamed-Type" class="headerlink" title="Named vs Unnamed Type"></a>Named vs Unnamed Type</h2><p>Named types 有两类：</p>
+<ul>
+<li>内置的类型，比如 int, int64, float, string, bool，</li>
+<li>用 type 关键字声明的类型，比如 <code>type Foo string</code></li>
+</ul>
+<p>Unamed types：基于已有的 named types 声明出的组合类型，<code>uname types</code> 在 Go 里俯拾皆是。比如 <code>struct{}、[]string、interface{}、map[string]bool、[20]float32</code>……</p>
+<p>Named types 可以作为方法的接受者， unnamed type 却不能。比如：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">type Map map[string]string</span><br><span class="line"></span><br><span class="line">// ok</span><br><span class="line">func (m Map) <span class="keyword">Set</span>(<span class="keyword">key</span> <span class="keyword">string</span>, <span class="keyword">value</span> <span class="keyword">string</span>)&#123;</span><br><span class="line">	m[<span class="keyword">key</span>] = <span class="keyword">value</span> </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// invalid receiver <span class="keyword">type</span> <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span> (<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span> <span class="keyword">is</span> an unnamed <span class="keyword">type</span>)</span><br><span class="line">func (m <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>) <span class="keyword">Set</span>(<span class="keyword">key</span> <span class="keyword">string</span>, <span class="keyword">value</span> <span class="keyword">string</span>)&#123;</span><br><span class="line">	m[<span class="keyword">key</span>] = <span class="keyword">value</span> </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Underlying-Type"><a href="#Underlying-Type" class="headerlink" title="Underlying Type"></a>Underlying Type</h2><p>每种类型 T 都有一个底层类型：如果 T 是预声明类型或者 <strong>类型字面量</strong>(笔者注：type literal 翻译成类型字面量，地道不？) ，它的底层类型就是 T 本身，否则，T 的底层类型是其类型声明中引用的类型的底层类型。</p>
+<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> (</span><br><span class="line">	<span class="type">B1</span> string</span><br><span class="line">	<span class="type">B2</span> <span class="type">B1</span> </span><br><span class="line">	<span class="type">B3</span> []<span class="type">B1</span></span><br><span class="line">	<span class="type">B4</span> <span class="type">B3</span> </span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>string, B1 和 B2 的底层类型是 <code>string</code>. </p>
+<blockquote>
+<p>B2 引用了 B1，那么 B2 的底层类型其实是 B1 的底层类型，而 B1 又引用了 string，那么 B1 的底层类型其实是 string 的底层类型，很明显，string 的底层类型就是string，最终 B2 的底层类型是 string。</p>
+</blockquote>
+<p>[]B1, B3, 和 B4 的底层类型是 <code>[]B1</code>.</p>
+<blockquote>
+<p>[]B1 是类型字面量，因此它的底层类型就是它本身。</p>
+</blockquote>
+<p>所有基于相同 unnamed types 声明的变量的类型都相同，而对于 named types 变量而言，即使它们的底层类型相同，它们也是不同类型。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// x 是 unnamed types</span></span><br><span class="line"><span class="keyword">var</span> x <span class="keyword">struct</span>&#123; I <span class="keyword">int</span> &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// x 和 x2 类型相同</span></span><br><span class="line"><span class="keyword">var</span> x2 <span class="keyword">struct</span>&#123; I <span class="keyword">int</span> &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// y 是 named type</span></span><br><span class="line"><span class="keyword">type</span> Foo <span class="keyword">struct</span>&#123; I <span class="keyword">int</span> &#125;</span><br><span class="line"><span class="keyword">var</span> y Foo</span><br><span class="line"></span><br><span class="line"><span class="comment">// y 和 z 类型不同</span></span><br><span class="line"><span class="keyword">type</span> Bar <span class="keyword">struct</span>&#123; I <span class="keyword">int</span> &#125;</span><br><span class="line"><span class="keyword">var</span> z Bar</span><br></pre></td></tr></table></figure>
+<h2 id="Assignability"><a href="#Assignability" class="headerlink" title="Assignability"></a>Assignability</h2><p>不同类型的变量之间是不能赋值的。</p>
+<figure class="highlight nimrod"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="type">MyInt</span> <span class="built_in">int</span></span><br><span class="line"><span class="keyword">var</span> i <span class="built_in">int</span> = <span class="number">2</span></span><br><span class="line"><span class="keyword">var</span> i2 <span class="type">MyInt</span> = <span class="number">4</span></span><br><span class="line">i = i2  // error: cannot use i2 (<span class="keyword">type</span> <span class="type">MyInt</span>) <span class="keyword">as</span> <span class="keyword">type</span> <span class="built_in">int</span> <span class="keyword">in</span> assignment</span><br></pre></td></tr></table></figure>
+<p>你不能把 i2 赋值给 i，因为它们的类型不同，虽然它们的底层类型都是 int。</p>
+<p>对于那些拥有相同底层类型的变量而言，还需要理解另外一个重要概念：可赋值性。在 <a href="https://golang.org/ref/spec#Assignability" target="_blank" rel="noopener">Assignability</a> 的六大准则中，其中有一条：</p>
+<blockquote>
+<p>x’s type V and T have identical underlying types and at least one of V or T is not a defined type.</p>
+</blockquote>
+<p>也就是说底层类型相同的两个变量可以赋值的条件是：至少有一个不是 named type。</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">x</span>  = y   // ok</span><br><span class="line"><span class="attr">y</span>  = x   // ok</span><br><span class="line"><span class="attr">x</span>  = x2  // ok</span><br><span class="line"><span class="attr">y</span>  = z   // error: cannot use y (type Foo) as type Bar in assignment</span><br></pre></td></tr></table></figure>
+<p>现在，你知道“为什么开头那两份代码为什么一个能编译另一个不能”了吧。</p>
+<h2 id="Type-Embedding"><a href="#Type-Embedding" class="headerlink" title="Type Embedding"></a>Type Embedding</h2><p>当你使用 type 声明了一个新类型，它不会继承原有类型的方法集。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> User <span class="keyword">struct</span> &#123;</span><br><span class="line">    Name <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(u *User)</span> <span class="title">SetName</span><span class="params">(name <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    u.Name = name</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Employee User </span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    employee := <span class="built_in">new</span>(Employee)</span><br><span class="line">    employee.SetName(<span class="string">"Jack"</span>). </span><br><span class="line">    <span class="comment">// error employee.SetName undefined (type *Employee has no field or method SetName)</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>作为一个小技巧，你可以将原有类型作为一个匿名字段内嵌到 struct 当中来继承它的方法，这样的 struct 在 Go 代码中太常见不过了。</p>
+<p>比如：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> User <span class="keyword">struct</span> &#123;</span><br><span class="line">    Name <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(u *User)</span> <span class="title">SetName</span><span class="params">(name <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    u.Name = name</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Employee <span class="keyword">struct</span> &#123;</span><br><span class="line">    User       <span class="comment">// annonymous field</span></span><br><span class="line">    Title      <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    employee := <span class="built_in">new</span>(Employee)</span><br><span class="line">    employee.SetName(<span class="string">"Jack"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Last-But-Not-Least"><a href="#Last-But-Not-Least" class="headerlink" title="Last But Not Least"></a>Last But Not Least</h2><p>Go 里面关于类型 Types 的一些规定有时候让初学者丈二和尚摸不着头脑，而 Types 几乎是任何一门编程语言的基石，如果你不能理解 Go 里面最基本的概念之一：Types，相信我，你将不可能在这门语言上走远。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/images/qrcode-hxzqlh.jpg" alt="彦祖老师 wechat" style="width: 200px; max-width: 100%;"/>
+    <div></div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    彦祖老师
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://hxz.ink/2017/11/27/go-Named-and-Unnamed-Types/" title="Go 迷思之 Named 和 Unnamed Types">http://hxz.ink/2017/11/27/go-Named-and-Unnamed-Types/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/10/29/go-range-quiz/" rel="next" title="Go 语言从入门到放弃之 range">
+                <i class="fa fa-chevron-left"></i> Go 语言从入门到放弃之 range
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/12/16/Huang-Zexuan-6/" rel="prev" title="「黄泽瑄的成长记」第六季来啦">
+                「黄泽瑄的成长记」第六季来啦 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">彦祖老师</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">114</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hxzqlh" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hxzqlh@gmail.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Read-The-Fxxking-Manual"><span class="nav-number">1.</span> <span class="nav-text">Read The Fxxking Manual</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Named-vs-Unnamed-Type"><span class="nav-number">2.</span> <span class="nav-text">Named vs Unnamed Type</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Underlying-Type"><span class="nav-number">3.</span> <span class="nav-text">Underlying Type</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Assignability"><span class="nav-number">4.</span> <span class="nav-text">Assignability</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Type-Embedding"><span class="nav-number">5.</span> <span class="nav-text">Type Embedding</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Last-But-Not-Least"><span class="nav-number">6.</span> <span class="nav-text">Last But Not Least</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">彦祖老师</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="hxzqlh, 黄学忠" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Xtrabackup 是由 percona 公司 开源 的免费数据库 热备份 软件，它能对 InnoDB数据库和 XtraDB存储引擎的数据库进行 非阻塞 地备份。 众所周知，mysqldump 备份方式是采用的逻辑备份，其最大的缺陷是备份和恢复速度较慢，如果数据库大于50G，mysqldump备份就不太适合。 相比而言，Xtrabackup 的优势体现在：  备份、还原速度快，物理备份可靠 备份">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mysql 热备份迁移">
+<meta property="og:url" content="http://hxz.ink/2018/05/08/mysql-back-migration/index.html">
+<meta property="og:site_name" content="不忘痴心 砥砺前行">
+<meta property="og:description" content="Xtrabackup 是由 percona 公司 开源 的免费数据库 热备份 软件，它能对 InnoDB数据库和 XtraDB存储引擎的数据库进行 非阻塞 地备份。 众所周知，mysqldump 备份方式是采用的逻辑备份，其最大的缺陷是备份和恢复速度较慢，如果数据库大于50G，mysqldump备份就不太适合。 相比而言，Xtrabackup 的优势体现在：  备份、还原速度快，物理备份可靠 备份">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2021-01-12T13:04:00.720Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="mysql 热备份迁移">
+<meta name="twitter:description" content="Xtrabackup 是由 percona 公司 开源 的免费数据库 热备份 软件，它能对 InnoDB数据库和 XtraDB存储引擎的数据库进行 非阻塞 地备份。 众所周知，mysqldump 备份方式是采用的逻辑备份，其最大的缺陷是备份和恢复速度较慢，如果数据库大于50G，mysqldump备份就不太适合。 相比而言，Xtrabackup 的优势体现在：  备份、还原速度快，物理备份可靠 备份">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hxz.ink/2018/05/08/mysql-back-migration/"/>
+
+
+
+
+
+  <title>mysql 热备份迁移 | 不忘痴心 砥砺前行</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">不忘痴心 砥砺前行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hxz.ink/2018/05/08/mysql-back-migration/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="彦祖老师">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不忘痴心 砥砺前行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">mysql 热备份迁移</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-08T14:27:12+08:00">
+                2018-05-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Tool/" itemprop="url" rel="index">
+                    <span itemprop="name">Tool</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><code>Xtrabackup</code> 是由 <code>percona</code> 公司 <strong>开源</strong> 的免费数据库 <strong>热备份</strong> 软件，它能对 <code>InnoDB</code>数据库和 <code>XtraDB</code>存储引擎的数据库进行 <strong>非阻塞</strong> 地备份。</p>
+<p>众所周知，<code>mysqldump</code> 备份方式是采用的逻辑备份，其最大的缺陷是备份和恢复速度较慢，如果数据库大于<code>50G</code>，<code>mysqldump</code>备份就不太适合。</p>
+<p>相比而言，<code>Xtrabackup</code> 的优势体现在：</p>
+<ul>
+<li>备份、还原速度快，物理备份可靠</li>
+<li>备份过程不会打断正在执行的事务（无需锁表）</li>
+<li>能够基于压缩等功能节约磁盘空间和流量</li>
+<li>支持流式处理，将备份传输到另外一台机器上</li>
+<li>自动备份校验</li>
+</ul>
+<a id="more"></a>
+<p><code>Xtrabackup</code> 安装完成后有 4 个可执行文件:</p>
+<ul>
+<li><code>xtrabackup</code>: 是专门用来备份<code>InnoD</code>B表的，和<code>mysql</code>服务器没有交互；</li>
+<li><code>innobackupex</code>: 是一个封装xtrabackup的<code>Perl</code>脚本，支持同时备份<code>innodb</code>和<code>myisam</code>，但在对<code>myisam</code>备份时需要加一个全局的读锁。</li>
+<li><code>xbcrypt</code>: 加密解密备份工具</li>
+<li><code>xbstream</code>: 流打包传输工具</li>
+</ul>
+<h2 id="全备恢复"><a href="#全备恢复" class="headerlink" title="全备恢复"></a>全备恢复</h2><p>首先，准备一个数据库<code>全备份</code>：</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">root@zhaobi:~# innobackupex --user=*** --password=*** ./mysql.back</span><br><span class="line">encryption: <span class="keyword">using</span> gcrypt <span class="number">1.6</span><span class="number">.5</span></span><br><span class="line">...</span><br><span class="line"><span class="number">180508</span> <span class="number">14</span>:<span class="number">32</span>:<span class="number">32</span> Connecting to MySQL server host: localhost, user: root, password: <span class="keyword">set</span>, port: not <span class="comment">set, socket: not set</span></span><br><span class="line">Using <span class="comment">server version 5.7.20-0ubuntu0.16.04.1</span></span><br><span class="line">...</span><br><span class="line">180508 14:32:33 &gt;&gt; log <span class="comment">scanned up to (146069144514)</span></span><br><span class="line">xtrabackup: Generating <span class="comment">a list of tablespaces</span></span><br><span class="line">InnoDB: Allocated <span class="comment">tablespace ID 455 for parse</span>/mtf_LTC_USDT, old maximum was <span class="number">0</span></span><br><span class="line"><span class="number">180508</span> <span class="number">14</span>:<span class="number">32</span>:<span class="number">33</span> [<span class="number">01</span>] Copying ./<span class="comment">ibdata1 to</span> /root/<span class="comment">mysql.back</span>/<span class="number">2018</span><span class="number">-05</span><span class="number">-08</span>_14<span class="number">-32</span><span class="number">-32</span>/<span class="comment">ibdata1</span></span><br><span class="line">...</span><br><span class="line">180508 14:38:27 [01]        ...done</span><br><span class="line">180508 14:38:27 Finished <span class="comment">backing up non-InnoDB tables and files</span></span><br><span class="line">180508 14:38:27 Executing <span class="comment">FLUSH NO_WRITE_TO_BINLOG ENGINE LOGS...</span></span><br><span class="line">xtrabackup: The <span class="comment">latest check point (for incremental):</span> <span class="comment">'146066625808'</span></span><br><span class="line">xtrabackup: Stopping <span class="comment">log copying thread.</span></span><br><span class="line">.180508 14:38:27 &gt;&gt; log <span class="comment">scanned up to (146071684987)</span></span><br><span class="line"></span><br><span class="line">180508 14:38:27 Executing <span class="comment">UNLOCK TABLES</span></span><br><span class="line">180508 14:38:27 All <span class="comment">tables unlocked</span></span><br><span class="line">180508 14:38:27 [00] Copying <span class="comment">ib_buffer_pool to</span> /root/<span class="comment">mysql.back</span>/<span class="number">2018</span><span class="number">-05</span><span class="number">-08</span>_14<span class="number">-32</span><span class="number">-32</span>/<span class="comment">ib_buffer_pool</span></span><br><span class="line">180508 14:38:27 [00]        ...done</span><br><span class="line">180508 14:38:27 Backup <span class="comment">created in directory</span> <span class="comment">'/root/mysql.back/2018-05-08_14-32-32/'</span></span><br><span class="line">180508 14:38:27 [00] Writing /root/<span class="comment">mysql.back</span>/<span class="number">2018</span><span class="number">-05</span><span class="number">-08</span>_14<span class="number">-32</span><span class="number">-32</span>/<span class="comment">backup-my.cnf</span></span><br><span class="line">180508 14:38:27 [00]        ...done</span><br><span class="line">180508 14:38:27 [00] Writing /root/<span class="comment">mysql.back</span>/<span class="number">2018</span><span class="number">-05</span><span class="number">-08</span>_14<span class="number">-32</span><span class="number">-32</span>/<span class="comment">xtrabackup_info</span></span><br><span class="line">180508 14:38:27 [00]        ...done</span><br><span class="line">xtrabackup: Transaction <span class="comment">log of lsn (146061868327) to (146071684987) was copied.</span></span><br><span class="line">180508 14:38:27 completed <span class="comment">OK!</span></span><br></pre></td></tr></table></figure>
+<p><code>Xtrabackup</code> 备份原理：</p>
+<blockquote>
+<p>备份开始时首先会开启一个后台检测进程，实时检测 <code>mysql redo log</code>的变化，一旦发现有新的日志写入，立刻将日志记入后台日志文件 <code>xtrabackup_log</code>中，之后复制 <code>InnoDB</code> 的数据文件以及系统表空间文件<code>ibdatax</code>，复制结束后，将执行 <code>flush tables with readlock</code> ,然后复制 <code>.frm .MYI .MYD</code> 等文件，最后执行 <code>unlock tables</code>。</p>
+</blockquote>
+<p>输出 <code>completed OK!</code> 信息代表备份成功。</p>
+<p>看一下备份后的文件列表：</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">root@zhaobi:~<span class="comment"># ls -l mysql.back/2018-05-08_14-32-32/</span></span><br><span class="line">total 349608</span><br><span class="line">-rw-r-----<span class="number"> 1 </span>root root      <span class="number"> 487 </span>May <span class="number"> 8 </span>14:38 backup-my.cnf</span><br><span class="line">-rw-r-----<span class="number"> 1 </span>root root     <span class="number"> 2362 </span>May <span class="number"> 8 </span>14:38 ib_buffer_pool</span><br><span class="line">-rw-r-----<span class="number"> 1 </span>root root<span class="number"> 348127232 </span>May <span class="number"> 8 </span>14:32 ibdata1</span><br><span class="line">drwxr-x---<span class="number"> 2 </span>root root     <span class="number"> 4096 </span>May <span class="number"> 8 </span>14:38 mysql</span><br><span class="line">drwxr-x---<span class="number"> 2 </span>root root     <span class="number"> 4096 </span>May <span class="number"> 8 </span>14:38 parse</span><br><span class="line">drwxr-x---<span class="number"> 2 </span>root root     <span class="number"> 4096 </span>May <span class="number"> 8 </span>14:38 performance_schema</span><br><span class="line">drwxr-x---<span class="number"> 2 </span>root root    <span class="number"> 12288 </span>May <span class="number"> 8 </span>14:38 sys</span><br><span class="line">-rw-r-----<span class="number"> 1 </span>root root      <span class="number"> 123 </span>May <span class="number"> 8 </span>14:38 xtrabackup_checkpoints</span><br><span class="line">-rw-r-----<span class="number"> 1 </span>root root      <span class="number"> 445 </span>May <span class="number"> 8 </span>14:38 xtrabackup_info</span><br><span class="line">-rw-r-----<span class="number"> 1 </span>root root  <span class="number"> 9819136 </span>May <span class="number"> 8 </span>14:38 xtrabackup_logfile</span><br></pre></td></tr></table></figure>
+<p>然后，将备份好的数据拷贝到目标主机，准备进行恢复：</p>
+<p>先关掉目标主机的 <code>mysql</code> 服务，准备一个全备份：</p>
+<figure class="highlight sqf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ innobackupex --<span class="built_in">apply</span>-<span class="built_in">log</span> /path/<span class="keyword">to</span>/BACKUP-DIR</span><br></pre></td></tr></table></figure>
+<p>准备完成后，检查下最后输出到信息：</p>
+<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">150806 </span><span class="number">01</span>:<span class="number">01</span>:<span class="number">57</span>  InnoDB: Shutdown completed; <span class="keyword">log</span> sequence number <span class="number">1609228</span></span><br><span class="line"><span class="symbol">150806 </span><span class="number">01</span>:<span class="number">01</span>:<span class="number">57</span>  innobackupex: completed OK!</span><br></pre></td></tr></table></figure>
+<p>接着进行全备恢复：</p>
+<figure class="highlight dos"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ innobackupex --<span class="built_in">copy</span>-back /<span class="built_in">path</span>/to/BACKUP-<span class="built_in">DIR</span></span><br></pre></td></tr></table></figure>
+<h2 id="增量备份"><a href="#增量备份" class="headerlink" title="增量备份"></a>增量备份</h2><p>优点：</p>
+<ul>
+<li>数据库太大没有足够的空间全量备份，增量备份能有效节省空间，并且效率高；</li>
+<li>支持热备份，备份过程不锁表（针对<code>InnoDB</code>而言），不阻塞数据库的读写；</li>
+<li>每日备份只产生少量数据，也可采用远程备份，节省本地空间；</li>
+<li>备份恢复基于文件操作，降低直接对数据库操作风险；</li>
+</ul>
+<p>原理：</p>
+<ol>
+<li>首先完成一个全备份，并记录下此时检查点<code>LSN</code>；</li>
+<li>然后增量备份时，比较表空间中每个页的<code>LSN</code>是否大于上次备份的<code>LSN</code>，若是则备份该页并记录当前检查点的<code>LSN</code>。</li>
+</ol>
+<p>增量备份需要用到两个参数：</p>
+<ul>
+<li><code>--incremental</code> 告诉 <code>innobackupex</code> 进行增量备份</li>
+<li><code>--incremental-basedir</code> 指定增量备份的起始点，这里是之前备份过的某个目录</li>
+</ul>
+<p>在全量备份基础上进行第一次增量备份：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">root@zhaobi:~# innobackupex <span class="attribute">--user</span>=** <span class="attribute">--password</span>=*** --incremental <span class="attribute">--incremental-basedir</span>=./mysql.back/2018-05-08_14-32-32/ ./mysql.inc1</span><br><span class="line"><span class="built_in">..</span>.</span><br><span class="line">180508 15:29:32 [00]        <span class="built_in">..</span>.done</span><br><span class="line">xtrabackup: Transaction log of lsn (146084103197) <span class="keyword">to</span> (146090143186) was copied.</span><br><span class="line">180508 15:29:32 completed OK!</span><br></pre></td></tr></table></figure>
+<p>对比两次备份的 <code>xtrabackup_checkpoints</code> 记录可以看到：</p>
+<ul>
+<li><code>backup_type</code> 分别为 <code>full-backuped</code>，<code>incremental</code></li>
+<li>增量备份的 <code>from_lsn</code> 对应于上次全量备份的 <code>to_lsn</code></li>
+</ul>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">root@zhaobi:~# cat mysql.back/2018-05-08_14-32-32/xtrabackup_checkpoints</span></span><br><span class="line">backup_type = full-backuped</span><br><span class="line">from_lsn = 0</span><br><span class="line">to_lsn = 146066625808</span><br><span class="line">last_lsn = 146071684987</span><br><span class="line">compact = 0</span><br><span class="line">recover_binlog_info = 0</span><br><span class="line"><span class="section">root@zhaobi:~# cat mysql.inc1/2018-05-08_15-24-35/xtrabackup_checkpoints</span></span><br><span class="line">backup_type = incremental</span><br><span class="line">from_lsn = 146066625808</span><br><span class="line">to_lsn = 146090143177</span><br><span class="line">last_lsn = 146090143186</span><br><span class="line">compact = 0</span><br><span class="line">recover_binlog_info = 0</span><br></pre></td></tr></table></figure>
+<p>在第一次增量备份基础上，进行第二次增量备份：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">root@zhaobi:~# innobackupex <span class="attribute">--user</span>=** <span class="attribute">--password</span>=*** --incremental <span class="attribute">--incremental-basedir</span>=./mysql.inc1/2018-05-08_15-24-35/ ./mysql.inc2</span><br><span class="line"><span class="built_in">..</span>.</span><br><span class="line">180508 15:41:50 [00]        <span class="built_in">..</span>.done</span><br><span class="line">xtrabackup: Transaction log of lsn (146090145039) <span class="keyword">to</span> (146094909487) was copied.</span><br><span class="line">180508 15:41:50 completed OK!</span><br></pre></td></tr></table></figure>
+<p>同理，第二次增量备份的 <code>from_lsn</code> 对应于第一次增量备份的 <code>to_lsn</code>：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">root@zhaobi:~# cat mysql.inc2/2018-05-08_15-36-58/xtrabackup_checkpoints</span></span><br><span class="line">backup_type = incremental</span><br><span class="line">from_lsn = 146090143177</span><br><span class="line">to_lsn = 146090145039</span><br><span class="line">last_lsn = 146094909487</span><br><span class="line">compact = 0</span><br><span class="line">recover_binlog_info = 0</span><br></pre></td></tr></table></figure>
+<h2 id="增量恢复"><a href="#增量恢复" class="headerlink" title="增量恢复"></a>增量恢复</h2><p>首先，准备一个全备份：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">innobackupex --apply-<span class="built_in">log</span> --<span class="keyword">redo</span>-<span class="keyword">only</span> BASE-DIR</span><br></pre></td></tr></table></figure>
+<p>然后，依次将增量备份 <code>append</code> 到全备份，特别需要注意的是：最后一个增量备份不用 <code>--redo-only</code></p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">innobackupex --apply-<span class="keyword">log</span> --redo-only BASE-<span class="keyword">DIR</span> --incremental-<span class="keyword">dir</span>=INCREMENTAL-<span class="keyword">DIR</span>-1</span><br><span class="line">innobackupex --apply-<span class="keyword">log</span> BASE-<span class="keyword">DIR</span> --incremental-<span class="keyword">dir</span>=INCREMENTAL-<span class="keyword">DIR</span>-2</span><br></pre></td></tr></table></figure>
+<p>确保每次操作最后都打出了日志信息： <code>completed OK!</code></p>
+<p>现在，所有的备份都整合到了 <code>BASE-DIR</code>，对合在一起的完全备份进行一次 <code>apply</code> 操作，回滚未提交的数据:</p>
+<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">innobackupex --apply-<span class="built_in">log</span> <span class="built_in">BASE</span>-DIR</span><br></pre></td></tr></table></figure>
+<p>最后，恢复所有备份：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">innobackupex --<span class="keyword">copy</span><span class="bash">-back BASE-DIR</span></span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这篇文章简单记录并总结了使用 <code>Xtrabackup</code> 对 <code>mysql</code> 数据库进行 <code>全量/增量</code>备份并恢复的过程，希望能对初学者有所帮助。</p>
+<p>很抱歉，就做了点微小的贡献。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/images/qrcode-hxzqlh.jpg" alt="彦祖老师 wechat" style="width: 200px; max-width: 100%;"/>
+    <div></div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    彦祖老师
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://hxz.ink/2018/05/08/mysql-back-migration/" title="mysql 热备份迁移">http://hxz.ink/2018/05/08/mysql-back-migration/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/07/cross-chain-0-preface/" rel="next" title="跨链三部曲-0：开篇">
+                <i class="fa fa-chevron-left"></i> 跨链三部曲-0：开篇
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/22/cross-chain-1-Basecoin/" rel="prev" title="跨链三部曲-1：Basecoin">
+                跨链三部曲-1：Basecoin <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">彦祖老师</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">114</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hxzqlh" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hxzqlh@gmail.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#全备恢复"><span class="nav-number">1.</span> <span class="nav-text">全备恢复</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#增量备份"><span class="nav-number">2.</span> <span class="nav-text">增量备份</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#增量恢复"><span class="nav-number">3.</span> <span class="nav-text">增量恢复</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">彦祖老师</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

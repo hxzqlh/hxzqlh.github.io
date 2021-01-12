@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="hxzqlh, 黄学忠" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="试想一下，你作为一枚区块链技术开发者，受邀到某个区块链峰会做演讲，你总得做个 PPT 吧，做 PPT， mac 上自带了 keynote、pages 等软件还好，windows 系统的话你还得装个 powerpoint 吧。 到了会上做演讲，要么你自带笔记本，要么会场的电脑也得装了 PPT 播放软件，你才能把 PPT 投射出来。 嗯，情况就是这样。 我总觉得还是有点不方便。 而且，我想，我肯定不是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Gopher 做 PPT 的正确姿势">
+<meta property="og:url" content="http://hxz.ink/2018/03/28/Gopher-slide/index.html">
+<meta property="og:site_name" content="不忘痴心 砥砺前行">
+<meta property="og:description" content="试想一下，你作为一枚区块链技术开发者，受邀到某个区块链峰会做演讲，你总得做个 PPT 吧，做 PPT， mac 上自带了 keynote、pages 等软件还好，windows 系统的话你还得装个 powerpoint 吧。 到了会上做演讲，要么你自带笔记本，要么会场的电脑也得装了 PPT 播放软件，你才能把 PPT 投射出来。 嗯，情况就是这样。 我总觉得还是有点不方便。 而且，我想，我肯定不是">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://media.hxz.ink/2018-03-27_W3PWKH">
+<meta property="og:image" content="http://media.hxz.ink/2018-03-27__p0KjY">
+<meta property="og:updated_time" content="2021-01-12T13:04:00.672Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Gopher 做 PPT 的正确姿势">
+<meta name="twitter:description" content="试想一下，你作为一枚区块链技术开发者，受邀到某个区块链峰会做演讲，你总得做个 PPT 吧，做 PPT， mac 上自带了 keynote、pages 等软件还好，windows 系统的话你还得装个 powerpoint 吧。 到了会上做演讲，要么你自带笔记本，要么会场的电脑也得装了 PPT 播放软件，你才能把 PPT 投射出来。 嗯，情况就是这样。 我总觉得还是有点不方便。 而且，我想，我肯定不是">
+<meta name="twitter:image" content="http://media.hxz.ink/2018-03-27_W3PWKH">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hxz.ink/2018/03/28/Gopher-slide/"/>
+
+
+
+
+
+  <title>Gopher 做 PPT 的正确姿势 | 不忘痴心 砥砺前行</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">不忘痴心 砥砺前行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hxz.ink/2018/03/28/Gopher-slide/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="彦祖老师">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不忘痴心 砥砺前行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Gopher 做 PPT 的正确姿势</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-28T10:47:24+08:00">
+                2018-03-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Tool/" itemprop="url" rel="index">
+                    <span itemprop="name">Tool</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>试想一下，你作为一枚区块链技术开发者，受邀到某个区块链峰会做演讲，你总得做个 PPT 吧，做 PPT， mac 上自带了 keynote、pages 等软件还好，windows 系统的话你还得装个 powerpoint 吧。</p>
+<p>到了会上做演讲，要么你自带笔记本，要么会场的电脑也得装了 PPT 播放软件，你才能把 PPT 投射出来。</p>
+<p>嗯，情况就是这样。</p>
+<p>我总觉得还是有点不方便。</p>
+<p>而且，我想，我肯定不是第一个有这种感觉的人。</p>
+<a id="more"></a>
+<h2 id="Origin"><a href="#Origin" class="headerlink" title="Origin"></a>Origin</h2><p>最近，我们区块链底层开发组来了好几个实习生，我要给这拨刚毕业的同学们做个 go 语言基础培训，那肯定要做个类似于课件啊、讲义之类的 PPT 吧。</p>
+<p>刚开始，我打开了 mac 的 keynote 捣鼓会，其实就跟 windows 上搞 ppt 差不多的操作……</p>
+<p>但是，我烦了。</p>
+<p>我们这类技术培训，大部分内容跟代码相关，在 PPT 上贴一大段代码毕竟画面不会太好看，“PPT+IDE”组合又得不停地在两种窗口间切换来切换去，并且还得另外准备一份演示用的代码集。</p>
+<p>懒人开始思考。</p>
+<p>我想起刚学 go 语言那会在 YouTube 上看了不少 Google 大牛的 go 语言布道视频，他们演讲时好像是播放一种叫 slide 的文件，直接呈现在网页里，还可以在里面直接运行代码。</p>
+<p>这正是我想要的，我花点时间研究了下其中的内幕。</p>
+<h2 id="Experient"><a href="#Experient" class="headerlink" title="Experient"></a>Experient</h2><p>slide 是随着 Go 诞生而出现的一种 <code>present</code> 格式，Go 语言研发组那帮老爷们十分喜欢以这种格式分享 Go语言技术心得和想法，几乎所有技术会议的幻灯片均是以 <code>.slide</code> 形式提供的，给人一种“真会装逼”的感觉。</p>
+<p>present 是一种文本标记语言，使用普通文本编辑器就能编写（还装什么 powerpoint、keynote啊），只要遵循它的语法，就可以使普通文本内容呈现出特定的格式。说白了，就跟我现在用 markdown 语法写这篇文章差不多，它让作者把精力花在内容上，而无需过多关心格式、排版等问题。</p>
+<p>简单体验下 present 语法：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">Hello</span> <span class="selector-tag">Slide</span></span><br><span class="line"></span><br><span class="line"><span class="selector-tag">Huang_Xuezhong</span></span><br><span class="line">33<span class="selector-class">.cn</span></span><br><span class="line"><span class="selector-tag">hxz</span>@<span class="keyword">disanbo</span>.<span class="keyword">com</span></span><br><span class="line">http://hxzqlh.com</span><br><span class="line"></span><br><span class="line">* <span class="selector-tag">Hello</span> <span class="selector-tag">world</span></span><br></pre></td></tr></table></figure>
+<p>就这么几行文本，就可以渲染出下面 3 张 slide。</p>
+<p><img src="http://media.hxz.ink/2018-03-27_W3PWKH" alt=""></p>
+<p>回车键、方向键都可以控制往前或往后看～，神奇吧～</p>
+<p>本地运行的话，有这么几步：</p>
+<p>1.先装一个 present 渲染工具。</p>
+<figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">go</span> <span class="built_in">get</span> golang.org/x/tools/present</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>很不幸，如果你在天朝，无法访问 <code>golang.org/x/tools</code>, 不过好在你是一个 gopher，肯定知道，它已经转移到 <code>github.com/golang/tools</code> 有它的镜像，因此，在你的 <code>GOPATH/src</code> 下面手动创建个 <code>golang.org/x</code> 文件夹，再 <code>git clone github.com/golang/tools</code>，再 <code>go install golang.org/x/tools/cmd/present</code>, <code>present</code> 就安装到你的 <code>GOPATH/bin</code>目录中了。</p>
+</blockquote>
+<p>2.在 slide 文件目录，将 present 跑起来：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hxzdeMac-<span class="string">mini:</span><span class="regexp">~/workspace/</span>slide $ present</span><br><span class="line"><span class="number">2018</span><span class="regexp">/03/</span><span class="number">27</span> <span class="number">20</span>:<span class="number">34</span>:<span class="number">36</span> Open your web browser and visit <span class="string">http:</span><span class="comment">//127.0.0.1:3999</span></span><br></pre></td></tr></table></figure>
+<p>3.打开浏览器访问 <code>http://127.0.0.1:3999</code>，会列出它渲染的 slide 文件列表，点击进去，就是见证奇迹的时刻……</p>
+<h2 id="Present"><a href="#Present" class="headerlink" title="Present"></a>Present</h2><p>花点时间熟悉下 persent 语法。</p>
+<p>present 语法格式要求用户定义好 <strong>头部</strong> 和 <strong>正文</strong>。</p>
+<h3 id="header"><a href="#header" class="headerlink" title="header"></a>header</h3><figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Title of document</span><br><span class="line">Subtitle of document</span><br><span class="line">15:04 2 Jan 2006</span><br><span class="line"><span class="keyword">Tags:</span> foo, bar, baz</span><br><span class="line">&lt;blank line&gt;</span><br><span class="line">Author Name</span><br><span class="line">Job title, Company</span><br><span class="line">joe@example.com</span><br><span class="line">http://url/</span><br><span class="line">@twitter_name</span><br></pre></td></tr></table></figure>
+<p>头部只有标题是必需的，它是第一个非空非注释行，子标题、日前、标签、作者等信息都是可选的，标题、作者头衔以及所在机构作为 slide 的第一页。</p>
+<p>标签栏后留一个空行，可以附上作者信息：作者姓名、头衔、所在机构、邮箱、网站、Twitter名等，这部分会显示在最后那张 <code>Thank you</code> 的 slide 中。</p>
+<h3 id="body"><a href="#body" class="headerlink" title="body"></a>body</h3><p>正文部分以 <code>*</code>后跟当前页标题来区分每张 slide。 </p>
+<p>正文语法示例如下，支持多级标题、列表、图片、代码段、网页链接等多种格式。</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">* </span>Title of slide or section (must have asterisk)</span><br><span class="line"></span><br><span class="line">Some Text</span><br><span class="line"></span><br><span class="line">** Subsection</span><br><span class="line"></span><br><span class="line"><span class="bullet">- </span>bullets</span><br><span class="line"><span class="bullet">- </span>more bullets</span><br><span class="line"><span class="bullet">- </span>a bullet with</span><br><span class="line"></span><br><span class="line"><span class="emphasis">***</span> Sub-subsection</span><br><span class="line"></span><br><span class="line">Some More text</span><br><span class="line"></span><br><span class="line">  Preformatted text</span><br><span class="line">  is indented (however you like)</span><br><span class="line"></span><br><span class="line">Further Text, including invocations like:</span><br><span class="line"></span><br><span class="line">.code x.go /^func main/,/^&#125;/</span><br><span class="line">.play y.go</span><br><span class="line">.image image.jpg</span><br><span class="line">.background image.jpg</span><br><span class="line">.iframe http://foo</span><br><span class="line">.link http://foo label</span><br><span class="line">.html file.html</span><br><span class="line">.caption <span class="emphasis">_Gopher_</span> by [<span class="string">[https://www.instagram.com/reneefrench/</span>][<span class="symbol">Renée French</span>]]</span><br><span class="line"></span><br><span class="line">Again, more text</span><br></pre></td></tr></table></figure>
+<p>最最令人兴奋的是，可以在里面直接跑代码：</p>
+<p><img src="http://media.hxz.ink/2018-03-27__p0KjY" alt=""></p>
+<p>真正的所见即所得啊，再也不用在代码区和演示文稿窗口间切来切去啦～这正是我等代码家梦寐以求的 PPT 打开方式啊。</p>
+<p>关于 present 语法，<a href="https://godoc.org/golang.org/x/tools/present" target="_blank" rel="noopener">这里</a> 有详细的文档。</p>
+<h2 id="Watch-It-Everywhere"><a href="#Watch-It-Everywhere" class="headerlink" title="Watch It Everywhere"></a>Watch It Everywhere</h2><p>本地 present 服务可以作为调试用，slide 最终是给别人看的。</p>
+<p>通过 <code>https://talks.godoc.org/</code> 提供的 present 渲染服务可以在线浏览 slide，并且支持 github 仓库中的 slide 文件。</p>
+<p>Go 开发者们只需要将自己写好的 slide 文件存放在自己 github 上的仓库中，就可以随时随地打开这类 present 文件给大家分享了。</p>
+<p>比如，我的 github 有一个叫 slide 的仓库地址：<code>github.com/hxzqlh/slide/</code> ，里面有一个 <code>golang_coding_standard.slide</code></p>
+<p>然后，你只需按照【仓库地址/slide文件名】格式拼接到 <code>https://talks.godoc.org/</code> 后面就可以观看了：</p>
+<blockquote>
+<p><code>https://talks.godoc.org/github.com/hxzqlh/slide/golang_coding_standard.slide</code></p>
+</blockquote>
+<p>很实用吧。</p>
+<p>但是……</p>
+<p>还是因为墙的原因，<code>https://talks.godoc.org/</code> 在大陆是无法直接访问的，有梯子的还可以访问，没有梯子的怎么办？</p>
+<p>TODO, 这里先挖个坑：</p>
+<blockquote>
+<p>等有空了，我自己搭建个 <code>https://talks.godoc.org/</code> 镜像。</p>
+</blockquote>
+<p>有个老外在 YouTube 上放了个非常酷炫的 <a href="https://www.youtube.com/watch?v=83JBmS8WpHM" target="_blank" rel="noopener">视频</a> 来介绍 present，我上面讲的这些内容，里面都有涉及，我把它搬砖到腾讯视频了，快来看看吧。</p>
+<iframe frameborder="0" width="640" height="498" src="https://v.qq.com/iframe/player.html?vid=q06153ycrwy&tiny=0&auto=0" allowfullscreen></iframe>
+
+<h2 id="Last"><a href="#Last" class="headerlink" title="Last"></a>Last</h2><p>如此一番折腾，我们得到了什么？</p>
+<p>我们可以不装 office，不用 keynote，只需打开你随身携带的记事本，简简单单地用 present 写 slide，一键上传至 github，只要有网，人人皆可访问。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/images/qrcode-hxzqlh.jpg" alt="彦祖老师 wechat" style="width: 200px; max-width: 100%;"/>
+    <div></div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    彦祖老师
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://hxz.ink/2018/03/28/Gopher-slide/" title="Gopher 做 PPT 的正确姿势">http://hxz.ink/2018/03/28/Gopher-slide/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/07/Lisk/" rel="next" title="Lisk：下一个百倍币，也许现在是最佳入手时机。">
+                <i class="fa fa-chevron-left"></i> Lisk：下一个百倍币，也许现在是最佳入手时机。
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/06/I-expericed-N-digital-wallet/" rel="prev" title="我体验了 N 款数字货币钱包">
+                我体验了 N 款数字货币钱包 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">彦祖老师</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">114</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hxzqlh" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hxzqlh@gmail.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Origin"><span class="nav-number">1.</span> <span class="nav-text">Origin</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Experient"><span class="nav-number">2.</span> <span class="nav-text">Experient</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Present"><span class="nav-number">3.</span> <span class="nav-text">Present</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#header"><span class="nav-number">3.1.</span> <span class="nav-text">header</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#body"><span class="nav-number">3.2.</span> <span class="nav-text">body</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Watch-It-Everywhere"><span class="nav-number">4.</span> <span class="nav-text">Watch It Everywhere</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Last"><span class="nav-number">5.</span> <span class="nav-text">Last</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">彦祖老师</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

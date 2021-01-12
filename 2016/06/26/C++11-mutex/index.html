@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="hxzqlh, 黄学忠" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="在多线程的程序中，经常需要通过锁的机制来保证数据的一致性。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="漫话 C++11 之 mutex">
+<meta property="og:url" content="http://hxz.ink/2016/06/26/C++11-mutex/index.html">
+<meta property="og:site_name" content="不忘痴心 砥砺前行">
+<meta property="og:description" content="在多线程的程序中，经常需要通过锁的机制来保证数据的一致性。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://media.hxz.ink/2016-06-26_sj66OG">
+<meta property="og:updated_time" content="2021-01-12T13:04:00.671Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="漫话 C++11 之 mutex">
+<meta name="twitter:description" content="在多线程的程序中，经常需要通过锁的机制来保证数据的一致性。">
+<meta name="twitter:image" content="http://media.hxz.ink/2016-06-26_sj66OG">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hxz.ink/2016/06/26/C++11-mutex/"/>
+
+
+
+
+
+  <title>漫话 C++11 之 mutex | 不忘痴心 砥砺前行</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">不忘痴心 砥砺前行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hxz.ink/2016/06/26/C++11-mutex/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="彦祖老师">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不忘痴心 砥砺前行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">漫话 C++11 之 mutex</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-06-26T12:21:08+08:00">
+                2016-06-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Coder/" itemprop="url" rel="index">
+                    <span itemprop="name">Coder</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在多线程的程序中，经常需要通过锁的机制来保证数据的一致性。</p>
+<p><img src="http://media.hxz.ink/2016-06-26_sj66OG" alt=""></p>
+<a id="more"></a>
+<p><code>C++11</code>提供了下面四种语义的锁:</p>
+<table>
+<thead>
+<tr>
+<th>type</th>
+<th>function</th>
+<th>desc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mutex</td>
+<td>Lockable</td>
+<td>普通的互斥锁，不能递归使用。</td>
+</tr>
+<tr>
+<td>timed_mutex</td>
+<td>TimedLockable</td>
+<td>带超时的互斥锁，不能递归使用。</td>
+</tr>
+<tr>
+<td>recursive_mutex</td>
+<td>Lockable</td>
+<td>递归互斥锁。</td>
+</tr>
+<tr>
+<td>recursive_timed_mutex</td>
+<td>TimedLockable</td>
+<td>带超时的递归互斥锁。</td>
+</tr>
+</tbody>
+</table>
+<p>继承关系为：</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">BasicLockable &lt;<span class="params">---</span> Lockable &lt;<span class="params">---</span> TimedLockable</span><br><span class="line">+lock              +<span class="keyword">try</span>_lock     +<span class="keyword">try</span>_lock_for</span><br><span class="line">+unlock                          +<span class="keyword">try</span>_lock_until</span><br></pre></td></tr></table></figure>
+<h2 id="mutex"><a href="#mutex" class="headerlink" title="mutex"></a>mutex</h2><p><code>C++11</code> 中最基本的互斥量，它不支持递归地上锁。</p>
+<ul>
+<li><code>mutex</code> 不允许拷贝构造，也不允许 <code>move</code> 赋值，最初产生的 <code>mutex</code> 对象是处于 <code>unlocked</code> 状态的。</li>
+<li><code>lock()</code>，调用线程将锁住该互斥量。线程调用该函数会发生下面 3 种情况：<ol>
+<li>如果该互斥量当前没有被锁住，则调用线程将该互斥量锁住，直到调用 <code>unlock</code>之前，该线程一直拥有该锁。</li>
+<li>如果当前互斥量被其他线程锁住，则当前的调用线程被阻塞住。</li>
+<li>如果当前互斥量被当前调用线程锁住，则会产生死锁。</li>
+</ol>
+</li>
+<li><code>unlock()</code>， 解锁，释放对互斥量的所有权。</li>
+<li><code>try_lock()</code>，尝试锁住互斥量，和 <code>lock()</code> 相似，不同的是如果互斥量被其他线程占有，则当前线程也不会被阻塞，而是马上返回 <code>false</code>。</li>
+</ul>
+<h2 id="recursive-mutex"><a href="#recursive-mutex" class="headerlink" title="recursive_mutex"></a>recursive_mutex</h2><ul>
+<li>允许同一个线程对互斥量多次上锁，来获得对互斥量对象的多层所有权。</li>
+<li><strong>释放互斥量时需要调用与该锁层次深度相同次数的 unlock()</strong>。</li>
+</ul>
+<h2 id="time-mutex"><a href="#time-mutex" class="headerlink" title="time_mutex"></a>time_mutex</h2><ul>
+<li>比 <code>mutex</code> 多了两个成员函数:<code>try_lock_for()</code>，<code>try_lock_until()</code>。</li>
+<li><code>try_lock_for()</code> 函数接受一个时间范围，表示在 <strong>一段时间范围之内</strong> 线程如果没有获得锁则被阻塞住，如果在此期间其他线程释放了锁，则该线程可以获得对互斥量的锁，如果超时（即在指定时间内还是没有获得锁），则返回 <code>false</code>。</li>
+<li><code>try_lock_until()</code> 函数则接受一个时间点作为参数，在 <strong>指定时间点未到来之前</strong> 线程如果没有获得锁则被阻塞住，如果在此期间其他线程释放了锁，则该线程可以获得对互斥量的锁，如果超时（即在指定时间内还是没有获得锁），则返回 <code>false</code>。</li>
+</ul>
+<h2 id="RAII"><a href="#RAII" class="headerlink" title="RAII"></a>RAII</h2><p>关于 <code>mutex</code> 的使用，建议使用 <code>RAII</code>(Resource Acquisition is Initialization)的方式，即在构造的时候 <code>lock</code>, 析构的时候 <code>unlock</code>, 不建议直接手工地进行 <code>lock/unlock</code>。</p>
+<p><code>C++11</code>提供了 <code>lock_guard</code> 和 <code>unique_lock</code> 两种简单而又安全的上锁和解锁方式，即使程序抛出了异常，先前已被上锁的 <code>Mutex</code> 对象也能正确进行解锁，极大地简化了与 <code>Mutex</code> 相关的异常处理代码。</p>
+<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">template &lt;<span class="class"><span class="keyword">class</span> <span class="title">mutex</span>&gt; </span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">lock_guard</span>;</span></span><br><span class="line"></span><br><span class="line">template &lt;<span class="class"><span class="keyword">class</span> <span class="title">mutex</span>&gt; </span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">unique_lock</span>;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>都是模版类，实例化参数 <code>mutex</code> 必须是个 <code>BasicLockable</code> 类型(即支持 <code>lock</code> 和 <code>unlock</code>)。</li>
+<li>都只负责在构造时对 <code>mutex</code> 加锁，析构时对 <code>mutex</code> 解锁，<strong>它们并不管理 <code>mutex</code> 本身的生命周期</strong>，因此，<code>mutex</code> 的生命周期应至少延伸至 <code>lock_guard</code> 和 <code>unique_lock</code> 析构之后。</li>
+</ul>
+<h3 id="lock-guard"><a href="#lock-guard" class="headerlink" title="lock_guard"></a>lock_guard</h3><ul>
+<li>只有构造函数和析构函数。</li>
+</ul>
+<h2 id="unique-lock"><a href="#unique-lock" class="headerlink" title="unique_lock"></a>unique_lock</h2><ul>
+<li>更灵活的初始化方式：<ol>
+<li>default</li>
+<li>locking</li>
+<li>try_locking</li>
+<li>deferred</li>
+<li>adopting</li>
+<li>locking_for</li>
+<li>locking_until</li>
+<li>move</li>
+</ol>
+</li>
+<li>除了基本的上锁/解锁操作，<code>unique_lock</code> 还支持修改、获取 <code>mutex</code> 的操作：<ol>
+<li><code>move</code> 移动赋值</li>
+<li><code>swap</code> 与另一个 <code>unique_lock</code> 对象交换它们所管理的 <code>Mutex</code> 对象的所有权</li>
+<li><code>release</code> 返回指向它所管理的 <code>Mutex</code> 对象的指针，并释放所有权</li>
+<li><code>owns_lock</code> 返回当前 <code>unique_lock</code> 对象是否获得了锁</li>
+<li><code>operator bool()</code> 与 <code>owns_lock</code> 功能相同    5. <code>mutex</code> 返回当前 <code>unique_lock</code> 对象所管理的 <code>Mutex</code> 对象的指针</li>
+</ol>
+</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="http://www.cplusplus.com/reference/mutex/" target="_blank" rel="noopener">http://www.cplusplus.com/reference/mutex/</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/images/qrcode-hxzqlh.jpg" alt="彦祖老师 wechat" style="width: 200px; max-width: 100%;"/>
+    <div></div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    彦祖老师
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://hxz.ink/2016/06/26/C++11-mutex/" title="漫话 C++11 之 mutex">http://hxz.ink/2016/06/26/C++11-mutex/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/25/C++11-thread/" rel="next" title="漫话 C++11 之 thread">
+                <i class="fa fa-chevron-left"></i> 漫话 C++11 之 thread
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/06/26/C++11-condition-variable/" rel="prev" title="漫话 C++11 之 condition_variable">
+                漫话 C++11 之 condition_variable <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">彦祖老师</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">114</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hxzqlh" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hxzqlh@gmail.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#mutex"><span class="nav-number">1.</span> <span class="nav-text">mutex</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#recursive-mutex"><span class="nav-number">2.</span> <span class="nav-text">recursive_mutex</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#time-mutex"><span class="nav-number">3.</span> <span class="nav-text">time_mutex</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RAII"><span class="nav-number">4.</span> <span class="nav-text">RAII</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#lock-guard"><span class="nav-number">4.1.</span> <span class="nav-text">lock_guard</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#unique-lock"><span class="nav-number">5.</span> <span class="nav-text">unique_lock</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">彦祖老师</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

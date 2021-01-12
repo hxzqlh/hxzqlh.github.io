@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="区块链,跨链,IBC," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Cosmos Network 中最令人兴奋的特色是 InterBlockchain Communication (IBC) 协议，允许不同区块链之间进行资产转移。IBC 已经实现为一个 basecoin 插件，本节我将介绍如何使用它进行不同区块链间的资产互转。">
+<meta name="keywords" content="区块链,跨链,IBC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="跨链三部曲-3：IBC">
+<meta property="og:url" content="http://hxz.ink/2018/07/22/cross-chain-3-IBC/index.html">
+<meta property="og:site_name" content="不忘痴心 砥砺前行">
+<meta property="og:description" content="Cosmos Network 中最令人兴奋的特色是 InterBlockchain Communication (IBC) 协议，允许不同区块链之间进行资产转移。IBC 已经实现为一个 basecoin 插件，本节我将介绍如何使用它进行不同区块链间的资产互转。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2021-01-12T13:21:08.210Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="跨链三部曲-3：IBC">
+<meta name="twitter:description" content="Cosmos Network 中最令人兴奋的特色是 InterBlockchain Communication (IBC) 协议，允许不同区块链之间进行资产转移。IBC 已经实现为一个 basecoin 插件，本节我将介绍如何使用它进行不同区块链间的资产互转。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hxz.ink/2018/07/22/cross-chain-3-IBC/"/>
+
+
+
+
+
+  <title>跨链三部曲-3：IBC | 不忘痴心 砥砺前行</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">不忘痴心 砥砺前行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hxz.ink/2018/07/22/cross-chain-3-IBC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="彦祖老师">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不忘痴心 砥砺前行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">跨链三部曲-3：IBC</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-22T18:36:09+08:00">
+                2018-07-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Blockchain/" itemprop="url" rel="index">
+                    <span itemprop="name">Blockchain</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><code>Cosmos Network</code> 中最令人兴奋的特色是 <code>InterBlockchain Communication</code> (IBC) 协议，允许不同区块链之间进行资产转移。IBC 已经实现为一个 basecoin 插件，本节我将介绍如何使用它进行不同区块链间的资产互转。</p>
+<a id="more"></a>
+<h2 id="IBC"><a href="#IBC" class="headerlink" title="IBC"></a>IBC</h2><p>IBC 的目的是让区块链彼此之间充当一个轻量级的客户端。由于我们使用经典的拜占庭一致性容错算法，在客户端上进行验证是简单可行的：只须校验最新块的签名并验证 ABCI 应用的默克尔树根。</p>
+<p>在 <code>Tendermint</code> 共识引擎中，多个校验节点在处理新的区块之前会先达成一致。这意味着在下一个区块来临之前，当前区块的签名及其根状态不会加入到区块链中。每个区块包含一个 <code>LastCommit</code> （用于确认前一个区块的投票信息）和 <code>AppHash</code>（在区块头部，指处理完前一个区块的交易后的默克尔树根的 hash）。</p>
+<p>因此，如果我们要从高度 <code>H</code> 验证 <code>AppHash</code>，我们需要高度 <code>H+1</code> 节点的 <code>LastCommit</code> 的签名（请记住：<code>AppHash</code> 只包含了从叶子节点到 <code>H-1</code> 高度节点的所有交易结果）。</p>
+<p>不像 <code>PoW</code>，轻量级客户端协议不需要下载并检查所有区块链节点的头部信息，客户端总是能够直接跳跃到最新的头部，只要 validator 节点集还没有变更。如果 validator 节点集发生了变动，客户端需要跟踪这些变化，这个时候才需要从变更点开始下载所有区块点头部。这里，简单起见，我们假设这些 validator 节点集是静态不变的。 </p>
+<p>现在，让我们来演示 IBC 是如何工作的。假设我们有两条链：chain1 和 chain2，从 chain1 发送数据到 chain2，我们需要这么几个步骤:</p>
+<ul>
+<li>在 chain2 上注册 chain1 的信息（chainID、genesis 配置等） </li>
+<li>在 chain1 上，广播一条将要外发给 chain2 的 IBC 交易 </li>
+<li>广播一条交易给 chain2 告诉它 chain1 的最新状态（header和commit信息）</li>
+<li>chain1 向 chain2 发送 IBC 交易（区块高度、数据以及并默克尔证明），由于 chain2 已经知道了 chain1 的最新状态，它只需验证这个默克尔证明就可以了。</li>
+</ul>
+<p>最重要的部分是：</p>
+<blockquote>
+<p>在 chain2 上更新 chain1 的最新的状态，然后 chain1 向 chain2 发出 Merkle proof：我的数据包确实已经发出来了。</p>
+</blockquote>
+<p>上述每一步都包含一种 IBC 交易类型，让我们 <code>one by one</code> 地来看一下：</p>
+<h3 id="IBCRegisterChainTx"><a href="#IBCRegisterChainTx" class="headerlink" title="IBCRegisterChainTx"></a>IBCRegisterChainTx</h3><p><code>IBCRegisterChainTx</code> 用来注册一条链到另外一条链上。 </p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">type IBCRegisterChainTx struct &#123; BlockchainGenesis &#125;</span><br><span class="line"></span><br><span class="line">type BlockchainGenesis struct &#123; </span><br><span class="line">	ChainID string </span><br><span class="line">	Genesis string </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于给定的 <code>chainID</code>，该类型交易只能发送一次，重复发送将返回错误。</p>
+<h3 id="IBCUpdateChainTx"><a href="#IBCUpdateChainTx" class="headerlink" title="IBCUpdateChainTx"></a>IBCUpdateChainTx</h3><p><code>IBCUpdateChainTx</code> 用于在其它链上更新当前链的信息。</p>
+<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="type">IBCUpdateChainTx</span> struct &#123;</span><br><span class="line">  <span class="type">Header</span> tm.<span class="type">Header</span></span><br><span class="line">  <span class="type">Commit</span> tm.<span class="type">Commit</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="IBCPacketCreateTx"><a href="#IBCPacketCreateTx" class="headerlink" title="IBCPacketCreateTx"></a>IBCPacketCreateTx</h3><p><code>IBCPacketCreateTx</code> 用来创建一个将要外发给其他链的交易。 </p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">type IBCPacketCreateTx struct &#123;</span><br><span class="line">  Packet</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type Packet struct &#123;</span><br><span class="line">  SrcChainID string</span><br><span class="line">  DstChainID string</span><br><span class="line">  Sequence   uint64</span><br><span class="line"> <span class="built_in"> Type </span>string</span><br><span class="line">  Payload    []byte</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="IBCPacketPostTx"><a href="#IBCPacketPostTx" class="headerlink" title="IBCPacketPostTx"></a>IBCPacketPostTx</h3><p><code>IBCPacketPostTx</code> 用来向外发送交易到另外一条链。 </p>
+<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="type">IBCPacketPostTx</span> struct &#123;</span><br><span class="line">  <span class="type">FromChainID</span>     string // <span class="type">The</span> immediate source of the packet, not always <span class="type">Packet</span>.<span class="type">SrcChainID</span></span><br><span class="line">  <span class="type">FromChainHeight</span> uint64 // <span class="type">The</span> block height in which <span class="type">Packet</span> was committed, to check <span class="type">Proof</span> <span class="type">Packet</span></span><br><span class="line">  <span class="type">Proof</span> *merkle.<span class="type">IAVLProof</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="IBC-State"><a href="#IBC-State" class="headerlink" title="IBC State"></a>IBC State</h3><p>了解完跟跨链相关的交易类型，来看看 state。每条链都会在默克尔树中存储关于 IBC 的 state，对于当前链来说，它记录的每条注册到它上面的其它链的信息包括：</p>
+<ul>
+<li>Genesis configuration</li>
+<li>Latest state</li>
+<li>Headers for recent heights</li>
+</ul>
+<p>当然，还会记录所有它收到(<code>ingress</code>) 和外发(<code>egress</code>)的交易（packet）。</p>
+<p>每当一笔提交 <code>IBCUpdateChainTx</code> 交易，这条链的会相应地更新它的 state, 每当创建一笔<code>IBCPacketCreateTx</code> 交易，新的 packet 数据会添加到 <code>egress</code> state 中，每当接收到一笔 <code>IBCPacketPostTx</code> 交易并验证通过了 proof 后，新的 packet 数据会添加到 <code>ingress</code> state 中。</p>
+<h2 id="Relay"><a href="#Relay" class="headerlink" title="Relay"></a>Relay</h2><p>由于我们内部需要这些跟跨链相关的交易，以便在不同链之间以一种安全的方式来跟踪所有 proof，为了让整个流程显得流畅自然，我们可以运行一个 <code>relay</code> 程序来处理这些跟跨链相关的交互操作。</p>
+<p>在本例中，只需要 2 步：</p>
+<ul>
+<li><code>basecoin relay init</code>：每条链都在上面注册好另外一条链，并确保彼此可以发送和接收交易。</li>
+<li><code>basecoin relay start</code>：长轮询，不断地从一条链上拉取跨链交易并转发到另外一条链上。</li>
+</ul>
+<p>前提是：relay 程序必须有权限读写这些链的账户及资产信息，因为发送 IBC 交易需要支付一定的 Fee。</p>
+<h2 id="Try-it-out"><a href="#Try-it-out" class="headerlink" title="Try it out"></a>Try it out</h2><p>有了前面这些知识做铺垫，现在，让我们来真实地体验下跨链交易：</p>
+<h3 id="Preliminaries"><a href="#Preliminaries" class="headerlink" title="Preliminaries"></a>Preliminaries</h3><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># first, clean up any old garbage for a fresh slate...</span></span><br><span class="line">rm -rf ~<span class="regexp">/.ibcdemo/</span></span><br></pre></td></tr></table></figure>
+<p>为了方便后续操作，先设置好一些环境变量和命令行别名：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="builtin-name">export</span> <span class="attribute">BCHOME1_CLIENT</span>=~/.ibcdemo/chain1/client</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">BCHOME1_SERVER</span>=~/.ibcdemo/chain1/server</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">BCHOME2_CLIENT</span>=~/.ibcdemo/chain2/client</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">BCHOME2_SERVER</span>=~/.ibcdemo/chain2/server</span><br><span class="line">alias <span class="attribute">basecli1</span>=<span class="string">"basecli --home <span class="variable">$BCHOME1_CLIENT</span>"</span></span><br><span class="line">alias <span class="attribute">basecli2</span>=<span class="string">"basecli --home <span class="variable">$BCHOME2_CLIENT</span>"</span></span><br><span class="line">alias <span class="attribute">basecoin1</span>=<span class="string">"basecoin --home <span class="variable">$BCHOME1_SERVER</span>"</span></span><br><span class="line">alias <span class="attribute">basecoin2</span>=<span class="string">"basecoin --home <span class="variable">$BCHOME2_SERVER</span>"</span></span><br></pre></td></tr></table></figure>
+<p>设置两条链的 chainID</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="builtin-name">export</span> <span class="attribute">CHAINID1</span>=<span class="string">"test-chain-1"</span></span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">CHAINID2</span>=<span class="string">"test-chain-2"</span></span><br></pre></td></tr></table></figure>
+<p>由于我们是在一个机器上运行两条基于 <code>tendermint</code> 的区块链，我们需要给两条链设置不同的端口：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="builtin-name">export</span> <span class="attribute">PORT_PREFIX1</span>=1234</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">PORT_PREFIX2</span>=2345</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">RPC_PORT1</span>=<span class="variable">$&#123;PORT_PREFIX1&#125;</span>7</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">RPC_PORT2</span>=<span class="variable">$&#123;PORT_PREFIX2&#125;</span>7</span><br></pre></td></tr></table></figure>
+<h3 id="Setup-Chain-1"><a href="#Setup-Chain-1" class="headerlink" title="Setup Chain 1"></a>Setup Chain 1</h3><p>创建两个 <code>test-chain-1</code> 链的账户:</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">basecli1 <span class="built_in">keys</span> <span class="built_in">new</span> money</span><br><span class="line">basecli1 <span class="built_in">keys</span> <span class="built_in">new</span> gotnone</span><br><span class="line">export MONEY=$(basecli1 <span class="built_in">keys</span> <span class="built_in">get</span> money | awk <span class="string">'&#123;print $2&#125;'</span>)</span><br><span class="line">export GOTNONE=$(basecli1 <span class="built_in">keys</span> <span class="built_in">get</span> gotnone | awk <span class="string">'&#123;print $2&#125;'</span>)</span><br></pre></td></tr></table></figure>
+<p>初始化这条链，它会给 <code>$MONEY</code> 账户打很多钱：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">basecoin1</span> init --chain-id <span class="variable">$CHAINID1</span> <span class="variable">$MONEY</span></span><br></pre></td></tr></table></figure>
+<p>启动 basecoin 区块链：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sed -ie <span class="string">"s/4665/$PORT_PREFIX1/"</span> <span class="variable">$BCHOME1_SERVER</span>/config.toml</span><br><span class="line"></span><br><span class="line">basecoin1 start &amp;&gt; basecoin1<span class="selector-class">.log</span> &amp;</span><br></pre></td></tr></table></figure>
+<p><code>test-chain-1</code> 跑起来了，你可以通过 <code>tail -f basecoin1.log</code> 实时查看它的日志。</p>
+<p>接下来，我们将 basecli 客户端连接上 <code>test-chain-1</code>，验证 <code>test-chain-1</code> 的最新状态，下面第一个账户应该显示有钱，第二个显示没钱。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">basecli1 init <span class="attribute">--node</span>=tcp://localhost:$&#123;RPC_PORT1&#125; <span class="attribute">--genesis</span>=<span class="variable">$&#123;BCHOME1_SERVER&#125;</span>/genesis.json</span><br><span class="line">basecli1 query account <span class="variable">$MONEY</span></span><br><span class="line">basecli1 query account <span class="variable">$GOTNONE</span></span><br></pre></td></tr></table></figure>
+<h3 id="Setup-Chain-2"><a href="#Setup-Chain-2" class="headerlink" title="Setup Chain 2"></a>Setup Chain 2</h3><p>设置 <code>test-chain-2</code> 跟 <code>test-chain-1</code> 步骤类似：</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">basecli2 <span class="built_in">keys</span> <span class="built_in">new</span> moremoney</span><br><span class="line">basecli2 <span class="built_in">keys</span> <span class="built_in">new</span> broke</span><br><span class="line">MOREMONEY=$(basecli2 <span class="built_in">keys</span> <span class="built_in">get</span> moremoney | awk <span class="string">'&#123;print $2&#125;'</span>)</span><br><span class="line">BROKE=$(basecli2 <span class="built_in">keys</span> <span class="built_in">get</span> broke | awk <span class="string">'&#123;print $2&#125;'</span>)</span><br></pre></td></tr></table></figure>
+<p>准备创世块，启动节点：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">basecoin2</span> init --chain-id <span class="variable">$CHAINID2</span> $(basecli2 keys get moremoney | awk <span class="string">'&#123;print <span class="variable">$2</span>&#125;'</span>)</span><br><span class="line"></span><br><span class="line">sed -ie <span class="string">"s/4665/<span class="variable">$PORT_PREFIX2</span>/"</span> <span class="variable">$BCHOME2_SERVER</span>/config.toml</span><br><span class="line"></span><br><span class="line">basecoin2 start &amp;&gt; basecoin2.log &amp;</span><br></pre></td></tr></table></figure>
+<p>我们将 basecli 客户端连接上 <code>test-chain-2</code>，验证 <code>test-chain-2</code> 的最新状态，同样，下面第一个账户应该显示有钱，第二个显示没钱。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">basecli2 init <span class="attribute">--node</span>=tcp://localhost:$&#123;RPC_PORT2&#125; <span class="attribute">--genesis</span>=<span class="variable">$&#123;BCHOME2_SERVER&#125;</span>/genesis.json</span><br><span class="line">basecli2 query account <span class="variable">$MOREMONEY</span></span><br><span class="line">basecli2 query account <span class="variable">$BROKE</span></span><br></pre></td></tr></table></figure>
+<h3 id="Connect-these-chains"><a href="#Connect-these-chains" class="headerlink" title="Connect these chains"></a>Connect these chains</h3><p>OK，现在我们有两条独立的 basecoin 区块链在运行，让我们启动 <code>relay</code> 程序把它们串联起来，让它们可以彼此发送交易给对方。</p>
+<p><code>relay</code> 账户需要有余额来支付 IBC 消息，因此，我们需要先往 <code>relay</code> 账户充值部分钱。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># note that this key.json file is a hardcoded demo for all chains, this will</span></span><br><span class="line"><span class="comment"># be updated in a future release</span></span><br><span class="line"><span class="attribute">RELAY_KEY</span>=<span class="variable">$BCHOME1_SERVER</span>/key.json</span><br><span class="line"><span class="attribute">RELAY_ADDR</span>=$(cat <span class="variable">$RELAY_KEY</span> | jq .address | tr -d \<span class="string">")</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">basecli1 tx send --amount=100000mycoin --sequence=1 --to=<span class="variable">$RELAY_ADDR</span> --name=money</span></span><br><span class="line"><span class="string">basecli1 query account <span class="variable">$RELAY_ADDR</span></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">basecli2 tx send --amount=100000mycoin --sequence=1 --to=<span class="variable">$RELAY_ADDR</span> --name=moremoney</span></span><br><span class="line"><span class="string">basecli2 query account <span class="variable">$RELAY_ADDR</span></span></span><br></pre></td></tr></table></figure>
+<p>一切准备就绪，启动 <code>relay</code> 程序：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">basecoin relay init <span class="attribute">--chain1-id</span>=<span class="variable">$CHAINID1</span> <span class="attribute">--chain2-id</span>=<span class="variable">$CHAINID2</span> \</span><br><span class="line">  <span class="attribute">--chain1-addr</span>=tcp://localhost:$&#123;RPC_PORT1&#125; <span class="attribute">--chain2-addr</span>=tcp://localhost:$&#123;RPC_PORT2&#125; \</span><br><span class="line">  <span class="attribute">--genesis1</span>=<span class="variable">$&#123;BCHOME1_SERVER&#125;</span>/genesis.json <span class="attribute">--genesis2</span>=<span class="variable">$&#123;BCHOME2_SERVER&#125;</span>/genesis.json \</span><br><span class="line">  <span class="attribute">--from</span>=<span class="variable">$RELAY_KEY</span></span><br><span class="line"></span><br><span class="line">basecoin relay start <span class="attribute">--chain1-id</span>=<span class="variable">$CHAINID1</span> <span class="attribute">--chain2-id</span>=<span class="variable">$CHAINID2</span> \</span><br><span class="line">  <span class="attribute">--chain1-addr</span>=tcp://localhost:$&#123;RPC_PORT1&#125; <span class="attribute">--chain2-addr</span>=tcp://localhost:$&#123;RPC_PORT2&#125; \</span><br><span class="line">  <span class="attribute">--from</span>=<span class="variable">$RELAY_KEY</span> &amp;&gt; relay.log &amp;</span><br></pre></td></tr></table></figure>
+<h3 id="Sending-cross-chain-payments"><a href="#Sending-cross-chain-payments" class="headerlink" title="Sending cross-chain payments"></a>Sending cross-chain payments</h3><p>好了，<code>test-chain-1</code> 和 <code>test-chain-2</code> 通过 IBC 协议彼此连接好，跨链中最艰巨的部分已经完成，现在，就是见证 <strong>跨链交易</strong> 奇迹的时刻：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Here's an empty account on test-chain-2</span></span><br><span class="line">basecli2 query account <span class="variable">$BROKE</span></span><br><span class="line"><span class="comment"># Let's send some funds from test-chain-1</span></span><br><span class="line">basecli1 tx send <span class="attribute">--amount</span>=12345mycoin <span class="attribute">--sequence</span>=2 <span class="attribute">--to</span>=test-chain-2/$BROKE <span class="attribute">--name</span>=money</span><br><span class="line"><span class="comment"># give it time to arrive...</span></span><br><span class="line">sleep 2</span><br><span class="line"><span class="comment"># now you should see 12345 coins!</span></span><br><span class="line">basecli2 query account <span class="variable">$BROKE</span></span><br></pre></td></tr></table></figure>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>本节我们详细阐述了 IBC 的工作机制，并演示了如何利用它在链间通信，并手把手教你进行跨链交易。其中，IBC 最核心的部分是：</p>
+<blockquote>
+<p>在 chain2 上更新 chain1 的最新的状态，然后 chain1 向 chain2 发出 Merkle proof：我的数据包确实已经发出来了。</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/images/qrcode-hxzqlh.jpg" alt="彦祖老师 wechat" style="width: 200px; max-width: 100%;"/>
+    <div></div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    彦祖老师
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://hxz.ink/2018/07/22/cross-chain-3-IBC/" title="跨链三部曲-3：IBC">http://hxz.ink/2018/07/22/cross-chain-3-IBC/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/区块链/" rel="tag"># 区块链</a>
+          
+            <a href="/tags/跨链/" rel="tag"># 跨链</a>
+          
+            <a href="/tags/IBC/" rel="tag"># IBC</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/16/cross-chain-2-Basecoin-plugin/" rel="next" title="跨链三部曲-2：Basecoin Plugin">
+                <i class="fa fa-chevron-left"></i> 跨链三部曲-2：Basecoin Plugin
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/09/12/go-rate-limit/" rel="prev" title="限流 | Go 实现速率限制">
+                限流 | Go 实现速率限制 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">彦祖老师</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">114</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hxzqlh" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hxzqlh@gmail.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#IBC"><span class="nav-number">1.</span> <span class="nav-text">IBC</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#IBCRegisterChainTx"><span class="nav-number">1.1.</span> <span class="nav-text">IBCRegisterChainTx</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IBCUpdateChainTx"><span class="nav-number">1.2.</span> <span class="nav-text">IBCUpdateChainTx</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IBCPacketCreateTx"><span class="nav-number">1.3.</span> <span class="nav-text">IBCPacketCreateTx</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IBCPacketPostTx"><span class="nav-number">1.4.</span> <span class="nav-text">IBCPacketPostTx</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IBC-State"><span class="nav-number">1.5.</span> <span class="nav-text">IBC State</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Relay"><span class="nav-number">2.</span> <span class="nav-text">Relay</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Try-it-out"><span class="nav-number">3.</span> <span class="nav-text">Try it out</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Preliminaries"><span class="nav-number">3.1.</span> <span class="nav-text">Preliminaries</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Setup-Chain-1"><span class="nav-number">3.2.</span> <span class="nav-text">Setup Chain 1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Setup-Chain-2"><span class="nav-number">3.3.</span> <span class="nav-text">Setup Chain 2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Connect-these-chains"><span class="nav-number">3.4.</span> <span class="nav-text">Connect these chains</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Sending-cross-chain-payments"><span class="nav-number">3.5.</span> <span class="nav-text">Sending cross-chain payments</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Conclusion"><span class="nav-number">4.</span> <span class="nav-text">Conclusion</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">彦祖老师</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
