@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Fabric,备份," />
+  <meta name="keywords" content="Fabric,区块链," />
 
 
 
@@ -80,7 +80,7 @@
 
 
 <meta name="description" content="Fabric 是超级账本联盟(Hyperledger)的主要项目之一，其作为一个私有或“许可”型区块链网络，目前它主要被用于金融和供应链等行业。至今，Fabric已获得了阿里巴巴、AWS、Azure、百度、谷歌、华为、IBM、甲骨文、腾讯等互联网巨头的支持。">
-<meta name="keywords" content="Fabric,备份">
+<meta name="keywords" content="Fabric,区块链">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Fabric 简介">
 <meta property="og:url" content="http://hxz.ink/2019/04/18/Introduce-to-Fabric/index.html">
@@ -88,7 +88,7 @@
 <meta property="og:description" content="Fabric 是超级账本联盟(Hyperledger)的主要项目之一，其作为一个私有或“许可”型区块链网络，目前它主要被用于金融和供应链等行业。至今，Fabric已获得了阿里巴巴、AWS、Azure、百度、谷歌、华为、IBM、甲骨文、腾讯等互联网巨头的支持。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://media.hxz.ink/fabric-arch.png">
-<meta property="og:updated_time" content="2021-01-12T13:52:36.724Z">
+<meta property="og:updated_time" content="2021-01-16T18:01:46.086Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Fabric 简介">
 <meta name="twitter:description" content="Fabric 是超级账本联盟(Hyperledger)的主要项目之一，其作为一个私有或“许可”型区块链网络，目前它主要被用于金融和供应链等行业。至今，Fabric已获得了阿里巴巴、AWS、Azure、百度、谷歌、华为、IBM、甲骨文、腾讯等互联网巨头的支持。">
@@ -355,8 +355,8 @@
 <li>交易意味着围绕着某个链码进行操作，交易可以改变世界状态。</li>
 </ul>
 <p>世界观：世界状态, 用于存放链码执行过程中涉及到的 <strong>状态变量</strong>，是一个键值数据库。典型的元素为 <code>[chaincodeID, ckey]: value</code> 结构。</p>
-<h3 id="链码服务"><a href="#链码服务" class="headerlink" title="链码服务"></a>链码服务</h3><p>链码包含所有的处理逻辑，并对外提供接口，外部通过调用链码接口来改变世界观。</p>
-<p>链码需要实现 <code>Chaincode</code> 接口，以被 VP（Validating Peer,验证节点）节点调用，目前支持的交易类型包括：部署（Deploy）、调用（Invoke）和查询（Query）。不同链码之间可能互相调用和查询。</p>
+<h3 id="链码服务"><a href="#链码服务" class="headerlink" title="链码服务"></a>链码服务</h3><p>在 Fabric 中，智能合约叫做链码 (<code>Chaincode</code>)，它包含所有的业务处理逻辑，并对外提供接口，外部通过调用链码接口来改变世界观。</p>
+<p>链码需要实现 <code>Chaincode</code> 接口，以被 VP（<code>Validating Peer</code>,验证节点）节点调用，目前支持的交易类型包括：部署（Deploy）、调用（Invoke）和查询（Query）。不同链码之间可能互相调用和查询。</p>
 <p>在实现上，链码需要运行在隔离的 <strong>容器</strong> 中，超级账本采用了 <code>Docker</code> 作为默认容器。对容器的操作支持三种方法：<code>build</code>、<code>start</code>、<code>stop</code>，对应的接口为 <code>VM</code>。</p>
 <p>链码部署成功后，会创建连接到部署它的 VP 节点的 gRPC 通道，VP 节点和容器之间通过 gRPC 消息来交互。</p>
 <h3 id="成员权限管理"><a href="#成员权限管理" class="headerlink" title="成员权限管理"></a>成员权限管理</h3><p>通过基于 PKI 的成员权限管理，平台可以对接入的节点和客户端的能力进行限制。证书有三种:</p>
@@ -383,7 +383,7 @@
     
       <div>
         <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
-    <img id="wechat_subscriber_qcode" src="/images/qrcode-hxzqlh.jpg" alt="彦祖老师 wechat" style="width: 200px; max-width: 100%;"/>
+    <img id="wechat_subscriber_qcode" src="/images/qrcode.jpg" alt="彦祖老师 wechat" style="width: 200px; max-width: 100%;"/>
     <div></div>
 </div>
 
@@ -418,7 +418,7 @@
           
             <a href="/tags/Fabric/" rel="tag"># Fabric</a>
           
-            <a href="/tags/备份/" rel="tag"># 备份</a>
+            <a href="/tags/区块链/" rel="tag"># 区块链</a>
           
         </div>
       
@@ -440,6 +440,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/07/16/common-im-message-arch/" rel="prev" title="通用消息平台架构">
+                通用消息平台架构 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -516,7 +520,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">114</span>
+                  <span class="site-state-item-count">118</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -527,7 +531,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -538,7 +542,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">188</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

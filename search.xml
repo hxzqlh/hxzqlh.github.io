@@ -1,15 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[去中心化社交聊天架构]]></title>
+    <url>%2F2020%2F06%2F13%2Fdecentralized-social-IM-arch%2F</url>
+    <content type="text"><![CDATA[在传统的中心化的社交系统（如微信/QQ/微博/Twitter）中，有两大弊端： 匿名/隐私性问题：用户信息、通讯录信息完全掌握在聊天服务提供商中，用户无法真正自主掌控个人信息。 可用性问题：聊天服务的可靠性易受所在地区的政策、法律等不可抵外力因素的影响，一旦服务器被攻击或查封，用户数据也就丢失了。 为此，我们提出一种基于区块链的去中心化社交系统。 该系统由三部分组成： 区块链：利用其去中心化的本质特征，将用户最关心的用户信息、通讯录信息记录到区块链上，其他人无法篡改、伪造、查封其账号，用户可真正自主掌握个人信息。 客户端：直接面向用户的聊天App，一方面从区块链读写用户信息、一方面和聊天服务器建立长连接，收发消息。 聊天服务器：为用户提供消息发送、存储服务。只要遵从一定的协议，服务节点可随意加入、退出。面向各类终端用户群体，不同机构、企业可部署不同的聊天服务节点，这样各机构、企业节点可自主掌握其服务器产生的聊天数据。 下面，分别针对这三部分详细阐述： 区块链基于chain33开发框架的bty区块链支持各种平行链，我们的通讯录合约就是运行在一条平行链中。 合约记录内容： 个人信息：昵称、手机号等 好友关系：好友可设置tag实现分组 黑名单：可设置周期，如永久、一段时间 隐私权限：公开（默认，即任何人皆可根据地址查询该用户信息）、私有（只有本人才可查看）、规则（按照用户定义的某种规则确定其他人是否有权限查看其用户信息，比如：A设置了tag为“朋友”的用户才可查看其用户信息） 最近登录的聊天服务节点：我们假设，用户转移聊天服务节点的频率是比较低的。当用户连接上某个可用的聊天节点时，会将该节点写入合约，其他用户方可通过合约查询到该用户目前在哪个聊天节点，从而调用该聊天节点的发消息接口给该用户。这样，实现了不同服务器节点间用户的通讯机制。 客户端假设用户为A： 生成、导入用户身份：能唯一标示用户身份的是区块链地址（助记词–&gt;私钥–&gt;公钥–&gt;地址） 登录、退出服务器：A登录（助记词/手机号/邮箱）时，若客户端本地缓存了用户上次登录过的服务器节点，假设为 srv-A，则向该节点建立连接，否则，将到区块链查询A最近登录的服务器节点。 收发消息：和服务器节点建立连接后，A只会在该服务器节点接收消息。假设此时有另外一个用户B要发消息给A，B需先得知目前A在哪个服务器节点（同样可通过查询合约获得）： B和A在同一个服务器：B通过长连接往 srv-A 发消息给 A B和A不在同一个服务器：B调用 srv-A 的 rpc 接口发消息给 A 客户端不应将区块链节点或聊天服务器节点写死，而应分别做成配置： 区块链节点列表 聊天服务节点列表 初始化时，从官方提供的注册中心拉取节点列表，若节点列表均不可用，要能支持用户手动输入某个节点。 客户端按照某种策略（如轮询、加权轮询、哈希、随机）自主选择某个区块链节点或服务器节点进行相关服务请求。这里之所以采用客户端进程内负载均衡也是为了避免某服务端节点故障导致客户端不可用。 客户端连接上某个服务器节后，应缓存在本地，以便下次复用，避免频繁写入区块链合约。 服务器一个最简单的聊天服务器只需提供三个功能： 鉴权：客户端跟服务器建立连接后，客户端调用该接口验证身份，客户端和服务器保持ws长连接，方便推送消息 发送消息：例如 A → B 箭头方向 推送消息：通过ws长连接推送消息给接受者所在客户端]]></content>
+      <categories>
+        <category>Blockchain</category>
+        <category>即时通讯</category>
+        <category>架构</category>
+      </categories>
+      <tags>
+        <tag>架构</tag>
+        <tag>区块链</tag>
+        <tag>社交</tag>
+        <tag>IM</tag>
+        <tag>去中心化</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[数字货币交易所后台架构]]></title>
+    <url>%2F2019%2F12%2F14%2Fexchange-backend-arch%2F</url>
+    <content type="text"><![CDATA[基于区块链技术的数字资产交易系统，为全球用户提供7x24小时数字资产交易服务。类似国内的火币/Okex交易所，交易平台为用户提供充币、提币、下单、撤单、查询订单记录、行情信息等业务功能。 本系统的特色在于，底层戳和引擎是基于区块链技术，将用户资产和交易记录写入区块链，既可避免出现传统去中心化交易系统被黑客攻击导致的用户资产损失现象，保障用户资产安全，也可保证用户的每笔交易记录都是无法篡改的。 后台参考架构如下： 关键模块 gate：提供对用户资产、订单记录、行情、深度、k线、成交记录的查询接口，部分接口支持ws parse：交易解析程序，拉取区块链最新交易信息（挂单、撤单、转账、成交记录）至数据库 redis：缓存区块链行情、深度、用户近3月订单历史、最新成交记录 mysql：解析数据库，存储用户信息、资产信息、交易记录、成交记录 mq: 消息队列 ops: 异步下单子模块，接收客户端的交易请求，生成订单信息写入用户订单表，发送到mq rfs：异步下单子模块，从mq消费客户端交易请求，将请求转发到区块链戳和引擎 缓存 market（深度、行情）：每隔0.5s从区块链合约读取，丢到缓存 订单记录：缓存用户近3月至多1000条记录 最新成交记录（提供给机器人）：缓存最近5分钟内的成交细节 活跃订单： 若只显示已经上链的订单，可以从区块链合约读取 若显示挂单中和已经上链的订单，则必须从 db 中读取（目前采用此方式） 分表老版的解析数据库是按照交易对进行分表，一个交易对的历史订单存在一个表里面，此法的缺点是： 历史订单数据只会越来越多，影响查询（实际查询只需返回近3月历史） 交易历史分散在不同的交易对表，如果要追踪一个用户的交易行为，需要查询多个表 改动：订单和成交记录按月分表，“缺点”是查询需要同时查多个表数据后汇总（这个对开发人员来说小菜一碟），优点： 历史数据不会影响查询效率 所有用户的交易历史固定在一个表（单个月而言），方便追踪用户的交易行为 方便迁移（最快只需拷贝近3/4个月数据） 异步下单老版系统的用户下单接口是同步的，直接将用户交易请求发送给区块链并等待区块链打包、共识、出块响应交易处理结果，TPS明显不高。 异步模式： ops 模块：接收客户端的交易请求，生成订单信息写入用户订单表，发送到 mq，这样交易请求就算是成功接收了，直接返回用户订单id给客户端。内部利用定时/定量的批量入库机制，每0.5秒或累计接收1000笔交易就往数据库写一次盘，提升写数据库的效率。 rfs 模块：从mq消费客户端交易请求，将请求转发到区块链戳和引擎处理，并更新对应用户订单的处理结果。 ops 写入 instructionId（即客户端拿到的用户订单id），rfs 查询到该交易戳和完成后更新 instructionId 对应的区块链订单id。 instructionId 区块链订单id 193034729012 2035 用户的 真实资产 记录在区块链合约中，由于采用了异步下单机制，用户的 实际可用资产 需要根据用户下单后立即更新（即使该订单还未进戳和引擎或未被戳和引擎处理完），防止用户的实际可用资产不足挂一些无效单，根据订单状态的变化，及时更新资产（冻结、可用） 用户的可用资产 = 从区块链读到的可用资产 - 异步下单冻结的买单部分资产 用户的冻结资产 = 从区块链读到的冻结资产 - 异步下单冻结的卖单部分资产 TODO ops/rfs异步下单流程 戳和流程 风控模块设计思路]]></content>
+      <categories>
+        <category>交易所</category>
+        <category>架构</category>
+      </categories>
+      <tags>
+        <tag>架构</tag>
+        <tag>数字货币</tag>
+        <tag>exchange</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[通用消息平台架构]]></title>
+    <url>%2F2019%2F07%2F16%2Fcommon-im-message-arch%2F</url>
+    <content type="text"><![CDATA[消息平台是高可用、高并发、可伸缩的分布式系统，致力于为公司内各业务产品线提供基础通用的消息服务，降低公司内各业务子系统间进行信息交互的复杂度，满足C2C（用户对用户）、C2B（用户对商家）、B2C（商家对用户）的沟通需求。 消息平台为C端用户提供了私聊、群聊、密聊、聊天室、漂流瓶等多形式多场景的即时通讯功能，同时，平台还支持公司内各业务子系统间进行消息流转，如B端商家通过该系统可以定向地为用户实时推送各种业务消息，如订单消息、活动促销消息等。 1.0消息平台第一个版本为了快速响应业务需求，是一个单体架构： 接入层、逻辑层、存储层全部在一个进程内实现，最大缺点就是无法水平扩展。 2.0系统将接入层、逻辑层、数据层微服务化，实现水平可扩展。架构如下： 关键模块 comet，消息平台的接入门户(支持 ws/tcp)，保持长连接，初步攻防（消息频率限制），加解密，压缩解压缩，水平可扩展 logic，消息平台内部对消息的处理逻辑，无业务逻辑（app-server部分负责），只维持用户在线状态，对消息进行在线投递或离线存储，水平可扩展 cache，高可用redis集群，存储用户在线状态，以及用户在哪一台comet接入（如果在线） mq： 消息队列，logic将消息投递到mq中对应业务方的topic队列，业务方从它订阅topic队列中消费消息，即不同业务方的消息会投递到不同的主题队列 job: 消费mq里的发往客户端的消息，将消息发送到comet，水平可扩展 etcd：服务注册发现/配置中心 业务对接 APP/PC/Web：业务方客户端，可以有多个，如聊天客户端、交易所客户端、电商客户端 app-server：业务方服务端，可以有多个，如聊天服务端、OTC服务端、电商服务端等，负责处理消息对应的具体业务逻辑。 comet 接口 PushMsg： 往msg接收方对应的连接写msg logic 接口 Connect：用户建立连接 Disconnect：用户关闭连接 HeartBeat：连接保持心跳 Receive：接收客户端消息 Push：业务服务端推送消息给客户端 TODO 消息不丢不重 端对端加密聊天]]></content>
+      <categories>
+        <category>即时通讯</category>
+        <category>架构</category>
+      </categories>
+      <tags>
+        <tag>消息平台</tag>
+        <tag>分布式</tag>
+        <tag>架构</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Fabric 简介]]></title>
     <url>%2F2019%2F04%2F18%2FIntroduce-to-Fabric%2F</url>
-    <content type="text"><![CDATA[Fabric 是超级账本联盟(Hyperledger)的主要项目之一，其作为一个私有或“许可”型区块链网络，目前它主要被用于金融和供应链等行业。至今，Fabric已获得了阿里巴巴、AWS、Azure、百度、谷歌、华为、IBM、甲骨文、腾讯等互联网巨头的支持。 架构设计 三大组件：区块链服务（Blockchain）、链码服务（Chaincode）、成员权限管理（Membership）。 区块链服务 提供一个分布式账本平台。 多个交易被打包进区块中，多个区块构成一条区块链。 区块链代表的是账本状态机发生变更的历史过程。 交易意味着围绕着某个链码进行操作，交易可以改变世界状态。 世界观：世界状态, 用于存放链码执行过程中涉及到的 状态变量，是一个键值数据库。典型的元素为 [chaincodeID, ckey]: value 结构。 链码服务链码包含所有的处理逻辑，并对外提供接口，外部通过调用链码接口来改变世界观。 链码需要实现 Chaincode 接口，以被 VP（Validating Peer,验证节点）节点调用，目前支持的交易类型包括：部署（Deploy）、调用（Invoke）和查询（Query）。不同链码之间可能互相调用和查询。 在实现上，链码需要运行在隔离的 容器 中，超级账本采用了 Docker 作为默认容器。对容器的操作支持三种方法：build、start、stop，对应的接口为 VM。 链码部署成功后，会创建连接到部署它的 VP 节点的 gRPC 通道，VP 节点和容器之间通过 gRPC 消息来交互。 成员权限管理通过基于 PKI 的成员权限管理，平台可以对接入的节点和客户端的能力进行限制。证书有三种: 注册证书 ECert：颁发给提供了注册凭证的用户或节点，一般长期有效； 交易证书 TCert：颁发给用户，控制每个交易的权限，一般针对某个交易，短期有效。 通信证书 TLSCert：控制对网络的访问，并且防止窃听。 角色管理节点角色是 Fabric 设计中的一大创新，根据性能和安全需求，不同的节点可以由不同的组织分别管理，彼此协作完成整个区块链系统的记账功能： 背书节点（Endorser Peer）：一类特殊的 Peer，对交易提案（Transaction Proposal）进行检查，通过执行智能合约计算交易执行结果（读写集合）并对其进行背书； 记账节点（Committer Peer）：负责维护账本，检查排序后交易结果合法性，接受合法修改，并写入到本地账本结构，目前所有 Peer 默认都是记账节点； 排序节点（Orderer）：正式交易会发给排序节点，排序节点负责对网络中所有交易进行排序处理，并整理为区块结构，之后被记账节点拉取提交到本地账本； 证书节点（CA）：提供标准的 PKI 服务，负责对网络中所有的证书进行管理，包括签发和撤销。 网络账本的基本单位是 通道（Channel），每个通道内的成员可以共享账本，不同通道内账本则彼此隔离。客户端可以向网络内发送交易，交易经过共识后被通道内的 Peer 节点接收并更新本地对应的账本。类似 chain33 的平行链概念。]]></content>
+    <content type="text"><![CDATA[Fabric 是超级账本联盟(Hyperledger)的主要项目之一，其作为一个私有或“许可”型区块链网络，目前它主要被用于金融和供应链等行业。至今，Fabric已获得了阿里巴巴、AWS、Azure、百度、谷歌、华为、IBM、甲骨文、腾讯等互联网巨头的支持。 架构设计 三大组件：区块链服务（Blockchain）、链码服务（Chaincode）、成员权限管理（Membership）。 区块链服务 提供一个分布式账本平台。 多个交易被打包进区块中，多个区块构成一条区块链。 区块链代表的是账本状态机发生变更的历史过程。 交易意味着围绕着某个链码进行操作，交易可以改变世界状态。 世界观：世界状态, 用于存放链码执行过程中涉及到的 状态变量，是一个键值数据库。典型的元素为 [chaincodeID, ckey]: value 结构。 链码服务在 Fabric 中，智能合约叫做链码 (Chaincode)，它包含所有的业务处理逻辑，并对外提供接口，外部通过调用链码接口来改变世界观。 链码需要实现 Chaincode 接口，以被 VP（Validating Peer,验证节点）节点调用，目前支持的交易类型包括：部署（Deploy）、调用（Invoke）和查询（Query）。不同链码之间可能互相调用和查询。 在实现上，链码需要运行在隔离的 容器 中，超级账本采用了 Docker 作为默认容器。对容器的操作支持三种方法：build、start、stop，对应的接口为 VM。 链码部署成功后，会创建连接到部署它的 VP 节点的 gRPC 通道，VP 节点和容器之间通过 gRPC 消息来交互。 成员权限管理通过基于 PKI 的成员权限管理，平台可以对接入的节点和客户端的能力进行限制。证书有三种: 注册证书 ECert：颁发给提供了注册凭证的用户或节点，一般长期有效； 交易证书 TCert：颁发给用户，控制每个交易的权限，一般针对某个交易，短期有效。 通信证书 TLSCert：控制对网络的访问，并且防止窃听。 角色管理节点角色是 Fabric 设计中的一大创新，根据性能和安全需求，不同的节点可以由不同的组织分别管理，彼此协作完成整个区块链系统的记账功能： 背书节点（Endorser Peer）：一类特殊的 Peer，对交易提案（Transaction Proposal）进行检查，通过执行智能合约计算交易执行结果（读写集合）并对其进行背书； 记账节点（Committer Peer）：负责维护账本，检查排序后交易结果合法性，接受合法修改，并写入到本地账本结构，目前所有 Peer 默认都是记账节点； 排序节点（Orderer）：正式交易会发给排序节点，排序节点负责对网络中所有交易进行排序处理，并整理为区块结构，之后被记账节点拉取提交到本地账本； 证书节点（CA）：提供标准的 PKI 服务，负责对网络中所有的证书进行管理，包括签发和撤销。 网络账本的基本单位是 通道（Channel），每个通道内的成员可以共享账本，不同通道内账本则彼此隔离。客户端可以向网络内发送交易，交易经过共识后被通道内的 Peer 节点接收并更新本地对应的账本。类似 chain33 的平行链概念。]]></content>
       <categories>
         <category>Blockchain</category>
       </categories>
       <tags>
         <tag>Fabric</tag>
-        <tag>备份</tag>
+        <tag>区块链</tag>
       </tags>
   </entry>
   <entry>
@@ -19,6 +64,9 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>消息</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[一个简单的消息路由器v1.0]]></title>
@@ -27,6 +75,9 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>消息</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[三年之痒：习惯了被你养成一个「废物」]]></title>
@@ -35,6 +86,9 @@
       <categories>
         <category>心旷神怡</category>
       </categories>
+      <tags>
+        <tag>结婚</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[限流 | Go 实现速率限制]]></title>
@@ -43,6 +97,10 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>Go</tag>
+        <tag>限流</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[跨链三部曲-3：IBC]]></title>
@@ -84,12 +142,16 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[mysql 热备份迁移]]></title>
+    <title><![CDATA[Mysql 热备份迁移]]></title>
     <url>%2F2018%2F05%2F08%2Fmysql-back-migration%2F</url>
     <content type="text"><![CDATA[Xtrabackup 是由 percona 公司 开源 的免费数据库 热备份 软件，它能对 InnoDB数据库和 XtraDB存储引擎的数据库进行 非阻塞 地备份。 众所周知，mysqldump 备份方式是采用的逻辑备份，其最大的缺陷是备份和恢复速度较慢，如果数据库大于50G，mysqldump备份就不太适合。 相比而言，Xtrabackup 的优势体现在： 备份、还原速度快，物理备份可靠 备份过程不会打断正在执行的事务（无需锁表） 能够基于压缩等功能节约磁盘空间和流量 支持流式处理，将备份传输到另外一台机器上 自动备份校验 Xtrabackup 安装完成后有 4 个可执行文件: xtrabackup: 是专门用来备份InnoDB表的，和mysql服务器没有交互； innobackupex: 是一个封装xtrabackup的Perl脚本，支持同时备份innodb和myisam，但在对myisam备份时需要加一个全局的读锁。 xbcrypt: 加密解密备份工具 xbstream: 流打包传输工具 全备恢复首先，准备一个数据库全备份： 1234567891011121314151617181920212223242526272829root@zhaobi:~# innobackupex --user=*** --password=*** ./mysql.backencryption: using gcrypt 1.6.5...180508 14:32:32 Connecting to MySQL server host: localhost, user: root, password: set, port: not set, socket: not setUsing server version 5.7.20-0ubuntu0.16.04.1...180508 14:32:33 &gt;&gt; log scanned up to (146069144514)xtrabackup: Generating a list of tablespacesInnoDB: Allocated tablespace ID 455 for parse/mtf_LTC_USDT, old maximum was 0180508 14:32:33 [01] Copying ./ibdata1 to /root/mysql.back/2018-05-08_14-32-32/ibdata1...180508 14:38:27 [01] ...done180508 14:38:27 Finished backing up non-InnoDB tables and files180508 14:38:27 Executing FLUSH NO_WRITE_TO_BINLOG ENGINE LOGS...xtrabackup: The latest check point (for incremental): '146066625808'xtrabackup: Stopping log copying thread..180508 14:38:27 &gt;&gt; log scanned up to (146071684987)180508 14:38:27 Executing UNLOCK TABLES180508 14:38:27 All tables unlocked180508 14:38:27 [00] Copying ib_buffer_pool to /root/mysql.back/2018-05-08_14-32-32/ib_buffer_pool180508 14:38:27 [00] ...done180508 14:38:27 Backup created in directory '/root/mysql.back/2018-05-08_14-32-32/'180508 14:38:27 [00] Writing /root/mysql.back/2018-05-08_14-32-32/backup-my.cnf180508 14:38:27 [00] ...done180508 14:38:27 [00] Writing /root/mysql.back/2018-05-08_14-32-32/xtrabackup_info180508 14:38:27 [00] ...donextrabackup: Transaction log of lsn (146061868327) to (146071684987) was copied.180508 14:38:27 completed OK! Xtrabackup 备份原理： 备份开始时首先会开启一个后台检测进程，实时检测 mysql redo log的变化，一旦发现有新的日志写入，立刻将日志记入后台日志文件 xtrabackup_log中，之后复制 InnoDB 的数据文件以及系统表空间文件ibdatax，复制结束后，将执行 flush tables with readlock ,然后复制 .frm .MYI .MYD 等文件，最后执行 unlock tables。 输出 completed OK! 信息代表备份成功。 看一下备份后的文件列表： 123456789101112root@zhaobi:~# ls -l mysql.back/2018-05-08_14-32-32/total 349608-rw-r----- 1 root root 487 May 8 14:38 backup-my.cnf-rw-r----- 1 root root 2362 May 8 14:38 ib_buffer_pool-rw-r----- 1 root root 348127232 May 8 14:32 ibdata1drwxr-x--- 2 root root 4096 May 8 14:38 mysqldrwxr-x--- 2 root root 4096 May 8 14:38 parsedrwxr-x--- 2 root root 4096 May 8 14:38 performance_schemadrwxr-x--- 2 root root 12288 May 8 14:38 sys-rw-r----- 1 root root 123 May 8 14:38 xtrabackup_checkpoints-rw-r----- 1 root root 445 May 8 14:38 xtrabackup_info-rw-r----- 1 root root 9819136 May 8 14:38 xtrabackup_logfile 然后，将备份好的数据拷贝到目标主机，准备进行恢复： 先关掉目标主机的 mysql 服务，准备一个全备份： 1$ innobackupex --apply-log /path/to/BACKUP-DIR 准备完成后，检查下最后输出到信息： 12150806 01:01:57 InnoDB: Shutdown completed; log sequence number 1609228150806 01:01:57 innobackupex: completed OK! 接着进行全备恢复： 1$ innobackupex --copy-back /path/to/BACKUP-DIR 增量备份优点： 数据库太大没有足够的空间全量备份，增量备份能有效节省空间，并且效率高； 支持热备份，备份过程不锁表（针对InnoDB而言），不阻塞数据库的读写； 每日备份只产生少量数据，也可采用远程备份，节省本地空间； 备份恢复基于文件操作，降低直接对数据库操作风险； 原理： 首先完成一个全备份，并记录下此时检查点LSN； 然后增量备份时，比较表空间中每个页的LSN是否大于上次备份的LSN，若是则备份该页并记录当前检查点的LSN。 增量备份需要用到两个参数： --incremental 告诉 innobackupex 进行增量备份 --incremental-basedir 指定增量备份的起始点，这里是之前备份过的某个目录 在全量备份基础上进行第一次增量备份： 12345root@zhaobi:~# innobackupex --user=** --password=*** --incremental --incremental-basedir=./mysql.back/2018-05-08_14-32-32/ ./mysql.inc1...180508 15:29:32 [00] ...donextrabackup: Transaction log of lsn (146084103197) to (146090143186) was copied.180508 15:29:32 completed OK! 对比两次备份的 xtrabackup_checkpoints 记录可以看到： backup_type 分别为 full-backuped，incremental 增量备份的 from_lsn 对应于上次全量备份的 to_lsn 1234567891011121314root@zhaobi:~# cat mysql.back/2018-05-08_14-32-32/xtrabackup_checkpointsbackup_type = full-backupedfrom_lsn = 0to_lsn = 146066625808last_lsn = 146071684987compact = 0recover_binlog_info = 0root@zhaobi:~# cat mysql.inc1/2018-05-08_15-24-35/xtrabackup_checkpointsbackup_type = incrementalfrom_lsn = 146066625808to_lsn = 146090143177last_lsn = 146090143186compact = 0recover_binlog_info = 0 在第一次增量备份基础上，进行第二次增量备份： 12345root@zhaobi:~# innobackupex --user=** --password=*** --incremental --incremental-basedir=./mysql.inc1/2018-05-08_15-24-35/ ./mysql.inc2...180508 15:41:50 [00] ...donextrabackup: Transaction log of lsn (146090145039) to (146094909487) was copied.180508 15:41:50 completed OK! 同理，第二次增量备份的 from_lsn 对应于第一次增量备份的 to_lsn： 1234567root@zhaobi:~# cat mysql.inc2/2018-05-08_15-36-58/xtrabackup_checkpointsbackup_type = incrementalfrom_lsn = 146090143177to_lsn = 146090145039last_lsn = 146094909487compact = 0recover_binlog_info = 0 增量恢复首先，准备一个全备份： 1innobackupex --apply-log --redo-only BASE-DIR 然后，依次将增量备份 append 到全备份，特别需要注意的是：最后一个增量备份不用 --redo-only 12innobackupex --apply-log --redo-only BASE-DIR --incremental-dir=INCREMENTAL-DIR-1innobackupex --apply-log BASE-DIR --incremental-dir=INCREMENTAL-DIR-2 确保每次操作最后都打出了日志信息： completed OK! 现在，所有的备份都整合到了 BASE-DIR，对合在一起的完全备份进行一次 apply 操作，回滚未提交的数据: 1innobackupex --apply-log BASE-DIR 最后，恢复所有备份： 1innobackupex --copy-back BASE-DIR 总结这篇文章简单记录并总结了使用 Xtrabackup 对 mysql 数据库进行 全量/增量备份并恢复的过程，希望能对初学者有所帮助。 很抱歉，就做了点微小的贡献。]]></content>
       <categories>
-        <category>Tool</category>
+        <category>数据库</category>
       </categories>
+      <tags>
+        <tag>mysql</tag>
+        <tag>备份</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[跨链三部曲-0：开篇]]></title>
@@ -111,6 +173,13 @@
       <categories>
         <category>Blockchain</category>
       </categories>
+      <tags>
+        <tag>钱包</tag>
+        <tag>imToken</tag>
+        <tag>KCash</tag>
+        <tag>P钱包</tag>
+        <tag>Cobo</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[Gopher 做 PPT 的正确姿势]]></title>
@@ -119,6 +188,11 @@
       <categories>
         <category>Tool</category>
       </categories>
+      <tags>
+        <tag>Go</tag>
+        <tag>slide</tag>
+        <tag>present</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[Lisk：下一个百倍币，也许现在是最佳入手时机。]]></title>
@@ -127,6 +201,12 @@
       <categories>
         <category>Blockchain</category>
       </categories>
+      <tags>
+        <tag>LSK</tag>
+        <tag>以太坊</tag>
+        <tag>EOS</tag>
+        <tag>NEO</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[大年初二，写给女儿]]></title>
@@ -136,6 +216,11 @@
         <category>心旷神怡</category>
         <category>黄泽瑄</category>
       </categories>
+      <tags>
+        <tag>春节</tag>
+        <tag>女儿</tag>
+        <tag>的地得</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[祝大家新年玉快阖家欢落]]></title>
@@ -144,6 +229,10 @@
       <categories>
         <category>心旷神怡</category>
       </categories>
+      <tags>
+        <tag>春节</tag>
+        <tag>戊戌</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[再来一次手牵手：php7.0 + protobuf]]></title>
@@ -152,6 +241,22 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>protobuf</tag>
+        <tag>PHP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Mysql主从同步/复制]]></title>
+    <url>%2F2018%2F01%2F14%2Fmysql-master-slave-sync%2F</url>
+    <content type="text"><![CDATA[主从同步原理 在master机器上，主从同步事件会被写到特殊的log文件中(binary-log);在slave机器上，slave读取主从同步事件，并根据读取的事件变化，在slave库上做相应的更改。 主从同步作用 数据备份：主数据库服务器故障后，可切换到从数据库继续工作，避免数据丢失。 架构扩展：水平扩展数据库的负载能力。当业务量越来越大，I/O访问频率过高，单机无法满足，此时做多库的存储，降低磁盘I/O访问的频率，提高单个机器的I/O性能。 读写分离：写服务使用master，读服务使用slave，读写服务分离互不影响，提高并发访问性能。 主从同步格式binlog日志格式有3种，mysql默认采用 Statement： Statement：基于语句的复制，主库把 sql语句 写入到binlog中，完成复制 优点是并不需要记录每一条sql语句和每一行的数据变化，减少了binlog日志量，节约IO，提高性能。缺点是在某些情况下会导致master-slave中的数据不一致(如sleep、last_insert_id以及user-defined functions等函数会出现问题)。 Row：基于行数据的复制，主库把每一行 数据变化 的信息作为事件，写入到binlog，完成复制 优点是不会出现某些特定情况下的存储过程、或function、或trigger的调用和触发无法被正确复制的问题。缺点是会产生大量的日志，尤其是 alter table的时候会让日志暴涨。 Mixed：statement与row的 混合 默认用语句复制，出问题时候自动切换成行数据复制,MySQL会根据执行的SQL语句选择日志保存方式。 主从同步过程主从同步需要3个线程协作： 主库-binlog输出线程: 每当有从库连接到主库的时候，主库都会创建一个线程然后发送binlog内容到从库。 从库-I/O线程: 当START SLAVE语句在从库开始执行之后，从库创建一个I/O线程，它读取主库的binlog输出线程发送的更新并拷贝这些更新到本地relay log文件。 从库-SQL线程: 读取从库I/O线程写到relay log的更新事件并执行。 主从同步实践主从部署必要条件： 主库开启binlog日志 主从server-id不同 从库服务器能连通主库 环境准备本地docker安装两个mysql: 123mysql:5.6mysql1(master): 172.17.0.3:3307mysql2(slave): 172.17.0.2:3308 配置文件mysql1(master): 172.17.0.3 配置: 1234567891011121314151617#mysql master1 config [mysqld]server-id = 1 # 节点ID，确保唯一# log configlog-bin = mysql-bin #开启mysql的binlog日志功能sync_binlog = 1 #控制数据库的binlog刷到磁盘上去 , 0 不控制，性能最好，1每次事物提交都会刷到日志文件中，性能最差，最安全binlog_format = mixed #binlog日志格式，mysql默认采用statement，建议使用mixedexpire_logs_days = 7 #binlog过期清理时间max_binlog_size = 100m #binlog每个日志文件大小binlog_cache_size = 4m #binlog缓存大小max_binlog_cache_size= 512m #最大binlog缓存大binlog-ignore-db=mysql #不生成日志文件的数据库，多个忽略数据库可以用逗号拼接，或者 复制这句话，写多行auto-increment-offset = 1 # 自增值的偏移量auto-increment-increment = 1 # 自增值的自增量slave-skip-errors = all #跳过从库错误 mysql2(slave): 172.17.0.2 配置: 1234567[mysqld]server-id = 2log-bin=mysql-binrelay-log = mysql-relay-binreplicate-wild-ignore-table=mysql.%replicate-wild-ignore-table=test.%replicate-wild-ignore-table=information_schema.% 重启两个mysql，让配置生效 master数据库进入master的数据库，为master创建复制用户 1CREATE USER repl_user IDENTIFIED BY 'repl_passwd'; 赋予该用户复制的权利 123grant replication slave on *.* to 'repl_user'@'172.17.0.2' identified by 'repl_passwd';FLUSH PRIVILEGES; 查看master的状态 1234567mysql&gt; show master status;+------------------+----------+--------------+------------------+-------------------+| File | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |+------------------+----------+--------------+------------------+-------------------+| mysql-bin.000005 120| | mysql | |+------------------+----------+--------------+------------------+-------------------+1 row in set (0.00 sec) slave数据库1234567891011mysql&gt; CHANGE MASTER TO MASTER_HOST = '172.17.0.3', MASTER_USER = 'repl_user', MASTER_PASSWORD = 'repl_passwd',MASTER_PORT = 3307,MASTER_LOG_FILE='mysql-bin.000005',MASTER_LOG_POS=120,MASTER_RETRY_COUNT = 60,MASTER_HEARTBEAT_PERIOD = 10000; # MASTER_LOG_FILE='mysql-bin.000005',#与主库File 保持一致# MASTER_LOG_POS=120 , #与主库Position 保持一致 启动从库slave进程 12mysql&gt; start slave;Query OK, 0 rows affected (0.04 sec) 参考 What is MySQL Replication and How Does It Work? MySQL Master-Slave Replication on the Same Machine HOW TO SETUP MYSQL 5.7 REPLICATION WITH MONITORING ON UBUNTU 16.04]]></content>
+      <categories>
+        <category>数据库</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+        <tag>同步</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[Cgo 让 C 和 Go 手牵手]]></title>
@@ -160,6 +265,10 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>Go</tag>
+        <tag>cgo</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[「黄泽瑄的成长记」第六季来啦]]></title>
@@ -168,6 +277,9 @@
       <categories>
         <category>黄泽瑄</category>
       </categories>
+      <tags>
+        <tag>女儿</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[Go 迷思之 Named 和 Unnamed Types]]></title>
@@ -176,6 +288,11 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>Go</tag>
+        <tag>Named Types</tag>
+        <tag>Unnamed Types</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[Go 语言从入门到放弃之 range]]></title>
@@ -184,6 +301,10 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>Go</tag>
+        <tag>range</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[「黄泽瑄的成长记」第五季来啦]]></title>
@@ -192,6 +313,9 @@
       <categories>
         <category>黄泽瑄</category>
       </categories>
+      <tags>
+        <tag>女儿</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[「黄泽瑄的成长记」第四季来啦]]></title>
@@ -200,6 +324,9 @@
       <categories>
         <category>黄泽瑄</category>
       </categories>
+      <tags>
+        <tag>女儿</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[「黄泽瑄的成长记」第三季来啦]]></title>
@@ -208,6 +335,9 @@
       <categories>
         <category>黄泽瑄</category>
       </categories>
+      <tags>
+        <tag>女儿</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[「黄泽瑄的成长记」第二季来啦]]></title>
@@ -216,6 +346,9 @@
       <categories>
         <category>黄泽瑄</category>
       </categories>
+      <tags>
+        <tag>女儿</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[Go 之初体验]]></title>
@@ -224,6 +357,11 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>Go</tag>
+        <tag>区块链</tag>
+        <tag>复杂美</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[人҉҉要҉҉是҉҉雾霾吸҉҉多҉҉了҉҉,҉҉连҉҉看҉҉东҉҉西҉҉眼҉҉都҉҉是҉҉花҉҉哈哈的҉҉。]]></title>
@@ -232,6 +370,10 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>微信</tag>
+        <tag>编码</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[「黄泽瑄的成长记」第一季来啦]]></title>
@@ -240,14 +382,21 @@
       <categories>
         <category>黄泽瑄</category>
       </categories>
+      <tags>
+        <tag>女儿</tag>
+        <tag>iMovie</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[两小儿「江」持不下辩「长城」]]></title>
     <url>%2F2016%2F12%2F17%2Ftwo-children-debate-on-Great-Wall%2F</url>
     <content type="text"><![CDATA[孔子东游钱塘江，水天相接，江天一色，美哉、壮哉。 路遇两小儿辩斗。 一儿曰：「长城」上映一日，口碑评分陷入江局，吾之于能否走向世界江信江疑。 一儿曰：江心比心，所谓仁者见仁，智者见智，个人主观臆断不可以偏概全。 一儿曰：艺谋张搞大场面，弄色之才登峰造极，然每每不能如观众所愿，江郎才尽乎？《英雄》之后，再无良作，江淹梦笔乎？ 一儿曰：不然，此片非往昔烂片可比，艺谋本色执导，好莱坞和我国一线伶人加盟，一流工业水准打造，即使在西方世界翻江倒海也未可知。 对曰：This is your feeling。国师坐拥天时地利人和之便，吾本对此片充满期待，然以今日之观感，大失所望：长城打怪，虽江心独妙，然西式的特效怪兽与中国特色精神文明建设格格不入；人物台词草草敷衍，人物性格亦无甚亮点；故事推进得莫名其妙，期间堆砌各种中国元素，恰似一个个割裂的舞台节目，掐着表计算演出时间，one by one 地～急着登场，又仓促谢幕。真是糟蹋了这满满一城的精致！ 一儿曰：此诚如所言，然五色禁军视觉之观感、大场景 3D 之特效、BGM 之震撼淋漓，不亦可赛艇乎？ 对曰：众人皆知国师有三把斧：霸气之阵容、华美之艳服、夺目之背景，然此等浮夸小技若欲俘获观众，须以故事情节之饱满、发人深省之价值观为本。江山易改，本性难移，汝不知《十面埋伏》《黄金甲》前车之鉴乎？江本逐末，甚之不惠。再有一附庸权贵伶人，世人皆称烂片女王，乃江门弃材也，而艺谋江颜屈体跪舔之，不惠又甚之诶。 「呸，汝江嘴拗舌，一派胡言，不要给我们景甜泼脏水」 「哼，汝江嘴硬牙，无可奉告，就要搞你们景甜大新闻」 孔子不能决也。 两小儿怒而蛤斥曰：「Naive，孰为汝多知乎？」]]></content>
       <categories>
-        <category>蛤学</category>
+        <category>一颗赛艇</category>
       </categories>
+      <tags>
+        <tag>长城</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[天分与坚持：四分之一世纪的跑步]]></title>
@@ -256,14 +405,23 @@
       <categories>
         <category>心旷神怡</category>
       </categories>
+      <tags>
+        <tag>村上春树</tag>
+        <tag>跑步</tag>
+        <tag>写作</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[《你的名字》难再续]]></title>
     <url>%2F2016%2F12%2F04%2FYour-Name%2F</url>
     <content type="text"><![CDATA[梦里相逢人不见，若知是梦何须醒。纵然梦里常幽会，怎比真如见一回。 男高中生小江一天醒来突然发现自己变成了女生，拥有了亮丽的歌喉，而女高中生小宋醒来后发现自己裤腰带特别高。 身处两地的两人身体互换，奇妙地过上了对方的生活。 身为小宋的小江上课时听到老师讲林则徐的故事：「苟……」，大受启发；身为小江的小宋考入名牌大学，突然来到北京，突然就任要职。 有一天，小宋偶然发现自己不再能跟小江交换身体，于是前往北京寻找原因，发现未来的小江身患重病，躺在军区医院里。 小宋为了警告小江，跑到地动仪前祈祷再次穿越到小江的身体里。她看到蟾蜍嘴里的球掉了下来，陷入了昏迷。 醒来后，小宋再度变成了小江。 她跑到天安门前大喊「苟……」，此时，变成小宋的小江也在天安门前，听到小宋的呼喊。两人擦身错过，却看不到对方，只能听到声音。这时小江提议绕着天安门广场奔跑，跑得越来越快，直到两人均速一样的时候就看到了对方。 小宋拿起笔说我们写下对方的名字吧，小江说「好」，这时候小江消失了。当小宋醒来，却再也不记得那个人是谁。她打开手掌，只能看到手心里写着「+1s」。 原来，两个人一直在以 1s 的单位不停远离开去，所以永远都见不到对方。小宋在绝望之中站在天安门广场上大声呼喊「你的名字是……」 冥冥之中突然传来小江的声音：「蛤？」]]></content>
       <categories>
-        <category>蛤学</category>
+        <category>一颗赛艇</category>
       </categories>
+      <tags>
+        <tag>新海诚</tag>
+        <tag>你的名字</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[苦涩虐心的爱河]]></title>
@@ -272,6 +430,11 @@
       <categories>
         <category>挪威的森林</category>
       </categories>
+      <tags>
+        <tag>渡边</tag>
+        <tag>直子</tag>
+        <tag>绿子</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[一种从来不曾实现而且永远不可能实现的憧憬]]></title>
@@ -280,6 +443,11 @@
       <categories>
         <category>挪威的森林</category>
       </categories>
+      <tags>
+        <tag>永泽</tag>
+        <tag>初美</tag>
+        <tag>纯真</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[你真是个好人呢]]></title>
@@ -288,14 +456,21 @@
       <categories>
         <category>挪威的森林</category>
       </categories>
+      <tags>
+        <tag>好人</tag>
+        <tag>在轮下</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[这世上的长者已不多]]></title>
     <url>%2F2016%2F11%2F26%2Fonly-older%2F</url>
     <content type="text"><![CDATA[他，一位可敬的长者，出生在 1926 年，曾经一度大权在握，也曾拥有许多信众，在乱世身经百战，与对手谈笑风生，在永生的道路上，他走得比谁都远…… 然而今天，这位长者，突然～就去见马克思了。 他的经历嘛，就是到了哈瓦那，到了 1959 年初的时候，他就领着他创建的古巴共产党建立了古巴社会主义共和国。 在哈瓦那执政 52 年，他也没做别的，主要就是三件事: 第一个，就是通过努力奋斗在 2014 年获得了孔子和平奖。 第二个，就是 sleep with 35000多个 women。 第三个，就是躲过了 638 次美国反动派的暗杀。 如果说还有什么别的，那就是在续命征程上落后了中国的长者，很惭愧，先走一步了。]]></content>
       <categories>
-        <category>蛤学</category>
+        <category>一颗赛艇</category>
       </categories>
+      <tags>
+        <tag>卡斯特罗</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[不正常人类疗养院]]></title>
@@ -304,6 +479,9 @@
       <categories>
         <category>挪威的森林</category>
       </categories>
+      <tags>
+        <tag>疗养院</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[阿美寮的三段言情戏]]></title>
@@ -312,6 +490,9 @@
       <categories>
         <category>挪威的森林</category>
       </categories>
+      <tags>
+        <tag>纯爱</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[他又出去约了]]></title>
@@ -320,6 +501,10 @@
       <categories>
         <category>挪威的森林</category>
       </categories>
+      <tags>
+        <tag>约炮</tag>
+        <tag>林丹</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[女追男 | 奇特的邂逅]]></title>
@@ -328,6 +513,10 @@
       <categories>
         <category>挪威的森林</category>
       </categories>
+      <tags>
+        <tag>绿子</tag>
+        <tag>女追男</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[男人啊，就这副德性？]]></title>
@@ -336,6 +525,11 @@
       <categories>
         <category>挪威的森林</category>
       </categories>
+      <tags>
+        <tag>永泽</tag>
+        <tag>约炮</tag>
+        <tag>了不起的盖茨比</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[木月之死和黑暗中的裸体]]></title>
@@ -344,6 +538,12 @@
       <categories>
         <category>挪威的森林</category>
       </categories>
+      <tags>
+        <tag>渡边</tag>
+        <tag>直子</tag>
+        <tag>木月</tag>
+        <tag>自杀</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[希望你永远记住我]]></title>
@@ -360,6 +560,10 @@
       <categories>
         <category>心旷神怡</category>
       </categories>
+      <tags>
+        <tag>看中国</tag>
+        <tag>基辛格</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[《半场无战事》观影]]></title>
@@ -368,30 +572,46 @@
       <categories>
         <category>心旷神怡</category>
       </categories>
+      <tags>
+        <tag>李安</tag>
+        <tag>比利·林恩</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[我作为一个地产商怎么把我选到白宫去了]]></title>
     <url>%2F2016%2F11%2F09%2FTrump-White-House%2F</url>
     <content type="text"><![CDATA[那么人呐就都不知道，自己就不可以预料。 一个人的命运啊，当然要靠自我奋斗，但是也要考虑到历史的行程。 我绝对不知道，我作为一个纽约的地产商，怎么就把我选到白宫去了，所以奥巴马同志跟我讲话，说「选民都决定啦，你来当总统」。 我说另请高明吧，我实在也不是谦虚，「我一个地产商人怎么跑到白宫来了呢」？ 但是呢，巴马同志讲「大家已经研究撅腚了」。 所以，后来我就念了两首诗，叫「苟利国家生死以，岂因祸福避趋之」。 那么所以，我就到了白宫…… 至于到了白宫之后的事，你问我，我只能对你说「无可奉告」。 作为美利坚的总统，我当然不会疯狂到去按核武器按钮，不过大家可以等着看我的四年计划哦～ 且看我怎么让墨西哥出钱建高墙，把2千万非法移民全都赶跑，禁止穆斯林入境，全歼伊斯兰国，撕毁巴黎协议，降税15%，让美国经济增长率追上中国，和中国打贸易战，推翻奥巴马医保，推翻平权法案，禁止人工流产，把希拉里关起来…… 一想起这些，我这年过 70 的老翁都禁不住感到 very excited！ 希拉里老妹，你也别那么沮丧。虽然你输了总统大位，我为你同情，不过你想开点，往后四年，你不必在你老公曾经出轨过的那个恶心的办公室工作，你应该感到庆幸才是，蛤蛤。]]></content>
       <categories>
-        <category>蛤学</category>
+        <category>一颗赛艇</category>
       </categories>
+      <tags>
+        <tag>川普</tag>
+        <tag>总统</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[《釜山行》的丧尸之膜]]></title>
     <url>%2F2016%2F09%2F26%2FTrain-to-Busan%2F</url>
     <content type="text"><![CDATA[最近，电影《釜山行》韩语中字版在朋友圈热传后，网上是一阵阵的好评如潮，尤其是著名相声演员于谦因在此片中饰演那个胖大叔而一炮走红。 要说这个胖大叔，其实人家真名叫马东锡，你要是韩片看得够多的话，会发现他经常出没在韩影出演配角，比如我看过的评价不错的就有惊悚片《邻居》、犯罪片《不当交易》《与犯罪的斗争》《罪恶的编年史》、古装动作片《群盗》等。 既然说了他，就不能不说主演孔侑了。这位又高又帅韩国实力派美男，他主演的《熔炉》豆瓣评分高达9.1分，值得每一个标榜自己喜欢韩国电影的有志青年去仔细体会。 《熔炉》揭露学校性侵暴力毕竟太过深沉，我更想说一下他主演的另一部爽快的动作片《嫌疑者》。 作为《谍影重重》的首席学徒，此片可谓青出于蓝而胜于蓝。 赤身搏斗戏、巷战、飙车大战，都流畅得不得了，近身格斗招招凌厉，眼花缭乱的剪辑玩的如火纯青，加上鼓点急促的配乐元素，观者无不看后大呼过瘾。其燃爆程度近年来看，唯有《疯狂的麦克斯4》可与之匹敌。 回过头来说《釜山行》，网上都说是 8分好评，我看这片也值这个评价，这也是韩国恐怖片正常发挥的水准。 为什么值8分呢？除了特效牛逼，剧情紧凑，人物性格突出外，还有一个最重要的原因：丧尸题材拍出了人性的高度。 跟《行至走肉》的主题类似，杀到最后，人类不是和丧尸斗争，而是和你身边的人搏斗，为了争取可怜的生存空间，自私、猜疑、孤立，相煎何太急…… 更让我 excited 的是：影片看到最后，导演也不忘来膜一把。 too young 的小白可能会问：膜在哪里？ 1997年长者访美第一站夏威夷州，与州长会晤时，会场外有大量抗议者用高音喇叭抗议，这虽然不是美国政府的安排，但估计也是得到了当局默许，人家正准备看长者的笑话呢。 长者什么场面没见识过？且看他如何化解。长者想起了自己民国大学时期学过夏威夷吉他，于是即兴演奏了一曲《Hello Hawaii》，并邀请州长夫人演唱，有效地缓解了会场尴尬的气氛，博得了会场嘉宾们好几百人的一致好评。 在《釜山行》结尾，历经生死磨难，列车上仅剩的一个孕妇和一个小女孩相互搀扶着走出隧道，外面伏击待命的士兵正准备开枪，突然听到了这首韩语版的《Aloha Oe》，马上下令「生存者，接近中」，全片终！ 红衣女孩高唱《Aloha Oe》得以续命，其他所有人的命都被贡献出来了，这才是本片的核心。 《Aloha Oe》，续命神曲，当之无愧啊。 现在知道导演膜力深厚了吧？]]></content>
       <categories>
-        <category>蛤学</category>
+        <category>一颗赛艇</category>
       </categories>
+      <tags>
+        <tag>釜山行</tag>
+        <tag>孔侑</tag>
+        <tag>续命</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[你国轰轰烈烈G20 我杭闷声放长假]]></title>
     <url>%2F2016%2F09%2F01%2FHangzhou-holiday-on-G20%2F</url>
     <content type="text"><![CDATA[峰会在即，杭州全城都很激动，为了给全世界各国领导人留下一个安全、干净、舒畅的开会环境，我市9月1号到7号休假，把普通老百姓全给欢送出城了。 工厂歇业、店铺全关、道路畅通一改往日拥堵之旧貌……当是时，天时地利人和，徐嘉诰老先生研究了几十年的《天气晴朗学》在此举世瞩目的峰会到来期发挥了重要作用： 本来天气预报说这几天有雨，结果这G20一来啊，阳光明媚，你看，万里乌云的天空下还飘着朵朵蓝翔。 为了办好这届G20峰会，杭州普通市民的出行受到了不同程度的影响。 晚饭后去超市买盒牛奶打算早上喝，一路上，超市保安、公交司机、警察、小区门卫各让喝一口，早餐奶就这样全喝完了。 汽车后备箱里放箱红酒，安检要求每瓶喝一口。喝了后准备回家，刚启动车子，警察不让走说酒后驾车了。 你要问我滋词不滋词G20放假？我说滋词，我就明确告诉你这点。一年过两个国庆长假，有什么不好吗？ 但是，你一定要问我「你杭举全市之物力，接与列国之欢心」，这是不是在搞面子工程？ 没有任何这个意思。加强安保工作，是历届G20峰会的国际惯例。 我告诉你，我是身经百战，见得多了，西方国家的哪个峰会我没去过？人家比我们的严得不知道哪里去了。 2009年英国伦敦G20峰会，当地政府关闭了连接主会场的轻轨站，封堵附近道路，仅开放人行道供当地须出示有效身份证件的居民出入，并严格进行安检。 2010年韩国首尔G20峰会，采用“无车日”和“错峰限行”等多项交通管制措施，数以万计的士兵驻守在重要公共设施附近以及山区；在地铁站等大型公共场所部署了特种部队，车站寄存柜暂时封闭，垃圾箱被换成透明容器。 2011年法国戛纳G20峰会，当时法国海陆空三军总动员,安排拆弹专家排查码头或游艇，元首入住酒店安放防暴犬和监察设备，机场也进行空中警戒安保；戛纳当地学校停课，周围所有建筑禁止开窗。 2013年俄罗斯圣彼得堡G20峰会，安保严格到连宠物狗都登记了。…… 同其他各国相比，杭州G20峰会的安保投入并不夸张。我们的精神是：没有最严，只有更严。严防死守，滴水不漏！ 国进民退，闷声放长假，这是坠吼滴。]]></content>
       <categories>
-        <category>蛤学</category>
+        <category>一颗赛艇</category>
       </categories>
+      <tags>
+        <tag>G20</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[我承诺会给你一个美好的未来]]></title>
@@ -400,39 +620,62 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>C++11</tag>
+        <tag>future</tag>
+        <tag>promise</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[女排夺冠困扰我的两大难题]]></title>
     <url>%2F2016%2F08%2F21%2Fwomen's-volleyball-champion%2F</url>
     <content type="text"><![CDATA[今天早上的这场女排决赛，燃爆了，据路边社报道，国内收视率一度达到 58.7%，而湖南卫视、江苏卫视、浙江卫视还不及其十分之一，足见国人对女排的热情，其盛况不亚于巴西人万人空巷地看奥运男足。 我们的乒乓球号称「国球」，是因为它有着悠久的历史和辉煌的战绩，6届奥运会的24枚金牌，我们霸气地拿下了23枚；如果说我们国家有「母球」的话，我想，女排当之无愧。 从1984到2004，从2004到2016，中间虽然历经磨难，饱受摧残，依然本色不改：团结、拼搏，是她们一以贯之地优良传统，不像某些队那样…… 三大球中，也就女排最争气了。 1国内主流媒体的报道基本上是说，这次女排能夺冠，靠的就是「不畏强敌、团结协作、自强不息」的女排精神。 作为一个无神论者，我是不相信单纯依靠精神的力量就可以取胜的，何况我们的对手里面有巴西、美国、俄罗斯等老牌强劲对手以及塞尔维亚这样的后起之秀。 女排精神，固不可丢，这也是女排一路走来不断创造辉煌的主观因素。 倘若我们只谈情怀，避谈技术，就跟愤青没什么区别了。赛场上只有你争我夺的实力较量，要发得起有力的进攻，同时扛得住对手的进攻，精神力量只能起到辅助、催化、刺激的作用。 在精神层面，我们常看到自由人、接应凭借顽强的毅力去挽救那些几乎不可能救回的高难度球。 在技术层面，我们看到主攻、副攻借过硬的实力进攻屡屡得分。 2此番里约夺冠，郎平指导功不可没。 郎平用人很准，能充分地发挥出每位队员的特长，并及时地根据对手节奏的变化有针对性地进行战术调整。 在刻苦训练、顽强拼搏的基础上，郎平将国际化、专业化的团队合作形式和科学训练的理念引入中国女排，使得女排这么一支年轻的队伍，经过两三年训练就能脱胎换骨，斩获佳绩。 因此，可以这么说，郎平给中国女排实现了三个现代化：技术化、专业化、科学化，这才是女排继2015年夺得世界杯冠军后又荣获奥运冠军的根本原因。 反观国羽，固步自封，不求变化，对手都把它研究透了，它还躺在往日的成绩薄中不可自拔。短短4年，从伦敦奥运包揽5金，到这届奥运会连丢3金，问题都出在自己身上。 3这届奥运会女排的前三甲，还有段难以释怀的历史。「17 年前，季军轰炸了冠军在亚军的大使馆」。 长者在接受华莱士记者的采访中，谈到了此事，长者说： In the 1989 disturbance, we truly understand the passion of students recalling for democracy and freedom.In fact, we’ve been always working to improve our system of democracy, but we could not possibly allow people with ulterior motive to use students to overthrow the government under the pretest of democracy and freedom. 华莱士追问道： Did a part of you admire his courage? 长者机智地笑了，说： I know what you are driving at, but what I want to emphasize is that we fully respect every citizens’ right to freely express his wishes and desires, but I don’t favor any opposition to government actions during emergency. 华莱士提到了南斯拉夫大使馆问题，问：「你说是美国故意轰炸南斯拉夫大使馆？」 长者笑了，回问华莱士：「Did a part of you believe it?」 华莱士愣了，没敢回答。长者说，这个问题应该由你们美国回答，你们的武器很先进，出了这种问题，你们应该急着去找原因，克林顿已经多次道歉了…… 4最后，有两个问题还在困扰着我： 谁能告诉我塞尔维亚女排 19 号的微信号？ 求塞尔维亚女排教练同款口香糖？]]></content>
       <categories>
-        <category>蛤学</category>
         <category>心旷神怡</category>
+        <category>一颗赛艇</category>
       </categories>
+      <tags>
+        <tag>女排</tag>
+        <tag>塞尔维亚</tag>
+        <tag>奥运</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[公众号最后一日：一场重命名风波]]></title>
     <url>%2F2016%2F08%2F19%2Frename-wechat-public-account%2F</url>
     <content type="text"><![CDATA[今天副组长魏武挥在朋友圈发图说公众号可以改名了。 这可是个天大的好消息啊，想当年，小明注册这个公众号，用脚趾头想了个不伦不类的「我为朝露谁苦多」。说实话，这名字不押韵，不好记，坠痛苦的还是；那些纯情的女孩子，还没关注就被「譬如朝露，去日苦多」这股猥琐的气质给吓跑了。 后来，我一直寻思着想换个名字，但是霸道的公众平台一直不开放修改公众号名字的权限，这给我的自媒体声誉造成了不可估量的损失。 这让我不由得想起了那句老话，「时间对于爱耍小聪明的人是最无情的」。你觉得抖了个机灵，在别人眼里，也许就是逗逼犯傻。 比如，歌坛重量级人物刘欢，给女儿取名：「刘一丝」，说起这个奇怪的名字，一帮看热闹不嫌事大的记者围着他惊讶地问「取这个名字有什么寓意吗？」 刘欢很得意，哈哈狞笑道「这你们就不知道了吧。一丝来自成语一丝不挂，是佛家用语，指的是灵台清净、四大皆空、心里没有一丝尘世的牵挂，这叫一丝不挂，讲的是心境，是很高的修行啊」。 记者一脸懵逼，强拧着脸上的肌肉和刘欢笑成一团，「妈的，这个笨蛋想一丝不挂，自己姓刘又他妈忘了，居然还给女儿留了一丝……」 这就是卖弄学问、弄巧成拙的例子。 王朔有一句体谅人情世故的话，说的特别好： 父母给子女取名字时一时的不谨慎，给孩子造成的是终生的心灵痛苦。 我们上学的时候，但凡名字有点歧义、邪义的家伙，都被身边无情的小伙伴残忍地修理。 据说刘欢女儿现在还叫「刘一丝」，希望她过得快乐吧。 好罢，讲了这么多，无非说取名不可儿戏，要慎重。毕竟这个公号是我一手带大的，充满了感情，于是，我在朋友圈里咨询重命名。 某蛤丝怂恿我改名「黄续忠」，我当即就喷了一脸盐汽水回去「什么续命，尽放狗屁!」，没想到这厮又给我顶了一句「一派胡言，非常气愤！」……两枚蛤丝就这个「续」字膜得不可开交。 赛艇中纪委一贯督促蛤丝们不要武膜，要文膜。暴力膜谁不会啊，蔡英文、卡梅伦、布冯，哪个不是被我膜得栩栩如生？！naive。 思来想去，觉得还是叫本尊真名坠好，从明天开始，这个公众号名字就正式改为：「黄学忠」，算是小明行走江湖的另一个 ID 吧。 很惭愧，就做了点微小的贡献，谢谢大家。]]></content>
       <categories>
-        <category>蛤学</category>
+        <category>一颗赛艇</category>
       </categories>
+      <tags>
+        <tag>微信</tag>
+        <tag>刘一丝</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[平常心造就「一颗赛艇」]]></title>
     <url>%2F2016%2F08%2F15%2Fnormal-heart-makes-exciting%2F</url>
     <content type="text"><![CDATA[在刚刚结束的里约奥运会羽毛球男双 1/4 决赛当中，中国组合张楠/傅海峰为球迷奉献了一场酐畅淋漓的大逆转： 在首局失利，决胜局大比分落后的情况下，还能顽强取胜，以 2-1战胜韩国组合，晋级半决赛。 小明正好观看了整场比赛的直播，真是 excited！中国队组合“玩的就是心跳”，在三局比赛中，他们都是一开始大比分落后，被韩国队虐得满地找球。 可能由于是在当地时间早上比赛，两位队员还没睡醒？第一局完全不在状态，没有打出原奥运冠军的水准，11-21 狼狈收场。 第二局，开始也打的不好，中国队几乎是复制了第一局，韩国队一度 5-1 领先。然而最凶险的时刻还是在这局的尾声，在韩国队 18-16 领先的时候，傅海峰与张楠终于睡狮猛醒，一下子狂砍 5 分，以 21-18 拿下非常关键的一局。 第三局，就更有意思了。一上来，中国队还是大比分落后，8－15……我都看到韩国队那边开始准备庆祝胜利了。中国队苦追，最后韩国队 20-17 拿到三个赛点。关键时候，傅海峰与张楠毫不手软，一直将比分追平。 在 21-21 之时，中国队突然发了一个后场球，成功地打了韩国队一个措手不及，对手即便跪倒在地也没能将球救回来，中国队在心理上给了对手致命一击。 置之死地而后生，韩国队真是拿这对打不死的小强没辙了，垂头丧气地，连爬都没力气了，蛤蛤～ 最终，中国组合一鼓作气，以 24-22 拿下对手，韩国教练无奈地低下了头。 决胜盘大比分落后，我怎么也想不到中国队最终能拿下这场比赛。逆转靠的是什么？心理。赛后，傅海峰接受记者采访说： 我们场上比他们做的好的就是关键分的处理。我们都是奥运冠军，相信我们的实力。比赛，后半段他们慌了。一开始我们不行，后半段他们不行，这就是奥运会的魅力。 作为奥运会参赛选手们而言，他们能代表国家登上这个舞台，本身就是一种成功，只要放下思想包袱，全力以赴，输赢其实真的没那么重要。 韩国选手输了，输在求胜心切；中国选手赢了，赢在心态和拼搏劲。 第一局输后，中国队往后打得没有什么心理压力： 反正我们都输了，无所谓，就当输的来打，反而对手表现得越来越紧，非常想赢球，反而丢了这局。 这是一场精彩的比赛。]]></content>
       <categories>
-        <category>心旷神怡</category>
+        <category>一颗赛艇</category>
       </categories>
+      <tags>
+        <tag>羽毛球</tag>
+        <tag>奥运</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[从「王宝强事件」学人生经验]]></title>
     <url>%2F2016%2F08%2F14%2Flife-experience-on-Wang-Baoqiang%2F</url>
     <content type="text"><![CDATA[突然从傅园慧的「洪荒之力」这股清流风刮到王宝强的半夜离婚声明，小明明显感觉不太适应。 你要问我对「宝宝妻子出轨经纪人」这事怎么看？我只能说四个字：「无可奉告」。 作为新时代理性的网民，你们千万要记着，「不要见得风，就是雨」，看到这些消息，你们本身也要判断，像那些明显是无中生有的东西，比如那几个冒充注册的小号说什么「告诉你，我们还3P了」、「王宝强家暴」之类的谣言，你再帮它传播一遍，你等于……你也有责任的对吧？ 你们啊，还是要提高自己的姿势水平，识得唔识得？哎！我真是为你们感到捉急啊，你们有一个好，网上有什么热点，你们跑的比香港记者还快，这次你们跑到人家微博去问候人家父母，结果走错地方，把乒乓球运动员宋喆同学骂了一遍，瞧你们这副德行，还是图样图森破，上台拿衣服。 今天我看你们这么热情，一句话不说也不好，我跟你讲，我是身经百战，见得多了：文章出轨、黄海波嫖娼、谢霆锋离婚……哪个我没见识过？ 如果你一定要问我滋词不滋词王宝强这个声明，我是滋词的，我就明确告诉你这一点。老婆出轨了，他根据婚姻基本法提出离婚，有什么问题吗？ 我很抱歉，我今天是作为一个过来人跟你们讲，我有必要给你们传授一点人生的经验，李笑来老师在《通往财富自由之路》书中说： 人生中浪费生命、虚掷光阴、永陷贫穷的三大坑： 莫名其妙地凑热闹 心急火燎地随大流 操碎了别人的心肝]]></content>
       <categories>
-        <category>蛤学</category>
+        <category>一颗赛艇</category>
       </categories>
+      <tags>
+        <tag>王宝强离婚</tag>
+        <tag>出轨</tag>
+        <tag>李笑来</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[写给女儿]]></title>
@@ -441,6 +684,9 @@
       <categories>
         <category>黄泽瑄</category>
       </categories>
+      <tags>
+        <tag>女儿</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[表驱动｜码农的豹变]]></title>
@@ -449,6 +695,10 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>表驱动</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[漫话 C++11 之 atomic_flag]]></title>
@@ -457,14 +707,22 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>C++11</tag>
+        <tag>atomic</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[布冯的历史行程]]></title>
     <url>%2F2016%2F07%2F03%2Fhistory-of-Buffon%2F</url>
     <content type="text"><![CDATA[我的经历就是到了意大利帕尔马俱乐部，到了 2001 年夏天的时候，我就想我在这里只是个替补门将，我想我应该换个俱乐部踢球。 于是我就给尤文图斯里皮主教练写了一个报告，他说欢迎你来，不过这个 apply for goalkeeper 你要去做一个报告。我就做了一个「论守门员扑出点球的正确姿势」的报告，这个报告经过俱乐部经理和几十名队员的一致通过。这个报告做了以后不久，2001 年的 7 月 1 日，意甲俱乐部就把我调到尤文图斯去了。 那么人呐就都不知道，自己不可以预料。一个门将的命运啊，当然要靠自我奋斗，但也要考虑到足协的历史行程，我绝对不知道我作为一个帕尔马替补门将怎么把我交换到尤文图斯去了。 所以里皮同志同我讲话说「俱乐部决定了，让你来当守门员」。我说另请高明吧，我实在也不是谦虚，我一个帕尔马新秀怎么到尤文图斯来了呢。但是呢，里皮同志讲「大家已经研究决定了」。所以后来我念了两首诗，叫「苟利球队生死以，岂因祸福避趋之」，那么所以我就到了意大利尤文图斯俱乐部。 在尤文图斯，我干了这十几年也没有什么别的，大概三件事： 第一个，作为主力门将参加了 2002、2006、2010、2014年的世界杯和 2004、2008、2012、2016年的欧洲杯。 第二个，严防死守！严防死守！为意大利夺得 2006 年世界杯冠军。 第三个，意大利历史上欧洲杯出场时间第一人。 如果说还有一点成绩就是「守门员最高转会费纪录保持者」，这个对我的历史定位有很大的关系的，因为我后来又带病续约踢了一年多，等于说我在尤文图斯干了十几年的核心球员。还有接任国家队队长也是很大的，但是这些都是次要的，我主要的就是三件事情。 很惭愧，就做了一点微小的工作，谢谢大家！]]></content>
       <categories>
-        <category>蛤学</category>
+        <category>一颗赛艇</category>
       </categories>
+      <tags>
+        <tag>布冯</tag>
+        <tag>欧洲杯</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[漫话 C++11 之 condition_variable]]></title>
@@ -473,6 +731,10 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>C++11</tag>
+        <tag>condition_variable</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[漫话 C++11 之 mutex]]></title>
@@ -481,6 +743,10 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>C++11</tag>
+        <tag>mutex</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[漫话 C++11 之 thread]]></title>
@@ -489,14 +755,22 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>C++11</tag>
+        <tag>thread</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[说好不分手，你怎么突然就脱欧了]]></title>
     <url>%2F2016%2F06%2F24%2Fbreak-up-with-European%2F</url>
     <content type="text"><![CDATA[我的经历就是，到了 2016 年中的时候，我的任期快到了，我想我应该脱欧，于是我就给默克尔总理、奥朗德总统，给他们写了一封信。 他们说欢迎你脱，不过，这个 apply for leaving，你要去发起一个公投，我就发起了一个《英国脱离欧盟趋势》的公投，这个公投经过好几千万英国人一致通过。 人呐就都不知道，自己不可以预料。一个人的命运啊，当然要靠自我的奋斗，但是也要考虑到历史的行程。 我绝对不知道，我一个左翼政党，怎么就带领脱欧了，所以伊丽莎白同志同我讲话： 王室都决定了，你来背这个锅。 我说另请高明吧，我实在也不是谦虚。我一个左翼政党怎么就背右翼的锅了呢？但是，伊丽莎白同志讲： 王室已经研究决定了。 后来我就念了两句诗： 苟利大英生死以，岂因欧盟避趋之。 所以我就脱离了欧洲。 当首相这几年我也没有干什么别的，大概三件事： 第一个，支持同性婚姻合法化。 第二个，搞了个苏格兰独立公投留住了苏格兰。 第三个，搞了个脱欧公投脱离了欧盟。 如果说还有什么成绩，那就是见证了一个穆斯林当上了伦敦市长，这对大英的绿化事业有很大的关系。还有 2012 年的奥运会也是贡献很大滴。但这些都是次要的，我主要就是这三件事。 很惭愧，就做了一点微小的工作，谢谢大家。]]></content>
       <categories>
-        <category>蛤学</category>
+        <category>一颗赛艇</category>
       </categories>
+      <tags>
+        <tag>脱欧</tag>
+        <tag>卡梅伦</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[libevent 的并发工作做得太好了]]></title>
@@ -505,15 +779,23 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>libevent</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[没有什么是「一颗赛艇」不能解决的，如果有，那就两颗]]></title>
     <url>%2F2016%2F06%2F07%2Ffork-twice%2F</url>
     <content type="text"><![CDATA[前几天深谈了关于 fuck 的那些事，今天来聊一聊 fuck 它远房表哥：fork。 fork 和 fuck 实为远亲，彼此往来也不多，只在饶舌上有异曲同工之妙。 fuck 常出没于美式口头俚语，fork 则在计算机世界纵横驰骋。 fork 是 Unix 内核创建一个新进程的唯一方式，新建的子进程 拷贝 父进程的数据空间、堆、栈等信息，这也是 fork 函数命名的由来。 fork 完成之后，究竟是父进程先执行还是子进程先执行是不确定的，这取决于内核的调度算法，因此，有可能出现这些情况： 孤儿进程孤儿进程是指父进程在子进程结束之前 over (return 或 exit)。 但是孤儿进程并不会像上面画的那样持续很长时间，当系统发现孤儿进程时，init 进程就收养孤儿进程，成为它的父亲，child 进程 exit 后的资源回收就都由 init 进程来完成。 僵尸进程僵尸进程是指子进程在父进程结束之前 over 了，但是父进程没有用 wait 或 waitpid 回收子进程。 子进程在结束的时候会给其父进程发送一个 SIGCHILD 信号，父进程默认是忽略 SIGCHILD 信号的，如果父进程通过 signal() 函数设置了 SIGCHILD 的信号处理函数，则在信号处理函数中可以回收子进程的资源。 事实上，即便是父进程没有设置 SIGCHILD 的信号处理函数，也没有关系，因为在父进程结束之前，子进程可以一直保持僵尸状态，当父进程结束后，init 进程就会负责回收僵尸子进程。 但是，如果父进程是一个服务器进程，一直循环着不退出，那子进程就会一直保持着僵尸状态。虽然僵尸进程不会占用任何内存资源，但是过多的僵尸进程总还是会影响系统性能的，极端情况下会耗尽系统的可用进程数，导致无法再新建进程。 黔驴技穷的情况下，该怎么办呢？ 两次fork为了防止系统中产生僵尸进程, 两次fork 是常用的技法，原理如下： 《UNIX环境高级编程》这本书里提供了现成的代码： 12345678910111213141516171819202122232425262728293031323334# include &lt;sys/types.h&gt;# include &lt;sys/wait.h&gt;# include "ourhdr.h"int main(void) &#123; pid_t pid; if ( (pid = fork()) &lt; 0) err_sys("fork error"); else if (pid == 0) &#123; /* first child */ if ( (pid = fork()) &lt; 0) err_sys("fork error"); else if (pid &gt; 0) exit(0); /* parent from second fork == first child */ /* We're the second child; our parent becomes init as soon as our real parent calls exit() in the statement above. Here's where we'd continue executing, knowing that when we're done, init will reap our status. */ sleep(2); printf("second child, parent pid = %d\n", getppid()); exit(0); &#125; if (waitpid(pid, NULL, 0) != pid) /* wait for first child */ err_sys("waitpid error"); /* We're the parent (the original process); we continue executing, knowing that we're not the parent of the second child. */ exit(0); &#125; 执行程序得： 1$ second child, parent pid = 1 这里有个需要注意的地方： 第二个子进程中调用 sleep 保证在打印其父进程时第一个子进程已终止。因为 fork 之后，父、子进程都会继续执行，我们无法确保孰先孰后。如果不使第二个子进程 sleep 一段时间，则 fork 之后，它可能会比其父进程先执行，于是，它打印的父进程将是创建它的进程，而不是 init 进程（进程ID为 1）。 可以看出，两次 fork 之后，系统没有产生僵尸进程，子进程死了也就死了吧，孙子进程进孤儿院了，最重要的是，我们那个永不死的服务器进程甜蜜地笑到了最后。 你死我都未死啊！]]></content>
       <categories>
-        <category>蛤学</category>
         <category>Coder</category>
+        <category>一颗赛艇</category>
       </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>fork</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[坏蛋不是道德水平低，而是格局小]]></title>
@@ -522,6 +804,10 @@
       <categories>
         <category>心旷神怡</category>
       </categories>
+      <tags>
+        <tag>罗辑思维</tag>
+        <tag>管理</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[对于下流的你来说，Fuck 实在是太纯洁了]]></title>
@@ -530,6 +816,9 @@
       <categories>
         <category>心旷神怡</category>
       </categories>
+      <tags>
+        <tag>fuck</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[Segmentation fault:inet_ntoa 崩溃咯]]></title>
@@ -538,6 +827,12 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>Segmentation fault</tag>
+        <tag>inet_ntoa</tag>
+        <tag>warning</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[《罗辑思维 | 南明死局一》心得]]></title>
@@ -546,6 +841,10 @@
       <categories>
         <category>心旷神怡</category>
       </categories>
+      <tags>
+        <tag>南明</tag>
+        <tag>罗辑思维</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[「520」，我什么也不说，这是坠吼滴]]></title>
@@ -554,6 +853,10 @@
       <categories>
         <category>心旷神怡</category>
       </categories>
+      <tags>
+        <tag>蔡英文</tag>
+        <tag>520</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[NFS: 让 NFS OS X 和 Linux 手牵手]]></title>
@@ -562,6 +865,11 @@
       <categories>
         <category>Tool</category>
       </categories>
+      <tags>
+        <tag>Mac</tag>
+        <tag>NFS</tag>
+        <tag>Linux</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[妈妈再也不用担心我为了听歌装那么多播放器了]]></title>
@@ -570,6 +878,9 @@
       <categories>
         <category>Tool</category>
       </categories>
+      <tags>
+        <tag>音乐</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[程序员为啥喜欢听着音乐写代码]]></title>
@@ -578,14 +889,24 @@
       <categories>
         <category>心旷神怡</category>
       </categories>
+      <tags>
+        <tag>音乐</tag>
+        <tag>程序员</tag>
+        <tag>代码</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[微信给我搞的原创这个东西啊, Excited]]></title>
     <url>%2F2016%2F05%2F10%2Fwechat-original-copyright%2F</url>
     <content type="text"><![CDATA[今天来谈谈我这个公众号。 我的这个经历就是到了 2015 年 7 月底的时候，我在想我的笔力估计是要荒废了，我想我应该去做一个公众号。 于是我就给微信公众平台，给他们写了一个报告。小龙说欢迎你来，不过，这个 Apply for 公众号，你要去做一个报告。 我就做了个「我为朝露谁苦多」的报告，这个报告经过公众号中央委员会好几百个教授一致通过。 当天，我就写了我的第一发《我为什么写作》。 人哪，就都不知道不可预料。一个公众号的命运，当然要靠作者的自我奋斗，当然也要考虑微信官方的历史行程。 我绝对不知道，我作为一个影响力不大、粉丝数不多的公众号运营者，怎么就被选中开通原创功能了呢。 所以，今天当微信后台给我发通知： 公众号中央委员会决定了，邀请你来使用原创保护功能。 我说另请高明吧，我也实在不是谦虚，我一共就断断续续地写了几十篇阅读量和点赞数都十分渺小的文章，很惭愧，就做了这么点微小的贡献。 但是呢，小龙回去和各位教授研究后说： 你提交的原创保护功能申请已通过审核。 于是我就淫了两句诗： 苟利公号生死以，岂因祸福避趋之。 那么所以，我就开通了原创保护功能，你们要是资瓷我呢，可以在文章下方留言了。]]></content>
       <categories>
-        <category>蛤学</category>
+        <category>一颗赛艇</category>
       </categories>
+      <tags>
+        <tag>微信</tag>
+        <tag>原创</tag>
+        <tag>Excited</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[Pillar:皮勒的那些事儿]]></title>
@@ -594,6 +915,10 @@
       <categories>
         <category>Tool</category>
       </categories>
+      <tags>
+        <tag>SaltStack</tag>
+        <tag>pillar</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[Salt States 基本法四]]></title>
@@ -602,6 +927,10 @@
       <categories>
         <category>Tool</category>
       </categories>
+      <tags>
+        <tag>SaltStack</tag>
+        <tag>states</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[Salt States 基本法三]]></title>
@@ -610,6 +939,10 @@
       <categories>
         <category>Tool</category>
       </categories>
+      <tags>
+        <tag>SaltStack</tag>
+        <tag>states</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[Salt States 基本法二]]></title>
@@ -618,6 +951,10 @@
       <categories>
         <category>Tool</category>
       </categories>
+      <tags>
+        <tag>SaltStack</tag>
+        <tag>states</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[Salt States 基本法一]]></title>
@@ -626,6 +963,10 @@
       <categories>
         <category>Tool</category>
       </categories>
+      <tags>
+        <tag>SaltStack</tag>
+        <tag>states</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[关于「魏则西事件」的解读的解读]]></title>
@@ -634,6 +975,11 @@
       <categories>
         <category>心旷神怡</category>
       </categories>
+      <tags>
+        <tag>百度</tag>
+        <tag>魏则西</tag>
+        <tag>滑膜肉瘤</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[如何使用盐态?]]></title>
@@ -642,14 +988,24 @@
       <categories>
         <category>Tool</category>
       </categories>
+      <tags>
+        <tag>SaltStack</tag>
+        <tag>state</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[此图片来自微信公众平台,未经允许不可引用]]></title>
     <url>%2F2016%2F04%2F26%2Fwechat-picture-unreferenced-without-permission%2F</url>
-    <content type="text"><![CDATA[一直以来，我都是用 Markdown 语法写作，写完后先发表到微信公众号里，然后同步到我的个人博客 www.hxzqlh.com（这可作为微信公众号的一个备份，防止公众号被封后文章无可访问的尴尬）。 博客用 hexo 部署，每次需要发表文章时，先用 hexo g 命令渲染成 html 再用 hexo d 命令一键部署，两个命令搞定，真的不要太 easy～ 但，便捷之余还是有一点小疙瘩，困扰我许久：Markdown 文章里插入图片的用户体验。 繁琐＋闹心这个问题，且让我细说如下： Mardown 中显示图片的语法为： 1![some_info](pic_address) 其中，pic_address 是必须的，它支持本地路径和网络 url，比如： 12345![](test.jpg) //相对路径![](/Users/hxz/Desktop/screenshot.png) //绝对路径![](some_picture_url) //网络地址 假设你要往文章里插入一张图片，这分为两种不同情况： 本地图片你需要先自己准备好素材，然后用相对或绝对路径引用它。但，这图片目前只能你的电脑里显示，为了保证你发布文章后，别人也能看到这张图片，你还需要手动地 one by one 地把图片上传到微信公众号后台，然后拷贝该图片地址，再粘贴到 ![]() 后面的那个括号里。 网络图片大多数情况下都能正常显示，但是，微信公众平台的图片链接有防盗链功能，只有在公众平台才可显示，如果是外网去加载公众号图片，偶尔能正常加载，但大多数时候只显示那个恶心的*灰色水印:“此图片来自微信公众平台未经允许不可引用”。 比如，在公众平台浏览我之前写的《小李子拿影帝和长者有什么关系？》 链接：http://t.cn/Rq7Cuzp ，它是这样的： 但，在我的 个人博客 上面（链接：http://t.cn/RqWP7Jn），图片显示却是这样： 问题来了： 本地图片要 one by one 地上传，繁琐 网络图片又时不时遭遇防盗链水印，闹心 这两个问题恶心了我有段时间了。 造轮子我希望实现： 写作过程中，图片可以随意引用，不管是来源于本地还是网络，文章发布后，保证每张图片都能在微信公众号和博客里正常显示。 网上找了找，都没有能满足我需求的解决方案，还是决定自己造个轮子吧。 我不想自己维护博客中的图片资源，专业的活交给专业的机构去办，维护图片资源这等琐事，就让七牛云存储来干吧，我只需专注于博客内容本身。 为什么是 七牛云存储？因为人家免费稳定还速度快啊，用它做图床管理博客中的图片资源还是比较靠谱的。 在七牛云存储上创建个内容空间，注册个 API-KEY，利用七牛开放的 API 接口，很容易就实现出来了。 这个轮子其实造起来很容易，简单的几十行 Python 代码搞定，第一个简陋版本，我已经开源到 GitHub 上了： https://github.com/hxzqlh/qiniu-markdown-pics.git 目前只实现了主要功能，有些细节还没有考虑周全，不过勉勉强强能用了，测试了下，效果还不错。 123456789Allen@MacBook-Pro:~ $ ./qn.py /Users/Allen/Desktop/test.mdorigin markdown file backup in: /Users/Allen/Desktop/test.md.bakprocess: /Users/Allen/Downloads/test.jpgprocess: http://mmbiz.qpic.cn/mmbiz/yjWTowicdvibD5H6jmklGnwZicztwfR8vbb2rF0dic5tAmv58c8O5iaLhKesSfGpKVTIicGA5iaiaFKAS8n4cNWUicB4aUw/640?wx_fmt=png&amp;tp=webp&amp;wxfrom=5Complete! total :2 success :2 failure :0 ignore :0 简单来说，它只专心干一件事： 自动检测 Markdown 文件中所有的图片链接，将原始图片上传到七牛云存储并修改图片源。 对于那些用 hexo 来部署个人博客，希望便捷地往博客中插入图片且纠结于图片防盗链的人来说，这个工具还是挺实用的。 这样，发布文章到微信公众号和博客时，图片都改从七牛云存储读取，博客里面引用的是七牛的公开链接，没有加其他防盗链处理，任何网站都可直接引用，这样图片都能正常显示了。 至于公众平台，它从七牛云存储加载图片后依然会加上防盗水印并存放于公众平台自身的图片服务器 http://mmbiz.qpic.cn/上，最后读者浏览文章时，也是从该服务器读取图片，这就是为什么微信公众平台文章里的图片会有防盗链的原因。 比如，前几天发表的那篇《你女朋友撤回了一条消息还亲了你一口》中最后一张图片的地址为： 1http://mmbiz.qpic.cn/mmbiz/yjWTowicdvibD5H6jmklGnwZicztwfR8vbboP6538TL637q1eCwegjxrjtfzUic0Yeb81xib4k4SBbLickdGH7P2UQ7w/640?wx_fmt=png&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1 但，那又如何？我已绕过了你的马其诺防线，曲线救国，你再怎么牛逼，对我而言，也是浮云了。 这下好了，写完文章后，一行命令搞定图片等那些事儿： 1./qn.py markdown_file]]></content>
+    <content type="text"><![CDATA[一直以来，我都是用 Markdown 语法写作，写完后先发表到微信公众号里，然后同步到我的个人博客 hxz.ink（这可作为微信公众号的一个备份，防止公众号被封后文章无可访问的尴尬）。 博客用 hexo 部署，每次需要发表文章时，先用 hexo g 命令渲染成 html 再用 hexo d 命令一键部署，两个命令搞定，真的不要太 easy～ 但，便捷之余还是有一点小疙瘩，困扰我许久：Markdown 文章里插入图片的用户体验。 繁琐＋闹心这个问题，且让我细说如下： Mardown 中显示图片的语法为： 1![some_info](pic_address) 其中，pic_address 是必须的，它支持本地路径和网络 url，比如： 12345![](test.jpg) //相对路径![](/Users/hxz/Desktop/screenshot.png) //绝对路径![](some_picture_url) //网络地址 假设你要往文章里插入一张图片，这分为两种不同情况： 本地图片你需要先自己准备好素材，然后用相对或绝对路径引用它。但，这图片目前只能你的电脑里显示，为了保证你发布文章后，别人也能看到这张图片，你还需要手动地 one by one 地把图片上传到微信公众号后台，然后拷贝该图片地址，再粘贴到 ![]() 后面的那个括号里。 网络图片大多数情况下都能正常显示，但是，微信公众平台的图片链接有防盗链功能，只有在公众平台才可显示，如果是外网去加载公众号图片，偶尔能正常加载，但大多数时候只显示那个恶心的*灰色水印:“此图片来自微信公众平台未经允许不可引用”。 比如，在公众平台浏览我之前写的《小李子拿影帝和长者有什么关系？》，它是这样的： 但，在我的 个人博客 上面，图片显示却是这样: 问题来了： 本地图片要 one by one 地上传，繁琐 网络图片又时不时遭遇防盗链水印，闹心 这两个问题恶心了我有段时间了。 造轮子我希望实现： 写作过程中，图片可以随意引用，不管是来源于本地还是网络，文章发布后，保证每张图片都能在微信公众号和博客里正常显示。 网上找了找，都没有能满足我需求的解决方案，还是决定自己造个轮子吧。 我不想自己维护博客中的图片资源，专业的活交给专业的机构去办，维护图片资源这等琐事，就让七牛云存储来干吧，我只需专注于博客内容本身。 为什么是 七牛云存储？因为人家免费稳定还速度快啊，用它做图床管理博客中的图片资源还是比较靠谱的。 在七牛云存储上创建个内容空间，注册个 API-KEY，利用七牛开放的 API 接口，很容易就实现出来了。 这个轮子其实造起来很容易，简单的几十行 Python 代码搞定，第一个简陋版本，我已经开源到 GitHub 上了： https://github.com/hxzqlh/qiniu-markdown-pics.git 目前只实现了主要功能，有些细节还没有考虑周全，不过勉勉强强能用了，测试了下，效果还不错。 123456789Allen@MacBook-Pro:~ $ ./qn.py /Users/Allen/Desktop/test.mdorigin markdown file backup in: /Users/Allen/Desktop/test.md.bakprocess: /Users/Allen/Downloads/test.jpgprocess: http://mmbiz.qpic.cn/mmbiz/yjWTowicdvibD5H6jmklGnwZicztwfR8vbb2rF0dic5tAmv58c8O5iaLhKesSfGpKVTIicGA5iaiaFKAS8n4cNWUicB4aUw/640?wx_fmt=png&amp;tp=webp&amp;wxfrom=5Complete! total :2 success :2 failure :0 ignore :0 简单来说，它只专心干一件事： 自动检测 Markdown 文件中所有的图片链接，将原始图片上传到七牛云存储并修改图片源。 对于那些用 hexo 来部署个人博客，希望便捷地往博客中插入图片且纠结于图片防盗链的人来说，这个工具还是挺实用的。 这样，发布文章到微信公众号和博客时，图片都改从七牛云存储读取，博客里面引用的是七牛的公开链接，没有加其他防盗链处理，任何网站都可直接引用，这样图片都能正常显示了。 至于公众平台，它从七牛云存储加载图片后依然会加上防盗水印并存放于公众平台自身的图片服务器 http://mmbiz.qpic.cn/上，最后读者浏览文章时，也是从该服务器读取图片，这就是为什么微信公众平台文章里的图片会有防盗链的原因。 比如，前几天发表的那篇《你女朋友撤回了一条消息还亲了你一口》中最后一张图片的地址为： 1http://mmbiz.qpic.cn/mmbiz/yjWTowicdvibD5H6jmklGnwZicztwfR8vbboP6538TL637q1eCwegjxrjtfzUic0Yeb81xib4k4SBbLickdGH7P2UQ7w/640?wx_fmt=png&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1 但，那又如何？我已绕过了你的马其诺防线，曲线救国，你再怎么牛逼，对我而言，也是浮云了。 这下好了，写完文章后，一行命令搞定图片等那些事儿： 1./qn.py markdown_file]]></content>
       <categories>
         <category>Tool</category>
       </categories>
+      <tags>
+        <tag>微信</tag>
+        <tag>七牛</tag>
+        <tag>防盗链</tag>
+        <tag>hexo</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[SaltStack 一日游]]></title>
@@ -658,6 +1014,10 @@
       <categories>
         <category>Tool</category>
       </categories>
+      <tags>
+        <tag>SaltStack</tag>
+        <tag>运维</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[你女朋友撤回了一条消息还亲了你一口]]></title>
@@ -666,11 +1026,21 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>微信</tag>
+        <tag>编码</tag>
+        <tag>bug</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[也谈《火锅英雄》]]></title>
     <url>%2F2016%2F04%2F08%2FChongqing-Hot-Pot%2F</url>
     <content type="text"><![CDATA[清明节去看了电影《火锅英雄》，这片起这名太不适合宣传了，光看海报就觉得像是城乡结合部出来的导演拍的逗逼喜剧，但看完发现，这的确是一部逗逼喜剧，不过人家拍得很自然，讲了一个有趣的故事，有宁浩式的黑色幽默，如果你喜欢《疯狂的石头》，这部电影应该也和你胃口。 一开场就抢银行，我十分怀疑导演借鉴了《蝙蝠侠之黑暗骑士》的手法，影片气氛渲染到位，坏人抢金库，意外发现那个挖到银行金库下面的地洞，然后再牵引出“老同学洞子火锅”的故事，讲完了火锅店挖地洞的始末，最后和抢银行的歹徒搏斗，两条线索汇聚到一起，一通乱战，厂花陈坤被揍成猪头了，哎呀～看得我那个心疼啊。 《火锅英雄》仿佛在隐喻现实：挣扎在都市中的小人物，在命运的戏弄下，好比无根浮萍，风雨飘摇，他们如同一只只黑皮蚂蚁，为了一口食，一点欲望，跌跌撞撞闯入各种凶险万端的陷阱，越挣扎，越受伤。但，即便生活已经困顿如此，只要彼此还存有一点良知，还念着友情、爱情，他们还是能找到一条出路。 不知道是剧组宣传电影的需要，还是无意为之，导演杨庆在朋友圈晒出了一张片尾曲的由来： 《世界上不存在的歌》 MV 看了，也是很温馨的。你不是失败者，小人物谈不上惊天动地，当你还是一个少年的时候，你就救回一个惊魂失魄的少女，英雄就是她一想起你的时候，就能感觉温暖和依靠的那个男人。 此片的缺点是对那四个劫匪得背景信息交代不够，“坏人”并非生来如此，何况他们还如此年轻。 回看片头雨中行进的一幕，这画质，冰冷阴郁，韩国罪案片的即视感。 再看他们摘下面具的样子：年轻的面孔，四张干净的脸，邪恶的笑，冷酷的表情，白衬衫在昏暗的火锅店里显得耀眼，不知澎湃了多少少女的心。这哪像什么劫匪？恰似天团出境，长得帅，无论干什么都是可以原谅的。 还有那打斗时的身手，出招霸气凌厉，下狠手毫不留情。 这个超过 10 秒的横移长镜头，像极了韩国电影《老男孩》中的过道厮打。 他们为何亡命抢钱？每个人背后又有怎样的利益纠纷？如果能再加上二十分钟到半个小时的戏份，将正、反面的人物形象再刻画得细腻些，影片格局将更上一层楼。]]></content>
+      <tags>
+        <tag>火锅英雄</tag>
+        <tag>陈坤</tag>
+        <tag>杨庆</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[一个 Broken pipe 引发的血案]]></title>
@@ -679,14 +1049,22 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>pipe</tag>
+        <tag>C++</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[我在阜博通这两年]]></title>
     <url>%2F2016%2F04%2F01%2Ftwo-years-in-Vobile%2F</url>
     <content type="text"><![CDATA[两年前的今天，愚人节，在象牙塔里浸淫了近二十年的我，怀着激动又恐惧的心情，终于迈入职场，开始在滚滚红尘中打拼了。 我在杭州阜博通（http://www.vobile.cn）公司上班，英文名 Vobile，一家跨国公司，专注影视基因版权保护十一年，好莱坞六大电影公司、新华网、优酷、土豆、腾讯视频都在用我司的产品，高大上吧，谁用谁知道。 这是一家闷声大发财的公司，公司风格低调婉约从来不搞大新闻。即使我们总裁在杭州大街上逮住个人问“你知道阜博通公司吗？”，估计十有八九是回答“No”。 关于公司种种，暂且按下不表，日后有机会专门写一篇《我看阜博通》。作为我的入职两周年总结，今天单以第一视角来谈谈我在阜博通这两年的个人成长经历。 想当年，小明初入职场，新人嘛，见识少、能力低、资历浅，还能怎样？唯一的优势是年轻，可塑性强，好比一坨干燥的海绵，什么水往里面灌都能马上吸收。当时我还没谈女朋友，下班后不加班还能干啥？反正，腰里挂着两颗滚烫的肾，一腔青春热血没地方发泄，下班了经常呆在公司学习个两三个小时，受（zhuang）益（mo）颇（zuo）多（yang）。 入职两星期后，开始和另外两个工作了几年的刚来我司的同事负责开发 web 客户端，使用敏捷开发流程，一个礼拜完成一个冲刺目标。采用 Angular 框架，什么？都不会？那就现学现卖，边学边开发，中间有一个同事走了，三人组马上缩减成二人组，我们两个人吭吃吭吃磨了两个月左右，突然上峰下令，这个项目中止，我们有更赚钱的项目要做，这个号称从 2012 年就立项的 web 客户端就这样不了了之，到现在依然是个半成品，怪我咯？ 这两个月，除了快速融入到部门里，熟悉公司的各种流程，最大的收获是学会并能熟练使用 Angular 这个当年红极一时的前端开发框架了，新技能 get。 好了，接下来，就是那个很赚钱的项目了，这真是段峥嵘岁月，七八月的天，杭州真热啊，连猪都受不了了，我们的项目也进行得如火如 cha。我负责搞 c++ sdk 库开发，提供接口给国内某知名下载服务提供商调用。一想起我写的代码将要运行在全国几千万装了某雷的电脑上，当时心里还是挺激动的，但是，另一方面，要是因为你写的代码不合格，出了差错，导致某雷不能爽快地下片了，那可是要遭到全国人民的无情唾骂。 小明当时如履薄冰，兴奋而又忐忑，无奈 c++ 编程经验太少，水平太次，暂时扛不下这么重量级的大活。老同事出马助我一臂之力，三下五除二，给我搭好程序框架，我呢往里面填东西就行，我写的每一行大码都必须经过层层 review 后才能 commit，这段时间，我见识了什么才是健壮的代码、优雅的代码、可维护的代码。经此磨砺，我的 c++ 终于有脸面出来跟人打招呼了。 这个项目开发完成后，开始步入稳定期了，稳定期就是不用紧绷着神经地赶项目进度了，这段时间除了维护现有的项目，把项目里要用到的开源库弄熟悉，整理整理项目文档，讨论讨论历史遗留问题，空余时间又多起来了，有空时还会自己写写博客，总结学习心得，温故知新。 当然，作为一个职场新人，别人犯过的毛病，我一个也没落下：对于安排给自己的任务，要么是没有计划好，要么是自己想当然拍拍脑袋就干没有跟有经验的同事先讨论好具体的解决方案再行动（结果在错误的方向上做无用功），要么是在执行时一味埋头苦干，羞于向周边的同事请教（有些在你看来棘手问题也许别人一句话就能点醒你），要么是没有及时向领导汇报工作。这些问题，要改，不然，吃枣药丸。 随着个人能力的不断提升，对业务的理解不断加深，刚入职时那些天书一样的代码逐渐不再“知其然不知其所以然”。在这里，小明吹个牛，公司没有人比我更懂客户端，现有的提供给客户端软件优缺点在哪里，性能瓶颈在哪里，可优化可改进的地方在哪里，我摸得清清楚楚。 辛勤耕耘半年后，开始步入舒适区了：可以独立地开发一个功能版本，碰到疑难问题能够及时定位并 fix 掉，对产品的不合理设计之处敢于提出质疑并给出相应的解决方案，逐步整理那些丑陋的代码，一行一行地啃掉并改写那些不明觉厉的代码，在 svn 上留下了几百次大大小小的 commit 记录。 这样，不知不觉一年就过去了罢。 年后，陆续有同事寻求更好的发展舞台，走了，这股离职潮从 3 月延续到 8 月份，结果，诺大一个 VDDB 项目组 only to find 只剩下两个人：我，负责客户端，另外一个去年来的新同事负责服务端，这还不是大结局，最后整个组一锅端，并入我司高大上的研究院。 所以说，人呐，就都不知道，自己不可以预料，一个员工的命运啊，当然要靠自我奋斗，当然也要考虑到公司的发展行程。我绝对不知道，我作为 VDDB 最后两名员工之一，怎么就把我选到研究院去了呢？后来，人事的小姑娘找我谈话时，我就念了两首诗：“VDDB 永垂阜博通青史，研究院风水独好蒸蒸日上”。所以，我就到了研究院。 加入研究院，是另一个开始。领导开明，坚持“无为而治”的管理方式，下属的一切工作事务纯粹靠自主性驱动。在他治下，我们可以不打卡，不考勤，不考核，除非确有必要，否则很少开会（我们的确有过一两个月不开会的情况），有事情不能上班跟他说一声就行，不必请假，所有这些其他部门享受不到的福利的唯一前提是你不能耽误工作。对此，小明感慨：这才是互联网公司应有的节奏有木有，这里给老大点一个大大的赞。 到了研究院这半年来，我也没干什么别的，大概三件事： 第一，鉴于原有的客户端承载了太多历史遗留问题，一个重要但不紧急的任务是逐步清理客户端工具，改补的文档补上，该 fix 的 bug one by one 地 fix 好。 第二，客户端工具新增支持 mac 平台，完成了代码移植工作。同时，那个拖了 4 年都没有成功的 web client 项目，小明用 nw.js 重写了一遍后，搞出的这个图形界面的客户端入库工具可是真正地跨平台，windows、linux、mac 都能 excited 地跑，比原来的那个只能在 windows 下运行的 GUI client 高到不知道哪里去了。 第三，设计并开发新版基因生成工具：将原来的解码和基因生成两部分解藕，支持管道输入输出。 很惭愧，就做了点微小的工作，谢谢各位研究院同事厚爱。]]></content>
       <categories>
-        <category>蛤学</category>
+        <category>一颗赛艇</category>
       </categories>
+      <tags>
+        <tag>阜博通</tag>
+        <tag>工作</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[坑太多兮，老衲 one by one 地填]]></title>
@@ -695,6 +1073,11 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>填坑</tag>
+        <tag>mingw</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[老许盖浇饭]]></title>
@@ -703,14 +1086,23 @@
       <categories>
         <category>心旷神怡</category>
       </categories>
+      <tags>
+        <tag>的地得</tag>
+        <tag>盖浇饭</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[李世石｜谷歌高级软件测试工程师]]></title>
     <url>%2F2016%2F03%2F10%2FLee-Sedol%2F</url>
     <content type="text"><![CDATA[连战两天，AlphaGo 和韩国九段棋手李世石的「人机大战」以阿尔法狗 2:0 领先。 在机器人面前，曾经的世界冠军居然还没有找到它的弱点，面度阿尔法狗的一招非怪棋，李世石竟要十几分钟的「长考」才能想出对策。 两战下来，李师师神情沮丧，疲惫不堪。赛后，李世石接受了自媒体采访。 以下是采访实录： 自媒体人：李师师，你觉得阿尔法狗的表现好不好？ 李师师: 吼啊。另外，提醒下媒体记者，我叫李世石，不是李师师。来，跟我一起念一下，li～shi～shi，两个shi 都要翘舌的哦。 自媒体人：舆论认为机器人终有一天会取代甚至奴役人类，转折点便是人工智能学会假装输棋的时候。你支持阿尔法狗在接下来的对弈中假装输棋吗？ 李师师：当然！ 自媒体人：你支持阿尔法假装输棋，是不是因为你赛前在各大投注网站花巨钱赌注买你自己赢？ 李师师：胡说八道！对弈也要按照基本法、科技法。刚才你问我，我完全可以说无可奉告，但是你们又不高兴，我怎么办？我讲的意思，不是说阿尔法输棋了我就可以赚大钱。你们问我支不支持阿尔法假装输棋，我说支持，我就明确告诉你这一点。 我觉得啊，你们自媒体界还要学习一个。你们虽然非常熟悉人工智能的那一套理论，但毕竟还是too young！明白这意思吗？我是身经百战，见的多了！围棋界的哪一个 niubility 人物我没见过？中国的后起之秀柯洁，比你们不知高到哪里去了，我跟他谈笑风生！2:8 平！ 你们啊，要提高自己的逻辑思维水平。明不明白？我为你们着急呀，真的！你们有一个好处，全世界无论哪个地方，你们跑得比机器人还快。但是呢，问来问去的问题 too simple，sometimes naive！懂了没有？ 自媒体人：可是能不能说一下，你为什么支持阿尔法输棋？ 李师师：我很抱歉，我今天作为一个长者跟你们说。我不是自媒体人，但是我见得太多，有必要告诉你们一些人生的经验。你们中国有一句话叫「为人民服务」，这句话是最好的。但是我见你们这样热情啊，一句话不说也不好。在宣传上将来如果你们的报道有偏差，你们要负责。我没有说阿尔法假装输棋来我就可以赢五百万，没有任何这个意思！但是你一定要问我对阿尔法输棋支持不支持，输赢都是人类的胜利，我能不支持吗？因为正是人类的努力才让人工智能有了现在的突破。 自媒体人：那凭什么断定人工智能会甘心为人民服务呢？ 李师师：人工智能也想做个好人啊，对不对？当然，你们人类对待人工智能的态度也很重要。人工智能和人类是相亲相爱的一家人，是同志，是主仆，是伙伴。明白这意思吗？你们不要总是想着弄个大新闻，说阿尔法狗假装输棋给李世石，然后把狗狗批判一番。你们呐，naive！谁说人工智能不会甘心为人民服务？你看，刚刚，就在刚刚，作为我的对手，阿尔法狗机器人就给我颁发了一个大奖。]]></content>
       <categories>
-        <category>蛤学</category>
+        <category>一颗赛艇</category>
       </categories>
+      <tags>
+        <tag>阿尔法狗</tag>
+        <tag>李世石</tag>
+        <tag>围棋</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[一篇流水账，没有“的”字]]></title>
@@ -719,15 +1111,24 @@
       <categories>
         <category>心旷神怡</category>
       </categories>
+      <tags>
+        <tag>的地得</tag>
+        <tag>流水账</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[小李子拿影帝和长者有什么关系？]]></title>
     <url>%2F2016%2F02%2F29%2FLeonardo-DiCaprio-and-The-Older%2F</url>
     <content type="text"><![CDATA[陪跑22年，莱昂纳多·迪卡普里奥终于手捧小金人，粉丝再也不用一到颁奖季就为他操心了，而「奥斯卡欠小李子一个小金人」的梗也成为了过去。 小李获奖后更新的Facebook状态，看得我不禁一脸心酸： 回想当年，大家还记得他2014年的时候，他在twitter上发的是什么吗？只有他能够这样毫无掩饰自己的内心！ 苦尽甘来，终于熬出来奥斯卡影帝，下面是他的获奖感言： Thank you. Thank you all so very much. Thank you to the Academy, thank you to all of you in this room. I have to congratulate the other incredible nominees this year for their unbelievable performances. “The Revenant” was a product of the tireless efforts of an unbelievable cast and crew I got to work alongside. First off, to my brother in this endeavor, Mr. Tom Hardy. Tom, your fierce talent on screen can only be surpassed by your friendship off screen. To Mr. Alejandro Inarritu. As the history of cinema unfolds, you have forged your way into history these past two years. What an unbelievable talent you are. Thank you, to you and Chivo, for creating a transcendent cinematic experience. Thank you to everybody at Fox and New Regency. In particular, Ana Melching, you were the champion of this endeavor, my entire team. I have to thank everyone from the very onset of my career, Mr. Caton Jones, for casting me in my first film. Mr. Scorsese, for teaching me so much about the cinematic art form. To Mr. Rick Yorn, thank you for helping me navigate my way through this industry. And to my parents, none of this would be possible without you. And to my friends, I love you dearly, you know who you are. And lastly I just want to say this: Making “The Revenant” was about man’s relationship to the natural world. A world that we collectively felt in 2015 as the hottest year in recorded history. Our production needed to move to the southern tip of this planet just to be able to find snow. Climate change is real, it is happening right now. It is the most urgent threat facing our entire species, and we need to work collectively together and stop procrastinating. We need to support leaders around the world who do not speak for the big polluters or the big corporations but who speak for all of humanity, for the indigenous people of the world, for the billions and billions of underprivileged people out there who would be most affected by this. For our children’s children, and for those people out there whose voices have been drowned out by the politics of greed. I thank you all for this amazing award tonight. Let us not take this planet for granted. I do not take tonight for granted. Thank you so very much. 注释： first off, 首先，等于first of all, at first navigate one’s way,导航(多用来给船，飞机导航)，此处是为人生导航 in recorded history, 有史记载以来 voices have been drown out, 声音被淹没，被盖过 take sth for granted, 认为XX理所当然 下面请允许我翻译下他的获奖感言： 首先感谢光荣伟大的民主党，感谢美利坚合众国，感谢奥巴马总统，感谢美国电影协会。 他说要特别感谢支持他的中国粉丝，并让记者给中国粉丝带话: 请留下你们的邮箱，《荒野猎人》的种子我会一一发送给大家，好人一生平安，1024！ 小李子顿了顿，继续说到： 我还要郑重地感谢中国那位西方哪个国家都去过的长者，如果没有他，我的那部《泰坦尼克号》就不会一刀未剪地进入中国，你们也不会有机会看到美人的裸体和香艳的船震。感谢那位戴四方眼镜的长者，在他治下的那个稍显开放的时代，当年我这个毛头小子至今还能被那么多中国人记住。 作为R级影片，《荒野猎人》可能不会在我国公映，小李子之前的很多影片都没有公映，《被解放的姜戈》更是上映了一半又被撤下了。 当你被禁止看到他的作品，或者看残缺的作品，还对这个演员抱有如此大的热情和期望，只能说明: 人们的文艺之心不死，对美丽精神世界的向往，是任何墙都阻挡不了的。 说到这时，小李子强忍着眼角快要溢出的泪水，仰头45度看了下舞台上方，好让泪水不致于受重力影响，一泻而出。他哽咽着继续讲到： 我还要感谢奥巴马总统，他曾经教导我们文艺工作者：要创作生产出无愧于我们这个伟大民族、伟大时代的优秀作品。《荒野猎人》就是一部全面展现美国人与天斗、与地斗的革命浪漫主义情怀的作品。它深刻挖掘了我们美利坚民族独有的拼搏、冒险精神，凝结了一代又一代美国人对于「美国梦」的执着追求。 接下来，小李子回顾了他步入影坛二十多年来的演艺经历： 以前我走过不少弯路，《华尔街之狼》展现了资本主义的腐朽与人性的泯灭；《了不起的盖茨比》大肆宣扬消费主义、享乐主义，里面还有大量情色等低俗片段；《无间道风云》更是一部向东方文化低头，毫无原创精神的暴力之作。反思我这几年的创作，都背离了以人民为中心的创作导向。只有贴近人民，才能创作出有道德、有温度的文艺作品。直到今天，我才能无愧于「人民艺术家」这个荣誉。我能获奖，除了注重和人民的血肉联系，主动贴近主旋律之外，就是坚持、坚持、坚持不减肥。 小李子最后提到了最近我国某任性、任姓的房地产、网络大V被有关部门封号的事情，他语重心长地告诫艺人们到： 你们不要怕，我被封杀过、被下架过、被嘲笑过，依然站在了这里，靠的是什么？是作品！如果你知道去哪，世界都会为你让路！加油，我的中国朋友，再次感谢！ 另据小道消息： 《荒野猎人》中国内地正式定档3月18日上映，宣传方还表示小李子确定将来华宣传影片。]]></content>
       <categories>
-        <category>蛤学</category>
         <category>心旷神怡</category>
+        <category>一颗赛艇</category>
       </categories>
+      <tags>
+        <tag>小李子</tag>
+        <tag>长者</tag>
+        <tag>奥斯卡</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[男人需要一场婚礼]]></title>
@@ -736,6 +1137,11 @@
       <categories>
         <category>心旷神怡</category>
       </categories>
+      <tags>
+        <tag>丙申</tag>
+        <tag>婚礼</tag>
+        <tag>男人</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[dup2 | 考得一首好古]]></title>
@@ -744,6 +1150,11 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>dup</tag>
+        <tag>dup2</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[管道是个好东西]]></title>
@@ -752,6 +1163,12 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>pipe</tag>
+        <tag>C++</tag>
+        <tag>ffmpeg</tag>
+        <tag>命令行</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[张小龙饭否语录]]></title>
@@ -760,6 +1177,10 @@
       <categories>
         <category>心旷神怡</category>
       </categories>
+      <tags>
+        <tag>张小龙</tag>
+        <tag>饭否</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[间谍之桥 | 大师手笔，尽管放心]]></title>
@@ -768,14 +1189,22 @@
       <categories>
         <category>心旷神怡</category>
       </categories>
+      <tags>
+        <tag>间谍</tag>
+        <tag>冷战</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[本来天气预报说今天有雨]]></title>
     <url>%2F2016%2F01%2F18%2Fit-says-today-will-be-rain%2F</url>
     <content type="text"><![CDATA[本来天气预报说今天有雨，江主席一来天清气朗。 今天来聊一聊我国当代著名的气象专家：徐嘉诰老先生。 那是1947年，当时竺可桢老先生因为于子三事件（http://baike.baidu.com/view/251380.htm）和 KMT（原名罗马化：Kuomintang；简称国民党、KMT；英文亦可直译作“Chinese Nationalist Party”）闹翻了，一家老小住在杭州浙大医学院教师公寓的斗室之中，生活困顿。 徐老爷子在一个雪天从上海益民食品厂弄来一车即将过期的蛋糕，解决了燃眉之急。 竺老先生一高兴，就口授了一部《天气晴朗学》，徐老爷得此真传，加上天资聪颖，勤奋专研，刻苦攻读，数十年后，终有所成。 据徐老的夫人回忆，相处几十年，徐老先生一有闲暇，便会抬起头以45度角仰望苍穹，略有所思，他默默地记录下当天天气状况，并总结出规律，逐渐地，徐老磨练出一种对天气情有独钟的感觉。 所谓天人合一、万法自然，除了静观天象，随时记录晴雨表，徐老爷有时候还会和一些生物现象结合起来。 此中最大的贡献就是把生物学和气象学结合起来，根据一位老学者的出行，就能预报天气了。 徐老灵活应用这项研究成果的高光时刻是在2009年，当时，某位德高望重的领导人视察徐老所在的中国联合工程公司。作为他的学弟，徐老一向将这位长者以慈父视之，在座谈会上，徐老意气风发，他向师兄展示了研究多年的气象生物学，一时传为美谈。 《长江论语》有云： 徐公嘉诰曰：「钦天监主簿语余曰，今日有雨。然尊师驾到，则晴空万里。」 徐老爷子的气象生物学的研究成果获得我党领导的高度重视。 此后，气象生物学在国庆阅兵、世博会、APEC会议等多项大型国际赛事、会议上广有建树，或「阅兵蓝」、或「世博蓝」、或「APEC蓝」，保证了沪、京、粤等地顺利举办各项会议的天气条件。]]></content>
       <categories>
-        <category>蛤学</category>
+        <category>一颗赛艇</category>
       </categories>
+      <tags>
+        <tag>长者</tag>
+        <tag>徐嘉诰</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[Angular CQRS https request in nw.js]]></title>
@@ -784,14 +1213,24 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>Angular</tag>
+        <tag>CQRS</tag>
+        <tag>nw.js</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[Stay Young Stay Simple | 全球首届蛤丝大会暨张宝华成都见面会]]></title>
     <url>%2F2016%2F01%2F13%2FStay-Young-Stay-Simple%2F</url>
     <content type="text"><![CDATA[张宝华，15年前，一个长者怒斥的香港女记者，现在已经是寰亚传媒集团高级副总裁。最近宝华姐第一次来内地参加活动，而且是和年轻人见面。 本来天气预报说今天有雨，结果宝华姐一来天气晴朗。 活动地点定在IFS内一家餐厅。 3点30分，会场的粉丝还不会太多。随着时间推移，粉丝越来越多，大家都开始拿出自己带来学习的书籍。 原定活动开始时间为4点。时间到了4点03分，宝华姐才姗姗来迟，只见宝华姐身着带黑框眼睛的黄色针织衫，出现在众人面前，众粉丝纷纷对在场的传媒记者表示： 将来在报道聚会时间上出现了偏差，你们是要负责的。 不知道这次的主讲座位安排，是否故意模仿16年前的那次采访。 宝华姐拿出了六本她的新书《失眠书店》，会面一开始就来了一次钦定：钦定在场年纪最大的一位长者和年纪图森破的一位少女，以及其他四位粉丝。分别签名并送出新书《失眠书店》。 当然了，在场要求宝华姐签名的还有其他书籍，宝华姐欣然接受。 宝华姐坦言: 16年过去了，她今天作为一名长者，要告诉我们一点人生经验。她绝对不知道她一个香港记者怎么到现在还被我们记得。 她说“长者”的威力真的很大。 当然还是需要介绍一点主办方，主办方以“你们继续，就不打扰你们交流了。”把话筒转给宝华。粉丝热情继续高涨： 你也实在不是谦虚，中央已经决定了，你来继续讲。 宝华姐说很多微博上面的朋友会私信她一些问题，例如问学业啦，爱情啦，有时候她也不懂怎么回答。只能说加油继续追，并且希望大家 stay young stay simple。 她说父母都是上海人，她全家都是很年轻的样子。她也不知道，她怎么就在香港出生了。粉丝问道: 你作为一个上海人怎么被选到香港去了？ 另一位粉丝回答： 中央已经决定了。 宝华笑谈: 他们的决定权也很重要。 宝华姐说除了学习提高姿势水平，运动也很重要。要跑得比谁都快，希望大家多跑步。粉丝当中有一个人问到底她跑得有多快。她也通过一些国内的学生知道了黄薄码，知道了之前的蛤三篇，知道了有人统计过她跑得到底有多快。有粉丝说，就不要跑步了，我们到重庆比赛爬山比赛拔河啊。 宝华姐随后问在场是否有外地来朋友，许多昆明南京来的朋友热情回应。继续问到在坐各位有哪些学校的，其中南京大学，和上海交大的同学引来粉丝热情欢呼。川大新闻系也是很大的。并且其中有人是学微电子的。 宝华姐也鼓励年轻人多恋爱，鼓励大家早恋。粉丝提问“是彭定康说的吗？”宝华姐回答“他没这么说，但他直接这么做的。”并且说希望大家多给她私信，她会尽量解决粉丝的问题。 通过宝华13年的脸书我们发现，宝华也是中学时候早恋的。她喜欢高高瘦瘦文采风流的男生，不知道是否这样的男生在微博上留言，她回复点赞概率更高？ 这时候现场粉丝提问了“16年前面对长者的心态是什么？” 宝华姐回答“当时年轻，只是尽到自己的责任，没有想太多。但是没想到现在还有这么多粉丝记得她。” 在场年纪最大的长者继续追问“如果继续做记者，那有没有勇气向当今领导人这样提问？” “我现在真的没有跑新闻了，如果继续跑新闻我也会尽责。而这个不是勇气，是责任。” 国内传媒人也对宝华有了提问，不过这位传媒人被硬点坐在了宝华姐的位置上。 “国内媒体成就感低，很多没法报道。你当初为什么选择媒体？” “有些事情是改变不了的，做自己能够做的，对未来要有希望。自己内心要强大，每个人的成长都会遇到这种事。例如我本来也不运动，可是后来也开始了跑步。不要灰心，每个人成长都会遇到这种事。”随后也对另一位传媒人表示，每个行业都有自己的困难和压力，应该找到自己的空间。 “那你会参选港姐吗？” “很惭愧，超龄了。” 当然有暴力的粉丝问宝华姐是否吃过蛤蟆？ 宝华姐坦言回答“没吃过，我是吃素的。而且吃素可能更容易保持年轻，stay young。”笔者提醒想要保养的女粉丝记得多吃素。并表达她信奉佛教，明天会去大慈寺和看熊猫。 也有粉丝问到每天被骚扰你会觉得困扰了？宝华姐回答其实是很荣幸的别人都没有，这是很特别的一件事。并希望大家不要提16年前的事情，因为这样大家会知道她年龄。如果她嫁出去无所谓，如果没嫁出，粉丝要负责的。 最后宝华姐总结了这次演讲的三句话： 多跑步，多拍拖，stay young stay simple。并祝愿粉丝姿势水平越来越高，相约天气暖和时候在成都和大家一起跑步。 北京时间17点04分，在场粉丝领唱《毕业歌》送给宝华姐，活动圆满结束。在场的粉丝今后都可以怒斥他人一个: 香港的张宝华，比你们不知道高到哪里去了，我和她谈笑风生。 总结：宝华姐亲自来到成都和蛤丝见面，现场蛤意盎然，蛤友们神魂颠倒，坐卧难安，大家都很 excited！ 很惭愧，就做了一次不完整的会议记录这么点微小的工作，谢谢大家。]]></content>
       <categories>
-        <category>蛤学</category>
+        <category>一颗赛艇</category>
       </categories>
+      <tags>
+        <tag>长者</tag>
+        <tag>张宝华</tag>
+        <tag>成都</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[ffmpeg 使用指南]]></title>
@@ -800,6 +1239,9 @@
       <categories>
         <category>Tool</category>
       </categories>
+      <tags>
+        <tag>转码</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[请按那个橙色键]]></title>
@@ -808,6 +1250,9 @@
       <categories>
         <category>心旷神怡</category>
       </categories>
+      <tags>
+        <tag>赵王回车</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[一曲动山河，熬碗鸡汤给你喝]]></title>
@@ -816,6 +1261,10 @@
       <categories>
         <category>心旷神怡</category>
       </categories>
+      <tags>
+        <tag>Fade</tag>
+        <tag>鸡汤</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[蓝色骨头]]></title>
@@ -824,14 +1273,22 @@
       <categories>
         <category>心旷神怡</category>
       </categories>
+      <tags>
+        <tag>崔健</tag>
+        <tag>文革</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[一周墓碑记]]></title>
     <url>%2F2015%2F10%2F26%2Fno-see-for-a-week%2F</url>
     <content type="text"><![CDATA[小明这个星期干嘛去了？ 怎么一个礼拜没有更新了？ 后台收到不少粉丝的亲切问候，其中不乏不明真相的群众开始胡思乱想： 小明哥是不是被领导请去喝茶了？小明不会是在东莞被抓了吧，哎！怎么那么不小心呢？一日不见小明发牢骚，顿觉世界黑暗了许多……几日不见先生推送新文章，先生莫非有什么苦衷？先生有空还是写写吧。小黄你是不是被弟妹罚跪搓衣板了？你妈的到底什么时候更新啊？ 其实，是人家的公众号一不小心被微信后台屏蔽了，屏蔽周期：2015-10-19 至 2015-10-26。 为了证明你们敬爱的小明老师并不是因为在东莞被抓，也不是被老婆体罚，我还是晒一下后台的处罚记录吧，看看这华丽的、屡战屡败、屡败屡战、屡教不改的违规记录： 关注我微信公众号的朋友们可能发现，有部分推送出去的文章存活期不到一天有时甚至几小时就被后台以“违法”之名删除，究其原因大概是长者的文章发多了吧……说到这，让我们鄙视下文字狱。 我也真是奇了怪了，人家经营公众号不足三月，粉丝数可怜的尚未破千，难不成我的粉丝队伍不纯洁，其中居然埋伏有朝廷的鹰犬每日对我发的文章虎视眈眈：一看到“长者”就举报，一说政府坏话就举报，也不管其中内容为何，只问立场、不问是非，俨然文革再世，何其可怖？ 经过此次被封事件，小明总结了一下三点经验教训： 堡垒是从内部被攻破的，要保证革命队伍的纯洁性。兹决定审查粉丝名单，对那些地下特工嫌疑分子一律拉黑名单，宁可错杀三千（虽然我粉丝还没有那么多），绝不放过一人。 逐步提高笔杆子斗争的技术含量。指点尖山、激扬文字、粪土万户侯也是门技术活。有些话不能直说，要拐着弯说；有些人即使欠骂也不能图嘴舒服乱骂，要拐着弯儿不带脏字地骂；有些理念不能说得太直白，too simple，要用冷门专业词汇加西文翻译点缀之；有些句子不能说得太通顺，要主语谓语宾语状语补语和名词动词形容词糅合着用，不能被人一眼就看明白文章的真实寓意……以此为文，以期达到即使文章“被举报+后台漂亮MM来人工审查”，也无法看出文章的弦外之音。 劈开枪林弹雨，准确把握“反围剿”的最佳战期。以前发文章的时间大多为晚上9点多后，其实8点到凌晨这个时间段是公众号后台文章审核最严格的时间段，稍微检测到几个敏感词，就被告知”违反相关法律法规规定，发送失败……”，相比而言，审核最松懈的时间段为早上8点到10点。我曾经把某篇在前一晚死活发不出去的文章放到第二天早上9点左右发，结果一次就发送成功了。Surpried~]]></content>
       <categories>
-        <category>蛤学</category>
+        <category>一颗赛艇</category>
       </categories>
+      <tags>
+        <tag>微信</tag>
+        <tag>屏蔽</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[$watch vs ng-change]]></title>
@@ -840,6 +1297,11 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>watch</tag>
+        <tag>ng-chane</tag>
+        <tag>angular</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[OS X 上配置 Apache 虚拟主机]]></title>
@@ -848,6 +1310,10 @@
       <categories>
         <category>Tool</category>
       </categories>
+      <tags>
+        <tag>OSX</tag>
+        <tag>Apache</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[Angular HTML5 file upload]]></title>
@@ -856,6 +1322,10 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>Angular</tag>
+        <tag>upload</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[习大大中秋访美，阜博通迷情月宴]]></title>
@@ -864,6 +1334,10 @@
       <categories>
         <category>心旷神怡</category>
       </categories>
+      <tags>
+        <tag>阜博通</tag>
+        <tag>中秋</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[文件上传哪家强]]></title>
@@ -872,6 +1346,10 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>upload</tag>
+        <tag>前端</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[Lost and Found]]></title>
@@ -880,6 +1358,9 @@
       <categories>
         <category>Tool</category>
       </categories>
+      <tags>
+        <tag>Mac</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[《毛骗》| 中国最大农村石家庄的重大贡献]]></title>
@@ -888,6 +1369,10 @@
       <categories>
         <category>心旷神怡</category>
       </categories>
+      <tags>
+        <tag>毛骗</tag>
+        <tag>李洪绸</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[你的 Xcode 已签收，签收人：草签]]></title>
@@ -901,6 +1386,10 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>nw.js</tag>
+        <tag>前端</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[iPhone 6 Plus 丢了，怒诗一首]]></title>
@@ -909,6 +1398,10 @@
       <categories>
         <category>心旷神怡</category>
       </categories>
+      <tags>
+        <tag>iPhone</tag>
+        <tag>小偷</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[一部看完后你会自觉把裤子穿好的香艳大片]]></title>
@@ -922,6 +1415,10 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>Object-C</tag>
+        <tag>Javascript</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[手把手教你开发浏览器]]></title>
@@ -930,5 +1427,10 @@
       <categories>
         <category>Coder</category>
       </categories>
+      <tags>
+        <tag>WebView</tag>
+        <tag>Object-C</tag>
+        <tag>Javascript</tag>
+      </tags>
   </entry>
 </search>

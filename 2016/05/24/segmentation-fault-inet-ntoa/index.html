@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="hxzqlh, 黄学忠" />
+  <meta name="keywords" content="C++,Segmentation fault,inet_ntoa,warning," />
 
 
 
@@ -80,6 +80,7 @@
 
 
 <meta name="description" content="今天来记录个小问题，应该说是个「坑」。 写了个 socket 通信程序，在我 64 位的 Mac mini 上，调用 inet_ntoa 函数产生段错误 Segmentation fault: 11 。 出错的地方就在这行代码： 1printf(&quot;accept a new client from: %s\n&quot;, inet_ntoa(client_addr.sin_addr)); 把它注释再跑就 O">
+<meta name="keywords" content="C++,Segmentation fault,inet_ntoa,warning">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Segmentation fault:inet_ntoa 崩溃咯">
 <meta property="og:url" content="http://hxz.ink/2016/05/24/segmentation-fault-inet-ntoa/index.html">
@@ -389,7 +390,7 @@
     
       <div>
         <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
-    <img id="wechat_subscriber_qcode" src="/images/qrcode-hxzqlh.jpg" alt="彦祖老师 wechat" style="width: 200px; max-width: 100%;"/>
+    <img id="wechat_subscriber_qcode" src="/images/qrcode.jpg" alt="彦祖老师 wechat" style="width: 200px; max-width: 100%;"/>
     <div></div>
 </div>
 
@@ -419,6 +420,18 @@
     
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/C/" rel="tag"># C++</a>
+          
+            <a href="/tags/Segmentation-fault/" rel="tag"># Segmentation fault</a>
+          
+            <a href="/tags/inet-ntoa/" rel="tag"># inet_ntoa</a>
+          
+            <a href="/tags/warning/" rel="tag"># warning</a>
+          
+        </div>
       
 
       
@@ -518,7 +531,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">114</span>
+                  <span class="site-state-item-count">118</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -529,7 +542,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -540,7 +553,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">188</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
