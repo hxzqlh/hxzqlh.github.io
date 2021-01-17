@@ -83,12 +83,12 @@
 <meta name="keywords" content="mysql,同步">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Mysql主从同步&#x2F;复制">
-<meta property="og:url" content="http://hxz.ink/2018/01/14/mysql-master-slave-sync/index.html">
+<meta property="og:url" content="http://hxz.ink/2018/04/14/mysql-master-slave-sync/index.html">
 <meta property="og:site_name" content="不忘痴心 砥砺前行">
 <meta property="og:description" content="主从同步原理 在master机器上，主从同步事件会被写到特殊的log文件中(binary-log);在slave机器上，slave读取主从同步事件，并根据读取的事件变化，在slave库上做相应的更改。  主从同步作用 数据备份：主数据库服务器故障后，可切换到从数据库继续工作，避免数据丢失。 架构扩展：水平扩展数据库的负载能力。当业务量越来越大，I/O访问频率过高，单机无法满足，此时做多库的存储，降">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://images2015.cnblogs.com/blog/820365/201608/820365-20160821160615776-1749314661.png">
-<meta property="og:updated_time" content="2021-01-16T17:44:29.727Z">
+<meta property="og:updated_time" content="2021-01-17T02:37:55.441Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Mysql主从同步&#x2F;复制">
 <meta name="twitter:description" content="主从同步原理 在master机器上，主从同步事件会被写到特殊的log文件中(binary-log);在slave机器上，slave读取主从同步事件，并根据读取的事件变化，在slave库上做相应的更改。  主从同步作用 数据备份：主数据库服务器故障后，可切换到从数据库继续工作，避免数据丢失。 架构扩展：水平扩展数据库的负载能力。当业务量越来越大，I/O访问频率过高，单机无法满足，此时做多库的存储，降">
@@ -122,7 +122,7 @@
 
 
 
-  <link rel="canonical" href="http://hxz.ink/2018/01/14/mysql-master-slave-sync/"/>
+  <link rel="canonical" href="http://hxz.ink/2018/04/14/mysql-master-slave-sync/"/>
 
 
 
@@ -255,7 +255,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hxz.ink/2018/01/14/mysql-master-slave-sync/">
+    <link itemprop="mainEntityOfPage" href="http://hxz.ink/2018/04/14/mysql-master-slave-sync/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="彦祖老师">
@@ -284,8 +284,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-14T14:40:37+08:00">
-                2018-01-14
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-14T14:40:37+08:00">
+                2018-04-14
               </time>
             
 
@@ -352,6 +352,7 @@
 <li>架构扩展：水平扩展数据库的负载能力。当业务量越来越大，I/O访问频率过高，单机无法满足，此时做多库的存储，降低磁盘I/O访问的频率，提高单个机器的I/O性能。</li>
 <li>读写分离：写服务使用master，读服务使用slave，读写服务分离互不影响，提高并发访问性能。</li>
 </ul>
+<a id="more"></a>
 <h2 id="主从同步格式"><a href="#主从同步格式" class="headerlink" title="主从同步格式"></a>主从同步格式</h2><p>binlog日志格式有3种，mysql默认采用 <code>Statement</code>：</p>
 <ul>
 <li>Statement：基于语句的复制，主库把 <strong>sql语句</strong> 写入到binlog中，完成复制</li>
@@ -433,7 +434,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://hxz.ink/2018/01/14/mysql-master-slave-sync/" title="Mysql主从同步/复制">http://hxz.ink/2018/01/14/mysql-master-slave-sync/</a>
+    <a href="http://hxz.ink/2018/04/14/mysql-master-slave-sync/" title="Mysql主从同步/复制">http://hxz.ink/2018/04/14/mysql-master-slave-sync/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -463,8 +464,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/01/11/c-and-go/" rel="next" title="Cgo 让 C 和 Go 手牵手">
-                <i class="fa fa-chevron-left"></i> Cgo 让 C 和 Go 手牵手
+              <a href="/2018/03/28/Gopher-slide/" rel="next" title="Gopher 做 PPT 的正确姿势">
+                <i class="fa fa-chevron-left"></i> Gopher 做 PPT 的正确姿势
               </a>
             
           </div>
@@ -473,8 +474,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/01/19/php-protobuf/" rel="prev" title="再来一次手牵手：php7.0 + protobuf">
-                再来一次手牵手：php7.0 + protobuf <i class="fa fa-chevron-right"></i>
+              <a href="/2018/05/06/I-expericed-N-digital-wallet/" rel="prev" title="我体验了 N 款数字货币钱包">
+                我体验了 N 款数字货币钱包 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -552,7 +553,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">118</span>
+                  <span class="site-state-item-count">119</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
