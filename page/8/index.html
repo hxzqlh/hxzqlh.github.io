@@ -249,6 +249,309 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hxz.ink/2016/05/24/segmentation-fault-inet-ntoa/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="彦祖老师">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不忘痴心 砥砺前行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/05/24/segmentation-fault-inet-ntoa/" itemprop="url">Segmentation fault:inet_ntoa 崩溃咯</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-24T11:23:33+08:00">
+                2016-05-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Coder/" itemprop="url" rel="index">
+                    <span itemprop="name">Coder</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>今天来记录个小问题，应该说是个「坑」。</p>
+<p>写了个 <code>socket</code> 通信程序，在我 64 位的 <code>Mac mini</code> 上，调用 <code>inet_ntoa</code> 函数产生段错误 <code>Segmentation fault: 11</code> 。</p>
+<p>出错的地方就在这行代码：</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">printf(<span class="string">"accept a new client from: %s\n"</span>, inet_ntoa(<span class="name">client_addr</span>.sin_addr))<span class="comment">;</span></span><br></pre></td></tr></table></figure>
+<p>把它注释再跑就 OK，干掉注释再跑又崩溃……试了好几次，每次都如此。</p>
+<p>Surpried？！</p>
+<p><img src="http://media.hxz.ink/2016-05-24_f7sAKr" alt=""></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/05/24/segmentation-fault-inet-ntoa/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hxz.ink/2016/05/21/Luogic-Talkshow-Southern-Ming-Dynasty-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="彦祖老师">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不忘痴心 砥砺前行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/05/21/Luogic-Talkshow-Southern-Ming-Dynasty-1/" itemprop="url">《罗辑思维 | 南明死局一》心得</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-21T21:27:08+08:00">
+                2016-05-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/心旷神怡/" itemprop="url" rel="index">
+                    <span itemprop="name">心旷神怡</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>今天在家啃了几十页的《Unix 环境高级编程》，内力消耗过度，感觉有轻度的头昏脑胀，我想不能再这样修炼下去了，得换个姿势调节下大脑。</p>
+<p>于是，我打开了很久没跟看的《罗辑思维》，这次看的是第 161 期《南明死局·一》，受益颇多，在此记录下心得。</p>
+<iframe height="498" width="510" src="http://player.youku.com/embed/XMTUwMjkwMjQ0OA==" frameborder="0" allowfullscreen></iframe>
+
+<p>熟悉中国历史的人都知道，1644 年，这一年特别热闹：5 个皇帝，你方唱罢我登场。什么国破家亡、文化沦丧、才子佳人、忠臣逆子……几乎所有能够调动起人们肾上腺激素的故事情节，在这一年都可以找到。</p>
+<p>这期节目借南明这段短暂的历史，用理性而非情绪化、道德化的角度来剖析它，讨论了中国古代政治系统和现代管理学方面的知识。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2016/05/21/Luogic-Talkshow-Southern-Ming-Dynasty-1/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://hxz.ink/2016/05/20/520-I-say-nothing/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1429,320 +1732,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hxz.ink/2016/05/05/Salt-States-2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="彦祖老师">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="不忘痴心 砥砺前行">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/05/05/Salt-States-2/" itemprop="url">Salt States 基本法二</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-05T17:07:04+08:00">
-                2016-05-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Tool/" itemprop="url" rel="index">
-                    <span itemprop="name">Tool</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>五一小长假，魏泽西事件，谁也没想到这事闹得这么大，惊动了习大大出来亲自做指示：「搜索结果不能以给钱多少作为排序依据」，当社会民生问题上升到国家机器的高度，这事推动起来就好办点了，这是积极的一面。</p>
-<p>再说黑暗的一面，在此事件中，百度的竞价排名、医疗广告备受诟病，有部分知乎大V收黑钱，昧着良心给那些为百度洗地的答案「点赞」，结果被人扒出来吊打一顿，个中过程，一波三折，撕逼打脸此起彼伏……</p>
-<p>详细报道，请观看明晚 19 点 35 分播出的焦点访谈节目《知乎6大V为百度洗地被永久封号》（链接：<a href="http://t.cn/Rq8r9zg）" target="_blank" rel="noopener">http://t.cn/Rq8r9zg）</a></p>
-<p>只不过一不小心点了个赞，瞬间几百万粉丝就没了，大V们的人品、口碑及其附带的一系列营销价值一夜坍塌，被永久地钉在知乎的耻辱柱上，受万人唾骂？请问，这事能怪谁？</p>
-<p>人在做天在看，且问苍天绕过谁？</p>
-<p><img src="http://media.hxz.ink/2016-04-28_1m2eS4" alt=""></p>
-<p>勿以恶小而为之啊！</p>
-<p>好啦，继续研究《Salt States 基本法》，本集前情提要：</p>
-<blockquote>
-<p>讨论有关 <code>sls</code> 模版以及 <code>include</code>, <code>extend</code> 等高级配置语法。</p>
-</blockquote>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2016/05/05/Salt-States-2/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hxz.ink/2016/05/03/Salt-States-1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="彦祖老师">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="不忘痴心 砥砺前行">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/05/03/Salt-States-1/" itemprop="url">Salt States 基本法一</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-03T22:03:22+08:00">
-                2016-05-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Tool/" itemprop="url" rel="index">
-                    <span itemprop="name">Tool</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>关于 <code>Salt States</code> ，《Salt Stack 一日游》（链接：<a href="http://t.cn/RqYQK0Q）从整体上介绍了" target="_blank" rel="noopener">http://t.cn/RqYQK0Q）从整体上介绍了</a> <code>salt</code> 系统以及各个组件，接着《如何使用盐态》(链接：<a href="http://t.cn/Rq8vJVF)把" target="_blank" rel="noopener">http://t.cn/Rq8vJVF)把</a> <code>state</code> 相关的知识过了一遍。但，这些多半是理论居多，实践得少，就像程序员学习一门新的编程语言一样，你讲再多都不如一个 <code>Hello World</code> 来的亲切。</p>
-<p>纸上得来终觉浅，得知此事须躬行。</p>
-<p>本文的目的就是手把手教你“怎样快速地运用 <code>Salt States</code> 来配置系统”。当然啦，想要挖掘更多 <code>Salt States</code> 的内幕信息，请移步官方文档，<a href="https://docs.saltstack.com/en/latest/ref/states/index.html" target="_blank" rel="noopener">那里</a>有你想知道的所有奇技淫巧。</p>
-<p>这个示例将分为四集，我打算从今天开始每晚放出一集熟肉版。</p>
-<p>本集前情提要：</p>
-<blockquote>
-<p>使用 <code>Salt</code> 配置一个 <code>minion</code>，使之运行 <code>Apache</code> 服务器，并确保该服务正常运行。</p>
-</blockquote>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2016/05/03/Salt-States-1/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/7/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/9/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/7/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/9/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1788,7 +1782,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">119</span>
+                  <span class="site-state-item-count">121</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1799,7 +1793,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -1810,7 +1804,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">188</span>
+                  <span class="site-state-item-count">189</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

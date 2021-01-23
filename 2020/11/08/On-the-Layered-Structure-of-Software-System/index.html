@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="消息平台,系统架构设计师," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="摘要2018年9月，我所在的部门因公司业务发展需要，承担了公司的实时消息平台的研发工作。该平台提供了即时通讯、消息推送、社交圈等功能，满足C2C（用户对用户）、C2B（用户对商家）、B2C（商家对用户）的沟通需求，同时为公司内其它业务子系统间消息流转提供支持。我在该项目中担任系统架构设计师的职务，主要负责设计平台的系统架构和技术选型。本文以实时消息平台为例，讨论了软件架构的选择和应用。在该项目中，">
+<meta name="keywords" content="消息平台,系统架构设计师">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论软件系统分层架构">
+<meta property="og:url" content="http://hxz.ink/2020/11/08/On-the-Layered-Structure-of-Software-System/index.html">
+<meta property="og:site_name" content="不忘痴心 砥砺前行">
+<meta property="og:description" content="摘要2018年9月，我所在的部门因公司业务发展需要，承担了公司的实时消息平台的研发工作。该平台提供了即时通讯、消息推送、社交圈等功能，满足C2C（用户对用户）、C2B（用户对商家）、B2C（商家对用户）的沟通需求，同时为公司内其它业务子系统间消息流转提供支持。我在该项目中担任系统架构设计师的职务，主要负责设计平台的系统架构和技术选型。本文以实时消息平台为例，讨论了软件架构的选择和应用。在该项目中，">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2021-01-23T17:12:47.686Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="论软件系统分层架构">
+<meta name="twitter:description" content="摘要2018年9月，我所在的部门因公司业务发展需要，承担了公司的实时消息平台的研发工作。该平台提供了即时通讯、消息推送、社交圈等功能，满足C2C（用户对用户）、C2B（用户对商家）、B2C（商家对用户）的沟通需求，同时为公司内其它业务子系统间消息流转提供支持。我在该项目中担任系统架构设计师的职务，主要负责设计平台的系统架构和技术选型。本文以实时消息平台为例，讨论了软件架构的选择和应用。在该项目中，">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hxz.ink/2020/11/08/On-the-Layered-Structure-of-Software-System/"/>
+
+
+
+
+
+  <title>论软件系统分层架构 | 不忘痴心 砥砺前行</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">不忘痴心 砥砺前行</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hxz.ink/2020/11/08/On-the-Layered-Structure-of-Software-System/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="彦祖老师">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="不忘痴心 砥砺前行">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">论软件系统分层架构</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-11-08T08:55:35+08:00">
+                2020-11-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/即时通讯/" itemprop="url" rel="index">
+                    <span itemprop="name">即时通讯</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/软考/" itemprop="url" rel="index">
+                    <span itemprop="name">软考</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/架构/" itemprop="url" rel="index">
+                    <span itemprop="name">架构</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>2018年9月，我所在的部门因公司业务发展需要，承担了公司的实时消息平台的研发工作。该平台提供了即时通讯、消息推送、社交圈等功能，满足C2C（用户对用户）、C2B（用户对商家）、B2C（商家对用户）的沟通需求，同时为公司内其它业务子系统间消息流转提供支持。我在该项目中担任系统架构设计师的职务，主要负责设计平台的系统架构和技术选型。本文以实时消息平台为例，讨论了软件架构的选择和应用。在该项目中，我结合实际业务需要，从开发和维护难度、稳定性、可靠性和可扩展性等方面综合衡量，为平台选择了接入层、逻辑层、数据访问层的三层分层架构。平台的研发耗时4个月，目前，系统已稳定运行了近2年。实践证明，这种架构设计有效的降低了系统的维护和开发成本，增强了系统的稳定性和可靠性，提高了系统的可扩展能力。</p>
+<a id="more"></a>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>随着移动互联网技术的迅猛发展，我所在的公司的在各业务子系统的开发过程中发现，用户、商户、客服之间进行沟通的需求越来越大，各业务子系统间进行消息流转的需求愈加频繁，且使用起来十分繁琐不便。为此，公司于2018年9月开始研发设计通用的实时消息平台（以下简称为“系统“）。该系统致力于为公司内各业务产品线提供基础通用的消息服务，降低公司内各业务子系统间进行信息交互的复杂度，满足C2C（用户对用户）、C2B（用户对商家）、B2C（商家对用户）的沟通需求。该系统为C端用户提供了私聊、群聊、密聊、聊天室、漂流瓶等多形式多场景的即时通讯功能，同时，该系统还支持公司内各业务子系统间进行消息流转，如B端商家通过该系统可以定向地为用户实时推送各种业务消息，如订单消息、活动促销消息等。本项目组全体成员共10人，我在里面担任系统架构设计师职务，主要负责项目计划制定，需求分析，整体架构设计与技术选型。下面，我将首先介绍软件系统开发中常用的软件架构风格及具体含义，然后详细介绍“消息平台”的分析和设计过程中所采用的架构风格及原因。</p>
+<p>软件系统开发中常用的软件架构风格有数据流风格、调用/返回风格、独立构件风格、虚拟机风格和仓库风格。<strong>数据流风格</strong> 包括批处理序列与管道-过滤器，其每一步处理都是独立，顺序执行的，适用于简单的线性流程。<strong>调用/返回风格</strong> 包括主程序/子程序风格，面向对象风格，层次结构风格，其主要思想是将复杂的大系统分解为一些小系统，明确系统层次，以便降低复杂度，增加可修改性。<strong>独立构件风格</strong> 包括进程通信，事件驱动系统（隐式调用），其特点是每个构件都是独立的个体，它们之间不直接通信，以便降低耦合度，提高灵活性。<strong>虚拟机风格</strong> 包括解释器风格和基于规则的系统风格，其具有良好的灵活性，可自定义规则。<strong>仓库风格</strong> 包括数据库系统风格、超文本系统风格和黑板系统风格，其以数据存储为中心。除此之外，还有基于特定领域的<strong>领域驱动风格</strong>，面向服务的 <strong>SOA架构风格</strong> 以及 <strong>微服务架构风格</strong> 等。</p>
+<p>在架构设计工作的开始阶段，我们便意识到，软件架构风格可以为我们的系统提供架构级的通用解决方案，这种架构级的软件重用可以极大地提高系统开发效率。作为一个通用的实时消息平台，系统首先必须具备高可用性和高可靠性，其支持业务子系统对接的特点又决定了其必须具有良好的扩展能力。我通过技术调研和讨论分析，决定采用层次架构风格，将系统划分为接入层，逻辑层，数据层。其中，接入层负责处理来自客户端（PC/H5/App）的连接、断开请求；逻辑层负责实现核心的消息处理逻辑，如私聊、群聊、密聊、漂流瓶、聊天室、消息推送等核心业务场景的实现；数据层负责提供数据存储访问服务，如数据库服务，缓存服务，文件服务，搜索服务等。</p>
+<p><strong>接入层</strong>，是客户端接入消息平台的门户，主要负责统一鉴权、保持长连接，初步攻防，加解密，压缩解压缩等功能。为了防止DDOS等恶意网络攻击，我们采用了“WAF+DDos高防”安全策略来保护消息平台。接入层本身不含业务逻辑，它是无状态的，因此可以很方便得进行水平扩展，出于对成本与技术成熟度等方面的考虑，我们采用了基于Ngnix的负载均衡技术，以应对日益增长的数据吞吐量，提高平台的可用性。由于系统的核心业务是实现消息的实时传递，对连接的可靠性非常敏感，我们采用了“WebSocket技术 + 心跳机制”，保持客户端和消息平台的长连接。为防止恶意用户对消息平台进行洪泛攻击，在不影响正常业务功能的前提下，我们采用了令牌桶机制来限制客户端发送消息的频率，保障平台的稳定性和可用性。出于节省带宽流量方面的考虑，客户端与消息平台之间进行交互的消息都是经过加密、压缩过的，因此，接入层还需要对收到的客户端消息进行解压缩、解密，对推送给客户端的消息进行加密、压缩处理。</p>
+<p><strong>逻辑层</strong>，负责实现消息平台本身的核心业务逻辑处理，如私聊、群聊、密聊、聊天室、漂流瓶以及业务子系统的消息推送等业务场景。为增强系统的可用性和可扩展性，逻辑层也保持了无状态性，同样支持水平扩展。为解决无线环境下网络不稳定导致的“消息丢失”问题，系统收到消息后，先持久化到数据库，再进行相关的业务逻辑处理，以保证消息不会丢失。针对客户端“重复发送”消息的问题，我们采用了客户端和消息平台协同处理方案，具体为：客户端在发送的的消息体里带上唯一的消息标示码（如根据“用户Uid+当前时间戳毫秒”规则生成UUID），若逻辑层根据根据该标示码在数据层查询到该消息已存在，则直接返回消息重复错误给客户端。逻辑层还支持各个业务子系统接入到消息平台，具体实践中，我们通过引入kafka消息队列，将客户端发送的消息，根据业务方注册时绑定的主题，发送到相应的业务消息主题队列，以达到消息平台和业务模块的解藕。 另外，业务子系统也可通过逻辑层开放的RPC接口实时推送业务消息给客户端，实现了业务子系统和消息平台间的解耦。消息平台和业务子系统间进行双向消息传递均实现了解藕，新增业务子系统，消息平台无需改动代码，增强了系统的可扩展性，同时也降低了系统的维护成本。</p>
+<p><strong>数据层</strong>，涉及缓存，文件系统，数据库，搜索系统等模块。由于用户对数据的访问具有集中性，所以我们基于Redis实现了缓存机制，将用户访问频率较高的用户信息、群组信息等置于缓存，减少对数据库的访问压力。从我们系统的业务特性来看，数据库操作是“读多写少”，所以我们对数据库进行了一主多从读写分离。数据库访问采用了数据库连接池的技术，以固定的连接池大小为限，使用有限的数据库连接，提高对数据库操作的性能，保障数据库服务的高可用。开发实践中，我们采用了比较成熟的Gorm组件，用于实现数据和模型的绑定，该方法开发高效，敏捷，成本较低，而且兼容多种主流数据库，开发人员不必再去写大量繁琐的SQL语句，节省了开发成本。</p>
+<h2 id="结尾"><a href="#结尾" class="headerlink" title="结尾"></a>结尾</h2><p>2019年1月，该系统正式上线运行，至今已稳定运行了接近2年时间，满足了用户常用的即时通讯需求，同时为公司内各大业务子系统提供了稳定可靠的消息服务支撑。系统所采用的三层分层架构在降低开发与维护难度、加强平台可用性、提高系统稳定性、增强系统可靠性等方面都发挥了重要的作用，获得了领导和同事的好评。当然，这种架构也存在一些不足，如我们接入层采用的负载均衡算法是加权轮转算法，过于简单，常常出现资源分配不合理的现象，可将算法改进为加权最小连接数算法来解决。分层架构所具有的优点和面临的问题将是我今后在同类系统的架构决策方面需要重点考虑的因素。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/images/qrcode.jpg" alt="彦祖老师 wechat" style="width: 200px; max-width: 100%;"/>
+    <div></div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    彦祖老师
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://hxz.ink/2020/11/08/On-the-Layered-Structure-of-Software-System/" title="论软件系统分层架构">http://hxz.ink/2020/11/08/On-the-Layered-Structure-of-Software-System/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/消息平台/" rel="tag"># 消息平台</a>
+          
+            <a href="/tags/系统架构设计师/" rel="tag"># 系统架构设计师</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/06/13/decentralized-social-IM-arch/" rel="next" title="去中心化社交聊天架构">
+                <i class="fa fa-chevron-left"></i> 去中心化社交聊天架构
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/11/09/On-the-Architecture-Style-of-Software-System/" rel="prev" title="论软件系统架构风格">
+                论软件系统架构风格 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">彦祖老师</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">121</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">189</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/hxzqlh" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:hxzqlh@gmail.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#摘要"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#正文"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结尾"><span class="nav-number">3.</span> <span class="nav-text">结尾</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">彦祖老师</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

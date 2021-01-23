@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://media.hxz.ink/2021-01-17_zckavs">
 <meta property="og:image" content="http://media.hxz.ink/2021-01-17_9v6opL">
-<meta property="og:updated_time" content="2021-01-16T17:53:24.810Z">
+<meta property="og:updated_time" content="2021-01-17T15:52:27.199Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="通用消息平台架构">
 <meta name="twitter:description" content="消息平台是高可用、高并发、可伸缩的分布式系统，致力于为公司内各业务产品线提供基础通用的消息服务，降低公司内各业务子系统间进行信息交互的复杂度，满足C2C（用户对用户）、C2B（用户对商家）、B2C（商家对用户）的沟通需求。 消息平台为C端用户提供了私聊、群聊、密聊、聊天室、漂流瓶等多形式多场景的即时通讯功能，同时，平台还支持公司内各业务子系统间进行消息流转，如B端商家通过该系统可以定向地为用户实时">
@@ -365,9 +365,9 @@
 <h2 id="2-0"><a href="#2-0" class="headerlink" title="2.0"></a>2.0</h2><p>系统将接入层、逻辑层、数据层微服务化，实现水平可扩展。架构如下：</p>
 <p><img src="http://media.hxz.ink/2021-01-17_9v6opL" alt=""></p>
 <h3 id="关键模块"><a href="#关键模块" class="headerlink" title="关键模块"></a>关键模块</h3><ul>
-<li>comet，消息平台的接入门户(支持 ws/tcp)，保持长连接，初步攻防（消息频率限制），加解密，压缩解压缩，<code>水平可扩展</code></li>
-<li>logic，消息平台内部对消息的处理逻辑，无业务逻辑（app-server部分负责），只维持用户在线状态，对消息进行在线投递或离线存储，<code>水平可扩展</code></li>
-<li>cache，高可用redis集群，存储用户在线状态，以及用户在哪一台comet接入（如果在线）</li>
+<li>comet：消息平台的接入门户(支持 ws/tcp)，保持长连接，初步攻防（消息频率限制），加解密，压缩解压缩，<code>水平可扩展</code></li>
+<li>logic：消息平台内部对消息的处理逻辑，无业务逻辑（app-server部分负责），只维持用户在线状态，对消息进行在线投递或离线存储，<code>水平可扩展</code></li>
+<li>cache：高可用redis集群，存储用户在线状态，以及用户在哪一台comet接入（如果在线）</li>
 <li>mq： 消息队列，logic将消息投递到mq中对应业务方的topic队列，业务方从它订阅topic队列中消费消息，即不同业务方的消息会投递到不同的主题队列</li>
 <li>job: 消费mq里的发往客户端的消息，将消息发送到comet，<code>水平可扩展</code></li>
 <li>etcd：服务注册发现/配置中心</li>
@@ -539,7 +539,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">119</span>
+                  <span class="site-state-item-count">121</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -550,7 +550,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -561,7 +561,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">188</span>
+                  <span class="site-state-item-count">189</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

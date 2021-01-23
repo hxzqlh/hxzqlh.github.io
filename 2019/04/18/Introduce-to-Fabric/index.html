@@ -79,19 +79,20 @@
 
 
 
-<meta name="description" content="Fabric 是超级账本联盟(Hyperledger)的主要项目之一，其作为一个私有或“许可”型区块链网络，目前它主要被用于金融和供应链等行业。至今，Fabric已获得了阿里巴巴、AWS、Azure、百度、谷歌、华为、IBM、甲骨文、腾讯等互联网巨头的支持。">
+<meta name="description" content="Fabric 是超级账本联盟(Hyperledger)的主要项目之一，其作为一个私有或“许可”型区块链网络，目前它主要被用于金融和供应链等行业。至今，Fabric已获得了阿里巴巴、AWS、Azure、百度、谷歌、华为、IBM、甲骨文、腾讯等互联网巨头的支持。 Fabric 是一个分布式账本解决方案平台，采用 模块化 架构，支持不同组件的 可插拔 实现，以适应业务系统的复杂性。">
 <meta name="keywords" content="Fabric,区块链">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Fabric 简介">
 <meta property="og:url" content="http://hxz.ink/2019/04/18/Introduce-to-Fabric/index.html">
 <meta property="og:site_name" content="不忘痴心 砥砺前行">
-<meta property="og:description" content="Fabric 是超级账本联盟(Hyperledger)的主要项目之一，其作为一个私有或“许可”型区块链网络，目前它主要被用于金融和供应链等行业。至今，Fabric已获得了阿里巴巴、AWS、Azure、百度、谷歌、华为、IBM、甲骨文、腾讯等互联网巨头的支持。">
+<meta property="og:description" content="Fabric 是超级账本联盟(Hyperledger)的主要项目之一，其作为一个私有或“许可”型区块链网络，目前它主要被用于金融和供应链等行业。至今，Fabric已获得了阿里巴巴、AWS、Azure、百度、谷歌、华为、IBM、甲骨文、腾讯等互联网巨头的支持。 Fabric 是一个分布式账本解决方案平台，采用 模块化 架构，支持不同组件的 可插拔 实现，以适应业务系统的复杂性。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://media.hxz.ink/fabric-arch.png">
-<meta property="og:updated_time" content="2021-01-16T18:01:46.086Z">
+<meta property="og:image" content="https://learnblockchain.cn/books/enterprise/assets/img/fabric_workflow_of_transaction.2e7c606d.png">
+<meta property="og:updated_time" content="2021-01-22T14:57:07.317Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Fabric 简介">
-<meta name="twitter:description" content="Fabric 是超级账本联盟(Hyperledger)的主要项目之一，其作为一个私有或“许可”型区块链网络，目前它主要被用于金融和供应链等行业。至今，Fabric已获得了阿里巴巴、AWS、Azure、百度、谷歌、华为、IBM、甲骨文、腾讯等互联网巨头的支持。">
+<meta name="twitter:description" content="Fabric 是超级账本联盟(Hyperledger)的主要项目之一，其作为一个私有或“许可”型区块链网络，目前它主要被用于金融和供应链等行业。至今，Fabric已获得了阿里巴巴、AWS、Azure、百度、谷歌、华为、IBM、甲骨文、腾讯等互联网巨头的支持。 Fabric 是一个分布式账本解决方案平台，采用 模块化 架构，支持不同组件的 可插拔 实现，以适应业务系统的复杂性。">
 <meta name="twitter:image" content="http://media.hxz.ink/fabric-arch.png">
 
 
@@ -345,6 +346,7 @@
 
       
         <p><code>Fabric</code> 是超级账本联盟(<code>Hyperledger</code>)的主要项目之一，其作为一个私有或“许可”型区块链网络，目前它主要被用于金融和供应链等行业。至今，Fabric已获得了阿里巴巴、AWS、Azure、百度、谷歌、华为、IBM、甲骨文、腾讯等互联网巨头的支持。</p>
+<p><code>Fabric</code> 是一个分布式账本解决方案平台，采用 <strong>模块化</strong> 架构，支持不同组件的 <strong>可插拔</strong> 实现，以适应业务系统的复杂性。</p>
 <a id="more"></a>
 <h2 id="架构设计"><a href="#架构设计" class="headerlink" title="架构设计"></a>架构设计</h2><p><img src="http://media.hxz.ink/fabric-arch.png" alt="arch"></p>
 <p>三大组件：区块链服务（Blockchain）、链码服务（Chaincode）、成员权限管理（Membership）。</p>
@@ -367,12 +369,22 @@
 </ul>
 <h2 id="角色管理"><a href="#角色管理" class="headerlink" title="角色管理"></a>角色管理</h2><p>节点角色是 Fabric 设计中的一大创新，根据性能和安全需求，不同的节点可以由不同的组织分别管理，彼此协作完成整个区块链系统的记账功能：</p>
 <ul>
-<li>背书节点（Endorser Peer）：一类特殊的 Peer，对交易提案（Transaction Proposal）进行检查，通过执行智能合约计算交易执行结果（读写集合）并对其进行背书；</li>
+<li>背书节点（Endorser Peer）：负责对交易的提案（Transaction Proposal）进行验证并进行 <strong>模拟</strong> 执行。背书节点相当于中立的第三方，用来保证交易的合法性；</li>
 <li>记账节点（Committer Peer）：负责维护账本，检查排序后交易结果合法性，接受合法修改，并写入到本地账本结构，目前所有 Peer 默认都是记账节点；</li>
 <li>排序节点（Orderer）：正式交易会发给排序节点，排序节点负责对网络中所有交易进行排序处理，并整理为区块结构，之后被记账节点拉取提交到本地账本；</li>
 <li>证书节点（CA）：提供标准的 PKI 服务，负责对网络中所有的证书进行管理，包括签发和撤销。</li>
 </ul>
-<p>网络账本的基本单位是 <strong>通道</strong>（Channel），每个通道内的成员可以共享账本，不同通道内账本则彼此隔离。客户端可以向网络内发送交易，交易经过共识后被通道内的 Peer 节点接收并更新本地对应的账本。类似 <code>chain33</code> 的平行链概念。</p>
+<h2 id="通道"><a href="#通道" class="headerlink" title="通道"></a>通道</h2><p>网络账本的基本单位是 <strong>通道</strong>（Channel），每个通道内的成员可以共享账本，不同通道内账本则彼此隔离。客户端可以向网络内发送交易，交易经过共识后被通道内的 Peer 节点接收并更新本地对应的账本。类似 <code>chain33</code> 的平行链概念。</p>
+<h2 id="交易流程"><a href="#交易流程" class="headerlink" title="交易流程"></a>交易流程</h2><p><img src="https://learnblockchain.cn/books/enterprise/assets/img/fabric_workflow_of_transaction.2e7c606d.png" alt=""></p>
+<p>上图中，客户端（App）使用 SDK 与 Fabric 网络进行交互。</p>
+<ol>
+<li>客户端先通过证书服务获取合法的身份并加入到应用通道（Channel）中。</li>
+<li>客户端构造交易请求（Proposal）提交给背书节点（Endorser）。</li>
+<li>背书节点对交易进行验证和模拟执行后（并不真正更新账本），反馈给客户端。</li>
+<li>客户端收到足够的背书支持后将交易发送给排序节点（Orderer）。</li>
+<li>排序节点（Orderer）对网络中的交易进行全局排序，并将排序后的交易打包成区块，然后广播给网络中的记账节点（Committer）。</li>
+<li>记账节点（Committer）负责维护区块链和账本结构，对交易进行最终检查（交易结构的合法性、交易背书签名是否符合背书策略等），检查通过后写入账本。</li>
+</ol>
 
       
     </div>
@@ -520,7 +532,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">119</span>
+                  <span class="site-state-item-count">121</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -531,7 +543,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -542,7 +554,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">188</span>
+                  <span class="site-state-item-count">189</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -591,7 +603,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#架构设计"><span class="nav-number">1.</span> <span class="nav-text">架构设计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#区块链服务"><span class="nav-number">1.1.</span> <span class="nav-text">区块链服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#链码服务"><span class="nav-number">1.2.</span> <span class="nav-text">链码服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#成员权限管理"><span class="nav-number">1.3.</span> <span class="nav-text">成员权限管理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#角色管理"><span class="nav-number">2.</span> <span class="nav-text">角色管理</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#架构设计"><span class="nav-number">1.</span> <span class="nav-text">架构设计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#区块链服务"><span class="nav-number">1.1.</span> <span class="nav-text">区块链服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#链码服务"><span class="nav-number">1.2.</span> <span class="nav-text">链码服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#成员权限管理"><span class="nav-number">1.3.</span> <span class="nav-text">成员权限管理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#角色管理"><span class="nav-number">2.</span> <span class="nav-text">角色管理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通道"><span class="nav-number">3.</span> <span class="nav-text">通道</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#交易流程"><span class="nav-number">4.</span> <span class="nav-text">交易流程</span></a></li></ol></div>
             
 
           </div>
