@@ -314,8 +314,8 @@
                 
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/软考/" itemprop="url" rel="index">
-                    <span itemprop="name">软考</span>
+                  <a href="/categories/架构/" itemprop="url" rel="index">
+                    <span itemprop="name">架构</span>
                   </a>
                 </span>
 
@@ -325,8 +325,8 @@
                 
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/架构/" itemprop="url" rel="index">
-                    <span itemprop="name">架构</span>
+                  <a href="/categories/软考/" itemprop="url" rel="index">
+                    <span itemprop="name">软考</span>
                   </a>
                 </span>
 
@@ -363,7 +363,14 @@
 
       
         
-          <h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>2018年9月，我所在的部门因公司业务发展需要，承担了公司的实时消息平台的研发工作。该平台提供了即时通讯、消息推送、社交圈等功能，满足C2C（用户对用户）、C2B（用户对商家）、B2C（商家对用户）的沟通需求，同时为公司内其它业务子系统间消息流转提供支持。我在该项目中担任系统架构设计师的职务，主要负责设计平台的系统架构和技术选型。本文以消息平台为例，论述了软件架构风格在项目中的应用，并阐述了选择层次结构、管道/过滤器和数据库系统三种架构风格在项目中组合应用的原因和效果，最后总结了在开发过程中遇到的问题及解决方式。实践证明，通过适当的架构风格选择和组合应用使开发工作取得了成功，消息平台于2019年1月验收上线，目前已稳定运行近2年时间，得到了领导和同事的一致认可和好评。</p>
+          <p>系统架构风格（<code>System Architecture Style</code>）是描述某一特定应用领域中系统组织方式的惯用模式。架构风格定义了一个词汇表和一组约束，词汇表中包含一些构件和连接件类型，而这组约束指出系统是如何将这些构件和连接件组合起来的。软件系统架构风格反映了领域中众多软件系统所共有的结构和语义特性，并指导如何将各个模块和子系统有效地组织成一个完整的系统。软件系统架构风格的共有部分可以使得不同系统共享同一个实现代码，系统能够按照常用的、规范化的方式来组织，便于不同设计者很容易地理解系统架构。</p>
+<p>请以“软件系统架构风格”论题，依次从以下三个方面进行论述：</p>
+<ol>
+<li>概要叙述你参与分析和开发的软件系统开发项目以及你所担任的主要工作。</li>
+<li>分析软件系统开发中常用的软件系统架构风格有哪些？详细阐述每种风格的具体含义。</li>
+<li>详细说明在你所参与的软件系统开发项目中，采用了哪种软件系统架构风格，具体实施效果如何。</li>
+</ol>
+<p>试题出自试卷《2017年下半年系统架构设计师考试论文真题》</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2020/11/09/On-the-Architecture-Style-of-Software-System/#more" rel="contents">
@@ -482,8 +489,8 @@
                 
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/软考/" itemprop="url" rel="index">
-                    <span itemprop="name">软考</span>
+                  <a href="/categories/架构/" itemprop="url" rel="index">
+                    <span itemprop="name">架构</span>
                   </a>
                 </span>
 
@@ -493,8 +500,8 @@
                 
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/架构/" itemprop="url" rel="index">
-                    <span itemprop="name">架构</span>
+                  <a href="/categories/软考/" itemprop="url" rel="index">
+                    <span itemprop="name">软考</span>
                   </a>
                 </span>
 
@@ -531,7 +538,14 @@
 
       
         
-          <h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>2018年9月，我所在的部门因公司业务发展需要，承担了公司的实时消息平台的研发工作。该平台提供了即时通讯、消息推送、社交圈等功能，满足C2C（用户对用户）、C2B（用户对商家）、B2C（商家对用户）的沟通需求，同时为公司内其它业务子系统间消息流转提供支持。我在该项目中担任系统架构设计师的职务，主要负责设计平台的系统架构和技术选型。本文以实时消息平台为例，讨论了软件架构的选择和应用。在该项目中，我结合实际业务需要，从开发和维护难度、稳定性、可靠性和可扩展性等方面综合衡量，为平台选择了接入层、逻辑层、数据访问层的三层分层架构。平台的研发耗时4个月，目前，系统已稳定运行了近2年。实践证明，这种架构设计有效的降低了系统的维护和开发成本，增强了系统的稳定性和可靠性，提高了系统的可扩展能力。</p>
+          <p>软件架构风格是描述一类特定应用领域中系统组织方式的惯用模式，反映了领域中诸多系统所共有的结构特征和语义特征，并指导如何将各个模块和子系统有效组织成一个完整的系统。分层架构是一种常见的软件架构风格，能够有效简化设计，使得设计的系统结构清晰，便于提高复用能力和产品维护能力。由于大量企业应用系统都由界面呈现、业务逻辑、数据存储三类功能构成，因此广泛采用分层架构风格进行系统设计。</p>
+<p>请围绕“企业应用系统的分层架构风格”论题，依次从以下三个方面进行论述。</p>
+<ol>
+<li>概要叙述你参与管理和开发的企业应用系统建设项目以及你在其中所承担的主要工作。</li>
+<li>请结合项目实际情况，指出应用系统都有哪些层次以及每个层次的主要功能。</li>
+<li>请结合项目实际情况，指出设计每个层次时需要注意的问题及相应的解决方案。</li>
+</ol>
+<p>试题出自试卷《2013年下半年系统架构设计师考试论文真题》</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2020/11/08/On-the-Layered-Structure-of-Software-System/#more" rel="contents">
