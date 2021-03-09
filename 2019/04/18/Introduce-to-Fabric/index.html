@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://media.hxz.ink/fabric-arch.png">
 <meta property="og:image" content="https://learnblockchain.cn/books/enterprise/assets/img/fabric_workflow_of_transaction.2e7c606d.png">
-<meta property="og:updated_time" content="2021-01-22T14:57:07.317Z">
+<meta property="og:updated_time" content="2021-01-29T14:24:12.402Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Fabric 简介">
 <meta name="twitter:description" content="Fabric 是超级账本联盟(Hyperledger)的主要项目之一，其作为一个私有或“许可”型区块链网络，目前它主要被用于金融和供应链等行业。至今，Fabric已获得了阿里巴巴、AWS、Azure、百度、谷歌、华为、IBM、甲骨文、腾讯等互联网巨头的支持。 Fabric 是一个分布式账本解决方案平台，采用 模块化 架构，支持不同组件的 可插拔 实现，以适应业务系统的复杂性。">
@@ -356,23 +356,22 @@
 <li>区块链代表的是账本状态机发生变更的历史过程。</li>
 <li>交易意味着围绕着某个链码进行操作，交易可以改变世界状态。</li>
 </ul>
-<p>世界观：世界状态, 用于存放链码执行过程中涉及到的 <strong>状态变量</strong>，是一个键值数据库。典型的元素为 <code>[chaincodeID, ckey]: value</code> 结构。</p>
 <h3 id="链码服务"><a href="#链码服务" class="headerlink" title="链码服务"></a>链码服务</h3><p>在 Fabric 中，智能合约叫做链码 (<code>Chaincode</code>)，它包含所有的业务处理逻辑，并对外提供接口，外部通过调用链码接口来改变世界观。</p>
 <p>链码需要实现 <code>Chaincode</code> 接口，以被 VP（<code>Validating Peer</code>,验证节点）节点调用，目前支持的交易类型包括：部署（Deploy）、调用（Invoke）和查询（Query）。不同链码之间可能互相调用和查询。</p>
 <p>在实现上，链码需要运行在隔离的 <strong>容器</strong> 中，超级账本采用了 <code>Docker</code> 作为默认容器。对容器的操作支持三种方法：<code>build</code>、<code>start</code>、<code>stop</code>，对应的接口为 <code>VM</code>。</p>
 <p>链码部署成功后，会创建连接到部署它的 VP 节点的 gRPC 通道，VP 节点和容器之间通过 gRPC 消息来交互。</p>
 <h3 id="成员权限管理"><a href="#成员权限管理" class="headerlink" title="成员权限管理"></a>成员权限管理</h3><p>通过基于 PKI 的成员权限管理，平台可以对接入的节点和客户端的能力进行限制。证书有三种:</p>
 <ul>
-<li>注册证书 ECert：颁发给提供了注册凭证的用户或节点，一般长期有效；</li>
-<li>交易证书 TCert：颁发给用户，控制每个交易的权限，一般针对某个交易，短期有效。</li>
-<li>通信证书 TLSCert：控制对网络的访问，并且防止窃听。</li>
+<li>注册证书 <code>ECert</code>：颁发给提供了注册凭证的用户或节点，一般长期有效；</li>
+<li>交易证书 <code>TCert</code>：颁发给用户，控制每个交易的权限，一般针对某个交易，短期有效。</li>
+<li>通信证书 <code>TLSCert</code>：控制对网络的访问，并且防止窃听。</li>
 </ul>
 <h2 id="角色管理"><a href="#角色管理" class="headerlink" title="角色管理"></a>角色管理</h2><p>节点角色是 Fabric 设计中的一大创新，根据性能和安全需求，不同的节点可以由不同的组织分别管理，彼此协作完成整个区块链系统的记账功能：</p>
 <ul>
-<li>背书节点（Endorser Peer）：负责对交易的提案（Transaction Proposal）进行验证并进行 <strong>模拟</strong> 执行。背书节点相当于中立的第三方，用来保证交易的合法性；</li>
-<li>记账节点（Committer Peer）：负责维护账本，检查排序后交易结果合法性，接受合法修改，并写入到本地账本结构，目前所有 Peer 默认都是记账节点；</li>
-<li>排序节点（Orderer）：正式交易会发给排序节点，排序节点负责对网络中所有交易进行排序处理，并整理为区块结构，之后被记账节点拉取提交到本地账本；</li>
-<li>证书节点（CA）：提供标准的 PKI 服务，负责对网络中所有的证书进行管理，包括签发和撤销。</li>
+<li>背书节点（<code>Endorser Peer</code>）：负责对交易的提案（Transaction Proposal）进行验证并进行 <strong>模拟</strong> 执行。背书节点相当于中立的第三方，用来保证交易的合法性；</li>
+<li>记账节点（<code>Committer Peer</code>）：负责维护账本，检查排序后交易结果合法性，接受合法修改，并写入到本地账本结构，目前所有 Peer 默认都是记账节点；</li>
+<li>排序节点（<code>Orderer</code>）：正式交易会发给排序节点，排序节点负责对网络中所有交易进行排序处理，并整理为区块结构，之后被记账节点拉取提交到本地账本；</li>
+<li>证书节点（<code>CA</code>）：提供标准的 PKI 服务，负责对网络中所有的证书进行管理，包括签发和撤销。</li>
 </ul>
 <h2 id="通道"><a href="#通道" class="headerlink" title="通道"></a>通道</h2><p>网络账本的基本单位是 <strong>通道</strong>（Channel），每个通道内的成员可以共享账本，不同通道内账本则彼此隔离。客户端可以向网络内发送交易，交易经过共识后被通道内的 Peer 节点接收并更新本地对应的账本。类似 <code>chain33</code> 的平行链概念。</p>
 <h2 id="交易流程"><a href="#交易流程" class="headerlink" title="交易流程"></a>交易流程</h2><p><img src="https://learnblockchain.cn/books/enterprise/assets/img/fabric_workflow_of_transaction.2e7c606d.png" alt=""></p>
@@ -532,7 +531,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">124</span>
+                  <span class="site-state-item-count">125</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -554,7 +553,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">194</span>
+                  <span class="site-state-item-count">196</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -638,6 +637,8 @@
 
 
 
+
+  <div class="footer-custom"><a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备20005040号-1</a></div>
 
 
         
